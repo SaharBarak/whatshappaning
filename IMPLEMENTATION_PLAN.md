@@ -547,22 +547,9 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### 7.5 Module Cards (16 total)
 
-- [x] Create `/frontend/js/components/modules/moon.js`
-- [x] Create `/frontend/js/components/modules/tzolkin.js`
-- [x] Create `/frontend/js/components/modules/dreamspell.js`
-- [x] Create `/frontend/js/components/modules/parasha.js`
-- [x] Create `/frontend/js/components/modules/gematria.js`
-- [x] Create `/frontend/js/components/modules/astrology.js`
-- [x] Create `/frontend/js/components/modules/solar.js`
-- [x] Create `/frontend/js/components/modules/schumann.js`
-- [x] Create `/frontend/js/components/modules/tarot.js`
-- [x] Create `/frontend/js/components/modules/numerology.js`
-- [x] Create `/frontend/js/components/modules/iching.js`
-- [x] Create `/frontend/js/components/modules/cosmic.js`
-- [x] Create `/frontend/js/components/modules/markets.js`
-- [x] Create `/frontend/js/components/modules/geophysical.js`
-- [x] Create `/frontend/js/components/modules/sentiment.js`
-- [x] Create `/frontend/js/components/modules/news.js`
+- [x] All 16 module renderers consolidated in `/frontend/js/components/modules.js`
+  - Includes: moon, tzolkin, dreamspell, parasha, gematria, numerology, iching, tarot, solar, schumann, cosmic, astrology, markets, geophysical, sentiment, news
+  - Deviation from spec: Single file vs. separate files per module (simpler architecture)
 
 ### 7.6 Accessibility & UX (Gap from Spec 02)
 
