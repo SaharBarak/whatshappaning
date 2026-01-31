@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.21 (stable)
+> **Version:** v0.0.22 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed (including new spec 25), decisions resolved, implementation verified
 > **Plan Verification:** VERIFIED - All 25 specs cross-referenced with parallel subagents, plan accuracy confirmed
@@ -213,13 +213,13 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - [x] Create `specs/25-HISTORICAL-DATA-BOOTSTRAP.md` - Bootstrap process, data sources, bulk import
 - [ ] Update `specs/08-MODULE-ASTROLOGY.md` - Swiss Ephemeris file config, eclipse source, ephemeris file management
 - [x] Update `specs/03-MODULE-MOON.md` - Void of Course algorithm detail, fallback strategy
-- [ ] Update `specs/05-MODULE-DREAMSPELL.md` - Feb 29 leap day handling, Guide/Analog/Antipode/Occult power calculations
+- [x] Update `specs/05-MODULE-DREAMSPELL.md` - Feb 29 leap day handling, Guide/Analog/Antipode/Occult power calculations
 - [ ] Update `specs/11-MODULE-TAROT.md` - Complete 78-card data (only 1 example provided)
 - [ ] Update `specs/18-MODULE-ICHING.md` - Complete 64-hexagram data (only 1 example provided), changing lines transformation algorithm
 - [ ] Update `specs/17-MODULE-NUMEROLOGY.md` - Sunrise/sunset data source, dayRulers array mapping
 - [x] Update `specs/22-MODULE-SENTIMENT.md` - News sentiment implementation, social mood implementation
-- [ ] Update `specs/23-CORRELATION-ENGINE.md` - Complete KEY_COMBINATIONS list (only 4 defined), continuous feature binning strategy
-- [ ] Update `specs/01-BACKEND-API.md` - Response formats for /api/history/:module, error response schema, pagination
+- [x] Update `specs/23-CORRELATION-ENGINE.md` - Complete KEY_COMBINATIONS list, continuous feature binning strategy
+- [x] Update `specs/01-BACKEND-API.md` - Complete response schemas for all endpoints, error formats, pagination
 
 ## Static Data Files [COMPLETE]
 
