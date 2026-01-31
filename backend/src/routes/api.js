@@ -16,6 +16,8 @@ const router = express.Router();
 const db = require('../db');
 const { getAllModuleData, getModuleData } = require('../scheduler');
 const cache = require('../utils/cache');
+const correlation = require('../correlation');
+const { extractFeatures } = require('../correlation/features');
 
 // Module list for validation
 const VALID_MODULES = [
@@ -210,11 +212,34 @@ router.get('/predictions', async (req, res) => {
       };
     });
 
+    // Get pattern alerts by extracting today's features from module data
+    let patternAlerts = [];
+    try {
+      const moduleDataMap = {};
+      for (const moduleName of VALID_MODULES) {
+        const snapshot = await db.getLatestSnapshot(moduleName);
+        if (snapshot && snapshot.data) {
+          moduleDataMap[moduleName] = snapshot.data;
+        }
+      }
+
+      if (Object.keys(moduleDataMap).length > 0) {
+        const todayFeatures = extractFeatures(moduleDataMap, new Date());
+        const patternAlert = await correlation.findPatternMatches(todayFeatures);
+        if (patternAlert) {
+          patternAlerts = [patternAlert];
+        }
+      }
+    } catch (patternErr) {
+      console.error('Error generating pattern alerts:', patternErr.message);
+      // Continue without pattern alerts - don't fail the whole request
+    }
+
     const response = {
       date: new Date().toISOString().split('T')[0],
       generatedAt: new Date().toISOString(),
       predictions,
-      patternAlerts: [], // TODO: Implement pattern matching
+      patternAlerts,
       actionSuggestions: generateSuggestions(predictions),
       summary: generateSummary(predictions),
       disclaimer: 'These predictions are based on historical statistical correlations and are provided for informational/entertainment purposes only. Past patterns do not guarantee future outcomes. This is not financial, medical, or professional advice.',
@@ -305,10 +330,40 @@ router.get('/correlations', async (req, res) => {
  */
 router.get('/patterns', async (req, res) => {
   try {
-    // TODO: Implement pattern matching logic
+    // Extract today's features from module data
+    const moduleDataMap = {};
+    for (const moduleName of VALID_MODULES) {
+      const snapshot = await db.getLatestSnapshot(moduleName);
+      if (snapshot && snapshot.data) {
+        moduleDataMap[moduleName] = snapshot.data;
+      }
+    }
+
+    if (Object.keys(moduleDataMap).length === 0) {
+      return res.json({
+        patterns: [],
+        note: 'No module data available for pattern matching',
+      });
+    }
+
+    const todayFeatures = extractFeatures(moduleDataMap, new Date());
+
+    // Find pattern matches
+    const patternAlert = await correlation.findPatternMatches(todayFeatures);
+
+    if (!patternAlert) {
+      return res.json({
+        patterns: [],
+        todayFeatures: todayFeatures,
+        note: 'No patterns with >80% similarity found. This requires at least 30 historical data points.',
+      });
+    }
+
     res.json({
-      patterns: [],
-      note: 'Pattern matching will be implemented once sufficient historical data is collected',
+      patterns: [patternAlert],
+      todayFeatures: todayFeatures,
+      matchCount: patternAlert.matchCount,
+      avgSimilarity: patternAlert.avgSimilarity,
     });
   } catch (err) {
     console.error('Error in /api/patterns:', err);
