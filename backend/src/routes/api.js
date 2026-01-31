@@ -299,6 +299,7 @@ router.get('/patterns', async (req, res) => {
       patterns: result.alerts || [],
       todayFeatures: todayFeatures,
       matchCount: result.matchCount,
+      avgSimilarity: result.avgSimilarity,
       topMatches: result.topMatches,
       analysis: result.analysis,
       note: result.matchCount === 0

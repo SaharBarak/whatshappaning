@@ -202,8 +202,14 @@ async function getPatternMatches(moduleData) {
     // Generate alerts
     const patternAlerts = await alerts.generatePatternAlerts(todayFeatures, historicalData);
 
+    // Calculate average similarity for matches
+    const avgSimilarity = matches.length > 0
+      ? matches.reduce((sum, m) => sum + m.similarity, 0) / matches.length
+      : 0;
+
     return {
       matchCount: matches.length,
+      avgSimilarity: Math.round(avgSimilarity * 100) / 100, // Round to 2 decimal places
       topMatches: matches.slice(0, 10).map((m) => ({
         date: m.date,
         similarity: Math.round(m.similarity * 100) + '%',
@@ -216,6 +222,7 @@ async function getPatternMatches(moduleData) {
     console.error('Error getting pattern matches:', error);
     return {
       matchCount: 0,
+      avgSimilarity: 0,
       topMatches: [],
       analysis: { insufficient: true },
       alerts: [],
