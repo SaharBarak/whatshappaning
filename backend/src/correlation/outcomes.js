@@ -1,7 +1,7 @@
 /**
  * Outcome Targets Module
  *
- * Defines and calculates 12 binary outcomes for correlation analysis.
+ * Defines and calculates 11 binary outcomes for correlation analysis.
  * Per spec 23:
  * - Market Outcomes (6): spx_direction, spx_volatile, btc_direction, btc_volatile, vix_spike, gold_direction
  * - Geophysical Outcomes (3): major_quake, quake_above_avg, geomag_storm
@@ -14,7 +14,7 @@
  * Outcome definitions with thresholds
  */
 const OUTCOME_DEFINITIONS = {
-  // Market Outcomes (7)
+  // Market Outcomes (6)
   spx_direction: {
     type: 'binary',
     description: 'S&P 500 up day',
