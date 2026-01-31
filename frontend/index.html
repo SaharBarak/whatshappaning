@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Data-driven prediction dashboard correlating cosmic and esoteric data with real-world measurable outcomes">
+  <title>What's Happening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="header-title">WHAT'S HAPPENING</h1>
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span class="live-text">Loading...</span>
+      </div>
+    </header>
+
+    <!-- Indices Bar -->
+    <section class="indices-bar" id="indices-bar">
+      <div class="index-item skeleton">
+        <span class="index-label">Solar-Geo:</span>
+        <span class="index-value">--</span>
+      </div>
+      <div class="index-item skeleton">
+        <span class="index-label">Astro Events:</span>
+        <span class="index-value">--</span>
+      </div>
+      <div class="index-item skeleton">
+        <span class="index-label">Calendar Sync:</span>
+        <span class="index-value">--</span>
+      </div>
+    </section>
+
+    <!-- Predictions Panel -->
+    <section class="predictions-panel" id="predictions-panel">
+      <div class="section-header">
+        <span class="section-icon">📊</span>
+        <span class="section-title">PREDICTIONS</span>
+      </div>
+      <div class="predictions-list" id="predictions-list">
+        <!-- Predictions will be rendered here -->
+        <div class="prediction-skeleton skeleton"></div>
+        <div class="prediction-skeleton skeleton"></div>
+        <div class="prediction-skeleton skeleton"></div>
+      </div>
+    </section>
+
+    <!-- Pattern Alert (Conditional) -->
+    <section class="pattern-alert hidden" id="pattern-alert">
+      <div class="alert-header">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-title">PATTERN ALERT</span>
+        <span class="match-score">Match: --</span>
+      </div>
+      <div class="alert-content" id="alert-content">
+        <!-- Alert content will be rendered here -->
+      </div>
+    </section>
+
+    <!-- Data Modules Section -->
+    <section class="modules-section">
+      <div class="section-header">
+        <span class="section-title">DATA MODULES</span>
+      </div>
+      <div class="data-grid" id="data-grid">
+        <!-- 16 module cards will be rendered here -->
+        <div class="module-card skeleton" data-module="moon"></div>
+        <div class="module-card skeleton" data-module="tzolkin"></div>
+        <div class="module-card skeleton" data-module="dreamspell"></div>
+        <div class="module-card skeleton" data-module="parasha"></div>
+        <div class="module-card skeleton" data-module="gematria"></div>
+        <div class="module-card skeleton" data-module="numerology"></div>
+        <div class="module-card skeleton" data-module="iching"></div>
+        <div class="module-card skeleton" data-module="tarot"></div>
+        <div class="module-card skeleton" data-module="solar"></div>
+        <div class="module-card skeleton" data-module="schumann"></div>
+        <div class="module-card skeleton" data-module="cosmic"></div>
+        <div class="module-card skeleton" data-module="astrology"></div>
+        <div class="module-card skeleton" data-module="markets"></div>
+        <div class="module-card skeleton" data-module="geophysical"></div>
+        <div class="module-card skeleton" data-module="sentiment"></div>
+        <div class="module-card skeleton" data-module="news"></div>
+      </div>
+    </section>
+
+    <!-- Suggestions Footer -->
+    <footer class="suggestions-footer" id="suggestions-footer">
+      <div class="suggestions-section" id="suggestions-section">
+        <div class="section-header">
+          <span class="section-icon">💡</span>
+          <span class="section-title">SUGGESTIONS</span>
+        </div>
+        <div class="suggestions-content" id="suggestions-content">
+          <!-- Suggestions will be rendered here -->
+        </div>
+      </div>
+      <div class="disclaimer">
+        Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.
+      </div>
+    </footer>
+
+    <!-- Error Banner (Hidden by default) -->
+    <div class="error-banner hidden" id="error-banner">
+      <span class="error-text">Connection error. Showing cached data.</span>
+      <button class="error-dismiss" onclick="dismissError()">×</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
