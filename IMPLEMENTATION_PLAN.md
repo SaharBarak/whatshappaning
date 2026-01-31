@@ -180,7 +180,9 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 # CRITICAL GAPS & SPEC INCONSISTENCIES
 
-## Database Schema Gaps
+## Database Schema Gaps [RESOLVED]
+
+**Note:** All tables listed below are IMPLEMENTED in `/backend/migrations/001_initial.sql`. These gaps refer to spec documentation inconsistencies, not missing implementation.
 
 | Table | Spec Source | Issue |
 |-------|-------------|-------|
