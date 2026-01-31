@@ -180,51 +180,9 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ---
 
-# CRITICAL GAPS & SPEC INCONSISTENCIES
+# REFERENCE INFORMATION
 
-## Database Schema Gaps [RESOLVED]
-
-**Note:** All tables listed below are IMPLEMENTED in `/backend/migrations/001_initial.sql`. These gaps refer to spec documentation inconsistencies, not missing implementation.
-
-| Table | Spec Source | Issue |
-|-------|-------------|-------|
-| `daily_data` | spec 14 | Missing `numerology`, `iching` JSONB columns |
-| `market_daily` | spec 20 | Not in main spec 14 - add to migration |
-| `market_sentiment` | spec 20 | Not in main spec 14 - add to migration |
-| `quakes_daily` | spec 21 | Not in main spec 14 - add to migration |
-| `geophysical_daily` | spec 21 | Not in main spec 14 - add to migration |
-| `sentiment_daily` | spec 22 | Not in main spec 14 - add to migration |
-| `correlation_results` | spec 23 | Full schema needed in migration |
-| `historical_features` | spec 23 | Says "34 features" but lists 35+ |
-
-## Update Frequency Inconsistencies
-
-| Module | Spec Frequency | Plan Frequency | Decision Required |
-|--------|----------------|----------------|-------------------|
-| Markets (prices) | Every 15 min | Every 3 hours | DECISION 1 |
-| Markets (sentiment) | Every hour | Every 3 hours | DECISION 1 |
-| Geophysical (seismic) | Every hour | Every 3 hours | DECISION 1 |
-| Sentiment (F&G) | Every hour | Every 3 hours | DECISION 1 |
-| Numerology (planetary hour) | Every 30 min | Every 30 min | FIXED |
-
-## Missing Specification Items
-
-> **Note:** These are **documentation gaps**, not implementation gaps. The actual functionality for these items has been implemented in the codebase. These checkboxes track spec documentation updates needed to reflect the implementation.
-
-- [x] Create `specs/25-HISTORICAL-DATA-BOOTSTRAP.md` - Bootstrap process, data sources, bulk import
-- [x] Update `specs/08-MODULE-ASTROLOGY.md` - Swiss Ephemeris file config, eclipse source, ephemeris file management
-- [x] Update `specs/03-MODULE-MOON.md` - Void of Course algorithm detail, fallback strategy
-- [x] Update `specs/05-MODULE-DREAMSPELL.md` - Feb 29 leap day handling, Guide/Analog/Antipode/Occult power calculations
-- [x] Update `specs/11-MODULE-TAROT.md` - Complete 78-card data documentation and structure
-- [x] Update `specs/18-MODULE-ICHING.md` - Complete 64-hexagram data documentation, changing lines transformation algorithm
-- [x] Update `specs/17-MODULE-NUMEROLOGY.md` - Sunrise/sunset data source, dayRulers array mapping
-- [x] Update `specs/22-MODULE-SENTIMENT.md` - News sentiment implementation, social mood implementation
-- [x] Update `specs/23-CORRELATION-ENGINE.md` - Complete KEY_COMBINATIONS list, continuous feature binning strategy
-- [x] Update `specs/01-BACKEND-API.md` - Complete response schemas for all endpoints, error formats, pagination
-
-## Static Data Files [COMPLETE]
-
-> **Note:** All required static data files are complete. Some data (meteor showers, parashiot, Hebrew months) is embedded directly in the module source code rather than separate JSON files.
+## Static Data Files
 
 **External data files:**
 - `/backend/data/tarot.json` (78 cards)
@@ -235,115 +193,48 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - `/backend/data/dreamspell_seals.json` (20 seals)
 
 **Inline data (embedded in modules):**
-- Meteor showers data: `METEOR_SHOWERS` array in `/backend/src/modules/cosmic.js`
-- Parashiot data: `PARASHIOT` array in `/backend/src/modules/parasha.js`
-- Hebrew months: calculated dynamically in `/backend/src/modules/gematria.js`
-
-## Spec Internal Inconsistencies
-
-| Issue | Location | Resolution |
-|-------|----------|------------|
-| Table naming | spec 01 vs spec 14 | Use spec 14 naming (`snapshots` not `data_snapshots`) |
-| Module count | spec 15 vs spec 00 | Use 16 modules (spec 00 is authoritative) |
-| Feature count | spec 23 | Treat enumeration as authoritative (36 features including day_of_week) |
-| Outcome count | spec 23 | Header said "12 outcomes" and "7 market outcomes" but table listed 11 total (6 market) - **FIXED** |
-| Ap Index | spec 09 title mentions it but body omits it | Add Ap index calculation from Kp (daily average) |
-| Dreamspell output | spec 05 | JSON shows Guide/Analog/Antipode powers but no calculation defined |
-| Trigram format | spec 18 | Example shows string but output shows object - use object format |
-| Confidence levels | spec 24 | "Very High" level defined but no p < 0.001 requirement - add it |
-| Pattern match threshold | specs 23/24 | Both say >80% but calculateSimilarity() gives categorical exact match only |
-| Update frequency | spec 17 | Planetary hours every 30min but module header says daily - use 30min |
-| socialMood component | spec 22 (lines 59-62) | Omitted from implementation - Twitter/X API requires $100/mo minimum for Basic tier |
-| Sentiment weights | spec 22 | News sentiment now integrated; weights updated to match spec (socialMood omitted due to API costs) |
-
-## Module Output Inconsistencies
-
-| Module | Spec Says | But Also Shows | Resolution |
-|--------|-----------|----------------|------------|
-| Tzolkin (04) | `daySign: string` | Example has `daySignNumber` | Include both: `daySign` (name) and `daySignNumber` (0-19) |
-| Dreamspell (05) | Basic kin/seal/tone | Example has Guide/Analog/etc | Add power relationships to output |
-| I Ching (18) | `lowerTrigram: string` | Output shows object with name/symbol/element | Use object format |
-| Astrology (08) | `voidOfCourse` | No calculation algorithm | Implement: track Moon's last major aspect to next ingress |
-| Solar (09) | `kpIndex` | Ap Index in title | Add Ap Index (daily Kp average) |
+- Meteor showers: `METEOR_SHOWERS` in `/backend/src/modules/cosmic.js`
+- Parashiot: `PARASHIOT` in `/backend/src/modules/parasha.js`
+- Hebrew months: calculated in `/backend/src/modules/gematria.js`
 
 ---
 
-# API ENDPOINT GAPS (Spec 01)
+## External API Risk Matrix
 
-| Endpoint | Gap | Resolution |
-|----------|-----|------------|
-| `GET /api/history/:module` | Response format undefined | Define: `{ module, data: [...], startDate, endDate }` |
-| `GET /api/health` | Response format undefined | Define: `{ status, modules: {...}, database, uptime }` |
-| All endpoints | Error response format undefined | Define: `{ error, message, code, timestamp }` |
-| `GET /api/history/:module` | Pagination missing | Add: `?page=1&limit=100` params |
-| `GET /api/current` | Module order undefined | Define consistent alphabetical order |
-
----
-
-# EXTERNAL API RISK MATRIX
-
-| API/Source | Reliability | Impact | Mitigation |
-|------------|-------------|--------|------------|
-| Swiss Ephemeris | 100% (local) | N/A | None needed |
-| NOAA SWPC (Solar) | High | Medium | Cache 24h, mark stale |
-| Hebcal | High | Low | Static fallback |
-| Yahoo Finance | Medium | High | CoinGecko fallback + cache |
-| CoinGecko | Medium | Medium | Cache + rate limit awareness |
-| USGS Earthquakes | High | Medium | Cache, historical fallback |
-| Tomsk Schumann | **Low** | Low | Estimate from Kp |
-| RSS Feeds | Medium | Low | Multiple sources, cache |
-| Gemini AI | High | Medium | Cache last analysis |
-| Google Trends | **Low** | Low | Cache 24h, reduce frequency |
-| CNN Fear & Greed | **Low** (unofficial) | Medium | Crypto F&G primary |
+| API/Source | Reliability | Mitigation |
+|------------|-------------|------------|
+| Swiss Ephemeris | 100% (local) | None needed |
+| NOAA SWPC | High | Cache 24h |
+| Hebcal | High | Static fallback |
+| Yahoo Finance | Medium | CoinGecko fallback |
+| CoinGecko | Medium | Cache + rate limit |
+| USGS Earthquakes | High | Cache, historical fallback |
+| Tomsk Schumann | Low | Estimate from Kp |
+| RSS Feeds | Medium | Multiple sources |
+| Gemini AI | High | Cache last analysis |
+| Google Trends | Low | Cache 24h |
 
 ---
 
-# STATISTICAL REQUIREMENTS REFERENCE
+## Statistical Requirements
 
 - **Minimum Sample Size**: n >= 30 (Wilson interval assumption)
-- **Confidence Intervals**: Wilson score method (better for proportions near 0 or 1)
+- **Confidence Intervals**: Wilson score method
 - **Significance Testing**: Chi-square with p < 0.05
 - **Pattern Matching**: >80% feature similarity threshold
-- **Probability Bounds**: Clamp predictions to 5%-95% range
-- **Confidence Levels**:
-  - Very High: n > 200, CI width < 0.15, p < 0.001
-  - High: n > 100, CI width < 0.20, p < 0.01
-  - Medium: n > 50, CI width < 0.30, p < 0.05
-  - Low: n > 30, CI width < 0.40, p < 0.10
-  - Insufficient: n < 30 or p > 0.10
+- **Probability Bounds**: 5%-95% range
+- **Confidence Levels**: Very High (n>200), High (n>100), Medium (n>50), Low (n>30), Insufficient (n<30)
 
 ---
 
-# TECH STACK REFERENCE
+## Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Frontend | Vanilla HTML/CSS/JS | No build tools, direct Vercel deploy |
-| Backend | Node.js + Express | API server |
-| Database | PostgreSQL + JSONB | Historical data + correlations |
-| Scheduling | node-cron | Data collection timing |
-| Astrology | swisseph | Planetary calculations (local) |
-| Markets | yahoo-finance2 | Stock/index data |
-| News | rss-parser + @google/generative-ai | Feed parsing + Gemini analysis |
-| Hosting (Backend) | Railway | Node.js + PostgreSQL |
-| Hosting (Frontend) | Vercel | Static files + CDN |
-
----
-
-# ESTIMATED TIMELINE
-
-| Phase | Effort | Cumulative |
-|-------|--------|------------|
-| Phase 0: Decisions | 1 day | 1 day |
-| Phase 1: Foundation | 2-3 days | 4 days |
-| Phase 2: Local Modules | 2-3 days | 7 days |
-| Phase 3: External APIs | 4-5 days | 12 days |
-| Phase 4: Indices | 1 day | 13 days |
-| Phase 5: Correlation | 4-5 days | 18 days |
-| Phase 6: Predictions | 3-4 days | 22 days |
-| Phase 7: Frontend | 4-5 days | 27 days |
-| Phase 8: Integration | 3-4 days | 31 days |
-
-**Total Estimated: 4-5 weeks**
-
-Note: Phases 2+3 can overlap. Phase 7 can start after Phase 1 and continue alongside backend development.
+| Layer | Technology |
+|-------|------------|
+| Frontend | Vanilla HTML/CSS/JS → Vercel |
+| Backend | Node.js + Express → Railway |
+| Database | PostgreSQL + JSONB |
+| Scheduling | node-cron |
+| Astrology | swisseph (local) |
+| Markets | yahoo-finance2 + CoinGecko |
+| News | rss-parser + Gemini AI |
