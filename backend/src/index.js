@@ -10,9 +10,13 @@ const config = require('./config');
 const db = require('./db');
 const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
+const { rateLimiter } = require('./utils/rateLimiter');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 
 const app = express();
+
+// Trust proxy for accurate IP detection behind load balancers
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(cors());
@@ -25,6 +29,9 @@ if (config.nodeEnv === 'development') {
     next();
   });
 }
+
+// Rate limiting for API routes (100 req/min/IP)
+app.use('/api', rateLimiter);
 
 // Routes
 app.use('/api', apiRoutes);

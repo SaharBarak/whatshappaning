@@ -4,7 +4,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ---
 
-## PROJECT STATUS: GREENFIELD - ~95% COMPLETE (373 tests pass)
+## PROJECT STATUS: GREENFIELD - ~95% COMPLETE (460 tests pass)
 
 > **Last Updated:** 2026-01-31
 > **Implementation Progress:** ~95% - Phase 7 frontend complete
@@ -607,7 +607,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   - Markets: Yahoo Finance <- CoinGecko <- Cache
   - Geophysical: USGS <- Cache
   - Sentiment: Multiple APIs <- Cache
-- [ ] Add stale data flags when using cached data
+- [x] Add stale data flags when using cached data
 - [ ] Create error logging to stdout (for Railway)
 - [ ] Implement system_status tracking
 
@@ -620,14 +620,14 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### 8.4 Performance
 
-- [ ] Add rate limiting (100 req/min/IP)
+- [x] Add rate limiting (100 req/min/IP)
 - [ ] API response caching (5 min TTL)
 - [ ] Verify database indexes with EXPLAIN ANALYZE
 
 ### 8.5 Testing
 
 - [x] Unit tests for local modules (Tzolkin, Dreamspell, Tarot, Numerology, I Ching, Gematria)
-- [ ] Integration tests for API endpoints
+- [x] Integration tests for API endpoints
 - [x] Statistical engine validation (Wilson interval, chi-square)
 
 ### 8.6 Deployment
