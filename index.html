@@ -22,17 +22,14 @@
     </header>
 
     <!-- Indices Bar -->
-    <section class="indices-bar" id="indices-bar">
-      <div class="index-item skeleton">
-        <span class="index-label">Solar-Geo:</span>
+    <section class="indices-bar" id="indices-bar" aria-label="Composite indices">
+      <div class="index-item skeleton" title="Solar-Geo Index">
         <span class="index-value">--</span>
       </div>
-      <div class="index-item skeleton">
-        <span class="index-label">Astro Events:</span>
+      <div class="index-item skeleton" title="Astro Events Index">
         <span class="index-value">--</span>
       </div>
-      <div class="index-item skeleton">
-        <span class="index-label">Calendar Sync:</span>
+      <div class="index-item skeleton" title="Calendar Sync Index">
         <span class="index-value">--</span>
       </div>
     </section>
@@ -40,10 +37,10 @@
     <!-- Predictions Panel -->
     <section class="predictions-panel" id="predictions-panel">
       <div class="section-header">
-        <span class="section-icon">📊</span>
+        <span class="section-icon" aria-hidden="true">📊</span>
         <span class="section-title">PREDICTIONS</span>
       </div>
-      <div class="predictions-list" id="predictions-list">
+      <div class="predictions-list" id="predictions-list" aria-live="polite" aria-atomic="false">
         <!-- Predictions will be rendered here -->
         <div class="prediction-skeleton skeleton"></div>
         <div class="prediction-skeleton skeleton"></div>
@@ -106,9 +103,9 @@
     </footer>
 
     <!-- Error Banner (Hidden by default) -->
-    <div class="error-banner hidden" id="error-banner">
+    <div class="error-banner hidden" id="error-banner" role="alert" aria-live="assertive">
       <span class="error-text">Connection error. Showing cached data.</span>
-      <button class="error-dismiss" onclick="dismissError()">×</button>
+      <button class="error-dismiss" onclick="dismissError()" aria-label="Dismiss error">×</button>
     </div>
   </div>
 
