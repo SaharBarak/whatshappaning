@@ -194,9 +194,9 @@ function transformHexagram(hexagramNumber, changingLines) {
     return hexagramNumber;
   }
 
-  // This would require hexagram line data to implement
-  // For now, return original hexagram as placeholder
-  // TODO: Implement when hexagram line structure is added to iching.json
+  // Per DECISION 2: Changing lines excluded for MVP
+  // Transformation requires hexagram line data (6 lines per hexagram, yin/yang values)
+  // Post-MVP: Add lines[] array to iching.json, then implement line flipping algorithm
   return hexagramNumber;
 }
 
