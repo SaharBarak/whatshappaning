@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.36 (stable)
+> **Version:** v0.0.37 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed, all documentation gaps resolved
 > **Plan Verification:** VERIFIED - All 26 specs cross-referenced, plan accuracy confirmed
@@ -23,6 +23,14 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Prediction System:** COMPLETE
 - **Accessibility:** COMPLETE - ARIA labels, keyboard navigation (Enter/Space to toggle cards)
 - **Development Environment:** Docker, loop scripts, and related configuration files excluded from version control via .gitignore for security (contain credentials)
+
+### v0.0.37 Changes
+- **Backfill Script:** Implemented standalone historical data bootstrap script at `/backend/scripts/backfill.js`
+  - Fetches market data from Yahoo Finance and CoinGecko
+  - Fetches earthquake data from USGS
+  - Calculates cosmic/esoteric features for any date range
+  - Usage: `node scripts/backfill.js --start 2024-01-01 --end 2024-12-31`
+  - Enables correlation analysis on historical data without requiring live data collection
 
 ### v0.0.36 Changes
 - **Spec Fix:** Fixed CSS example in 02-FRONTEND-UI.md to match text requirement "4 columns desktop, 2 tablet, 1 mobile"
@@ -221,6 +229,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   - Health check endpoint responds
   - All modules collecting data
   - Frontend loads and displays data
+  - Optional: Run backfill script (`/backend/scripts/backfill.js`) to populate historical data for correlation analysis
 
 ---
 
@@ -240,6 +249,15 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - Meteor showers: `METEOR_SHOWERS` in `/backend/src/modules/cosmic.js`
 - Parashiot: `PARASHIOT` in `/backend/src/modules/parasha.js`
 - Hebrew months: calculated in `/backend/src/modules/gematria.js`
+
+## Scripts
+
+**Historical Data Bootstrap:**
+- `/backend/scripts/backfill.js` - Populates historical data for correlation analysis
+  - Fetches market data (Yahoo Finance, CoinGecko)
+  - Fetches earthquake data (USGS)
+  - Calculates cosmic/esoteric features for any date range
+  - Usage: `node scripts/backfill.js --start 2024-01-01 --end 2024-12-31`
 
 ---
 
