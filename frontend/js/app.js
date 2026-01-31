@@ -163,10 +163,30 @@ function setupEventListeners() {
 
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + R to refresh
     if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       api.clearCache();
       refreshData();
+    }
+
+    // Enter or Space to activate focused cards (accessibility)
+    if (e.key === 'Enter' || e.key === ' ') {
+      const target = document.activeElement;
+
+      // Handle prediction cards
+      if (target?.classList.contains('prediction')) {
+        e.preventDefault();
+        const outcomeId = target.dataset.outcome;
+        if (outcomeId) togglePrediction(outcomeId);
+      }
+
+      // Handle module cards
+      if (target?.classList.contains('module-card')) {
+        e.preventDefault();
+        const moduleName = target.dataset.module;
+        if (moduleName) toggleModule(moduleName);
+      }
     }
   });
 
