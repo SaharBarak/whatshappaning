@@ -87,7 +87,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### 1.1 Project Structure
 
-- [ ] Create `/backend/` directory structure per spec 15
+- [x] Create `/backend/` directory structure per spec 15
   ```
   /backend/src/           - Main source directory
   /backend/src/routes/    - API route handlers
@@ -100,7 +100,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   /backend/migrations/    - SQL migration files
   ```
 
-- [ ] Create `/frontend/` directory structure per spec 15
+- [x] Create `/frontend/` directory structure per spec 15
   ```
   /frontend/css/                    - Stylesheets
   /frontend/js/                     - JavaScript modules
@@ -108,7 +108,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   /frontend/js/components/modules/  - Module-specific renderers (16 files)
   ```
 
-- [ ] Create `/backend/package.json` with dependencies:
+- [x] Create `/backend/package.json` with dependencies:
   - express, cors, pg, node-cron, dotenv
   - swisseph (Swiss Ephemeris for astrology)
   - yahoo-finance2 (markets data)
@@ -119,31 +119,31 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### 1.2 Database Schema [12 Tables Required]
 
-- [ ] Create `/backend/migrations/001_initial.sql` with ALL 12 tables:
+- [x] Create `/backend/migrations/001_initial.sql` with ALL 12 tables:
 
   **Core Tables (spec 14):**
-  - [ ] `snapshots` - Time-series module data (90 days retention)
-  - [ ] `daily_data` - Daily aggregations + ADD `numerology JSONB`, `iching JSONB` columns (missing from spec 14)
-  - [ ] `indices_history` - Index trends (1 year retention)
-  - [ ] `news_themes` - News analysis (30 days retention)
-  - [ ] `system_status` - Health monitoring (7 days retention)
+  - [x] `snapshots` - Time-series module data (90 days retention)
+  - [x] `daily_data` - Daily aggregations + ADD `numerology JSONB`, `iching JSONB` columns (missing from spec 14)
+  - [x] `indices_history` - Index trends (1 year retention)
+  - [x] `news_themes` - News analysis (30 days retention)
+  - [x] `system_status` - Health monitoring (7 days retention)
 
   **Market Tables (spec 20):**
-  - [ ] `market_daily` - OHLCV data for SPX, BTC, VIX, Gold, DXY
-  - [ ] `market_sentiment` - Fear/greed metrics, put/call ratio
+  - [x] `market_daily` - OHLCV data for SPX, BTC, VIX, Gold, DXY
+  - [x] `market_sentiment` - Fear/greed metrics, put/call ratio
 
   **Geophysical Tables (spec 21):**
-  - [ ] `quakes_daily` - Earthquake statistics
-  - [ ] `geophysical_daily` - AP index, pressure, UV, AQI, tides
+  - [x] `quakes_daily` - Earthquake statistics
+  - [x] `geophysical_daily` - AP index, pressure, UV, AQI, tides
 
   **Sentiment Tables (spec 22):**
-  - [ ] `sentiment_daily` - Sentiment component scores
+  - [x] `sentiment_daily` - Sentiment component scores
 
   **Correlation Tables (spec 23):**
-  - [ ] `correlation_results` - Pre-computed correlations with Wilson CI
-  - [ ] `historical_features` - 35 feature columns + 12 outcome columns
+  - [x] `correlation_results` - Pre-computed correlations with Wilson CI
+  - [x] `historical_features` - 35 feature columns + 12 outcome columns
 
-- [ ] Create all 9 required indexes:
+- [x] Create all 9 required indexes:
   - `idx_snapshots_module_time` ON snapshots (module, collected_at DESC)
   - `idx_snapshots_time` ON snapshots (collected_at DESC)
   - `idx_indices_time` ON indices_history (calculated_at DESC)
@@ -156,18 +156,18 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### 1.3 Core Backend
 
-- [ ] Create `/backend/src/config.js` - Environment variables (PORT, DATABASE_URL, GEMINI_API_KEY, NODE_ENV)
-- [ ] Create `/backend/src/db.js` - Connection pool + query helpers (saveSnapshot, getLatestSnapshot, saveDailyData, saveSystemStatus)
-- [ ] Create `/backend/src/index.js` - Express app entry point with CORS, JSON parsing, route mounting
+- [x] Create `/backend/src/config.js` - Environment variables (PORT, DATABASE_URL, GEMINI_API_KEY, NODE_ENV)
+- [x] Create `/backend/src/db.js` - Connection pool + query helpers (saveSnapshot, getLatestSnapshot, saveDailyData, saveSystemStatus)
+- [x] Create `/backend/src/index.js` - Express app entry point with CORS, JSON parsing, route mounting
 
 ### 1.4 Scheduler Framework
 
-- [ ] Create `/backend/src/scheduler.js` - Cron job orchestration, dynamic module loader, error handling
-- [ ] Create `/backend/src/utils/cache.js` - In-memory TTL cache (default 5 min)
+- [x] Create `/backend/src/scheduler.js` - Cron job orchestration, dynamic module loader, error handling
+- [x] Create `/backend/src/utils/cache.js` - In-memory TTL cache (default 5 min)
 
 ### 1.5 API Routes
 
-- [ ] Create `/backend/src/routes/api.js` with endpoints:
+- [x] Create `/backend/src/routes/api.js` with endpoints:
   - `GET /api/current` - All current module data + indices (16 modules)
   - `GET /api/history/:module` - Historical data (query: `days`, default 7, max 90)
   - `GET /api/predictions` - Today's full predictions
@@ -176,19 +176,19 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   - `GET /api/patterns` - Current pattern matches
   - `POST /api/backtest` - Custom backtest (body: features, outcome, startDate, endDate)
 
-- [ ] Create `/backend/src/routes/health.js` - Health check endpoints (/health, /health/detailed)
+- [x] Create `/backend/src/routes/health.js` - Health check endpoints (/health, /health/detailed)
 
 ### 1.6 Utility Modules
 
-- [ ] Create `/backend/src/utils/hebrew.js` - Gematria values (aleph=1 to tav=400), Hebrew date parsing
-- [ ] Create `/backend/src/utils/astro.js` - Swiss Ephemeris wrapper, Julian day, aspects, zodiac, retrograde detection
-- [ ] Create `/backend/src/utils/dateSeeding.js` - Deterministic RNG for Tarot/I Ching selection
+- [x] Create `/backend/src/utils/hebrew.js` - Gematria values (aleph=1 to tav=400), Hebrew date parsing
+- [x] Create `/backend/src/utils/astro.js` - Swiss Ephemeris wrapper, Julian day, aspects, zodiac, retrograde detection
+- [x] Create `/backend/src/utils/dateSeeding.js` - Deterministic RNG for Tarot/I Ching selection
 
 ### 1.7 Environment & Docker
 
-- [ ] Create `/backend/.env.example` - Template with all required environment variables
-- [ ] Create `/backend/Dockerfile` - Multi-stage build for production
-- [ ] Create `/backend/docker-compose.yml` - PostgreSQL for local development
+- [x] Create `/backend/.env.example` - Template with all required environment variables
+- [x] Create `/backend/Dockerfile` - Multi-stage build for production
+- [x] Create `/backend/docker-compose.yml` - PostgreSQL for local development
   - NOTE: Root `docker-compose.yml` is for Claude Code sandbox, not application
   - Application docker-compose needs: PostgreSQL service, backend service, volume mounts
 
