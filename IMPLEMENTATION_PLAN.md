@@ -4,10 +4,10 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ---
 
-## PROJECT STATUS: GREENFIELD - ~50% COMPLETE
+## PROJECT STATUS: GREENFIELD - ~60% COMPLETE
 
 > **Last Updated:** 2026-01-31
-> **Implementation Progress:** ~50% - Phase 3 external API modules complete
+> **Implementation Progress:** ~60% - Phase 4 composite indices complete
 > **Spec Analysis:** Complete - 25 specs analyzed, 78 gaps identified, 5 decisions required, 10 specs need updates
 > **Plan Verification:** VERIFIED - All 25 specs cross-referenced with parallel subagents, plan accuracy confirmed
 
@@ -16,7 +16,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Frontend:** NOT STARTED - `/frontend/` directory does not exist
 - **Database:** NOT STARTED - No migrations or schema deployed
 - **Modules:** 16/16 implemented
-- **Indices:** 0/3 implemented
+- **Indices:** 3/3 implemented
 - **Correlation Engine:** NOT STARTED
 - **Prediction System:** NOT STARTED
 
@@ -340,21 +340,21 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 > **Dependencies:** Phases 2 and 3 modules complete
 > **Estimated effort:** 1 day
 
-- [ ] Create `/backend/src/indices/solarGeo.js`
+- [x] Create `/backend/src/indices/solarGeo.js`
   - Formula: Kp(40%) + Flare(30%) + Schumann(20%) + Wind(10%)
   - Levels: Calm (0-2), Low (2-4), Moderate (4-6), Elevated (6-8), High (8-10)
   - **GAP:** "trend" field shown in spec 13 output but calculation undefined
     - Implement: Compare current value to 24h ago - "rising" if +0.5, "falling" if -0.5, else "stable"
   - Update: Every 3 hours
 
-- [ ] Create `/backend/src/indices/astroEvents.js`
+- [x] Create `/backend/src/indices/astroEvents.js`
   - Points: Retrogrades (+1 each, Mercury +1 bonus), Eclipse proximity (+2-4), Major aspects (+1), VOC (+0.5), Full/New moon (+1)
   - Levels: Quiet (0), Low (1-2), Active (3-4), Busy (5-6), Intense (7+)
   - **GAP:** Define "outer planets" for major aspect scoring (assume: Jupiter, Saturn, Uranus, Neptune, Pluto)
   - **GAP:** Define aspect types that count as "major" (assume: conjunction, opposition only for outer planets)
   - Update: Every 3 hours
 
-- [ ] Create `/backend/src/indices/calendarSync.js`
+- [x] Create `/backend/src/indices/calendarSync.js`
   - Points: GAP day (+2), Wavespell start (+1), Rosh Chodesh (+1), Full/New moon on Shabbat (+1), Matching numbers (+1)
   - Levels: None (0), Low (1), Moderate (2-3), High (4-5), Rare (6+)
   - **Include 52 GAP_DAYS array per spec 13**
