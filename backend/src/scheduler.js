@@ -19,7 +19,6 @@ const MODULE_SCHEDULES = {
   tzolkin: { schedule: config.schedules.daily, type: 'daily' },
   dreamspell: { schedule: config.schedules.daily, type: 'daily' },
   tarot: { schedule: config.schedules.daily, type: 'daily' },
-  numerology: { schedule: config.schedules.daily, type: 'daily' },
   iching: { schedule: config.schedules.daily, type: 'daily' },
   gematria: { schedule: config.schedules.daily, type: 'daily' },
 
@@ -34,8 +33,8 @@ const MODULE_SCHEDULES = {
   sentiment: { schedule: config.schedules.threeHourly, type: 'snapshot' },
   news: { schedule: config.schedules.threeHourly, type: 'snapshot' },
 
-  // 30-minute modules (planetary hours)
-  planetaryHours: { schedule: config.schedules.thirtyMinutes, type: 'snapshot' },
+  // 30-minute modules (planetary hours need frequent updates)
+  numerology: { schedule: config.schedules.thirtyMinutes, type: 'snapshot' },
 
   // Weekly modules (Friday sunset)
   parasha: { schedule: config.schedules.weekly, type: 'weekly' },
@@ -135,12 +134,18 @@ async function executeModule(name) {
  * Execute all daily modules and save to daily_data table
  */
 async function executeDailyModules() {
-  const dailyModules = ['tzolkin', 'dreamspell', 'tarot', 'numerology', 'iching', 'gematria'];
+  // These modules calculate once per day and are stored in daily_data
+  const dailyModules = ['tzolkin', 'dreamspell', 'tarot', 'iching', 'gematria'];
   const results = {};
 
   for (const name of dailyModules) {
     results[name] = await executeModule(name);
   }
+
+  // Numerology also goes into daily_data (for universal day number)
+  // It runs more frequently as a snapshot for planetary hours, but
+  // we include it in daily_data for the once-daily universal day number
+  results.numerology = await executeModule('numerology');
 
   // Save combined daily data
   try {

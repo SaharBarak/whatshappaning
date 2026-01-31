@@ -203,7 +203,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 | Markets (sentiment) | Every hour | Every 3 hours | DECISION 1 |
 | Geophysical (seismic) | Every hour | Every 3 hours | DECISION 1 |
 | Sentiment (F&G) | Every hour | Every 3 hours | DECISION 1 |
-| Numerology (planetary hour) | Every 30 min | Daily | FIX: Update to 30min |
+| Numerology (planetary hour) | Every 30 min | Every 30 min | FIXED |
 
 ## Missing Specification Items
 
