@@ -4,20 +4,21 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ---
 
-## PROJECT STATUS: GREENFIELD - ~97% COMPLETE (460 tests pass)
+## PROJECT STATUS: GREENFIELD - ~98% COMPLETE (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Implementation Progress:** ~97% - Phase 8 pattern integration complete
-> **Spec Analysis:** Complete - 25 specs analyzed, 78 gaps identified, 5 decisions required, 10 specs need updates
+> **Implementation Progress:** ~98% - Phase 8.1-8.6 complete, only deployment remaining
+> **Spec Analysis:** Complete - 25 specs analyzed, decisions resolved, implementation verified
 > **Plan Verification:** VERIFIED - All 25 specs cross-referenced with parallel subagents, plan accuracy confirmed
 
 ### Current State
-- **Backend:** IN PROGRESS - `/backend/` directory structure created
-- **Frontend:** COMPLETE - `/frontend/` directory with all components
-- **Database:** NOT STARTED - No migrations or schema deployed
+- **Backend:** COMPLETE - All 16 modules, 3 indices, correlation engine, prediction system
+- **Frontend:** COMPLETE - All UI components, 16 module renderers
+- **Database:** COMPLETE - Schema with 12 tables, 9 indexes, retention policies
 - **Modules:** 16/16 implemented
 - **Indices:** 3/3 implemented
 - **Correlation Engine:** COMPLETE
+- **Pattern Matching:** COMPLETE - Integrated into /api/predictions and /api/patterns
 - **Prediction System:** COMPLETE
 
 ### Verified Assets
@@ -46,36 +47,31 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ---
 
-## PHASE 0: PRE-IMPLEMENTATION DECISIONS
+## PHASE 0: PRE-IMPLEMENTATION DECISIONS [COMPLETE]
 
-> **These decisions MUST be resolved before any code is written.**
+> **All decisions resolved - recommended options implemented.**
 
-### Required Decisions
+### Resolved Decisions
 
-- [ ] **DECISION 1: Update Frequencies**
-  - Option A: Match specs exactly (15min/30min/hourly) - Higher API usage, potential rate limits
-  - Option B: Use 3hr intervals across the board - Document deviation, safer for free tiers
-  - **Recommendation:** Option B with documentation of deviation
+- [x] **DECISION 1: Update Frequencies** → Option B
+  - Using 3hr intervals across the board (see config.js schedules)
+  - Documented deviation from spec, safer for free API tiers
 
-- [ ] **DECISION 2: I Ching Changing Lines**
-  - Option A: Include 25% probability per line (spec 18 allows optional)
-  - Option B: Exclude for MVP (simpler daily static reading)
-  - **Recommendation:** Option B for MVP
+- [x] **DECISION 2: I Ching Changing Lines** → Option B
+  - Excluded for MVP - static daily reading only (see iching.js)
+  - Simpler implementation, changing lines marked as TODO
 
-- [ ] **DECISION 3: Tarot Reversals**
-  - Option A: Include 50% reversal chance (spec 11 default)
-  - Option B: Exclude for MVP (simpler interpretation)
-  - **Recommendation:** Option B for MVP
+- [x] **DECISION 3: Tarot Reversals** → Option B
+  - Excluded for MVP - upright readings only (see tarot.js)
+  - Simpler interpretation without reversed meanings
 
-- [ ] **DECISION 4: Continuous Outcomes**
-  - Option A: Include `spx_return` continuous outcome (requires regression analysis)
-  - Option B: Binary outcomes only (simpler chi-square model)
-  - **Recommendation:** Option B for MVP
+- [x] **DECISION 4: Continuous Outcomes** → Option B
+  - Binary outcomes only (see outcomes.js - 11 binary outcomes)
+  - Simpler chi-square model, spx_return field exists but unused
 
-- [ ] **DECISION 5: Reference Timezone**
-  - Option A: Jerusalem (authentic for Hebrew calendar/Shabbat)
-  - Option B: UTC (simpler, consistent)
-  - **Recommendation:** UTC with Jerusalem for Shabbat times only
+- [x] **DECISION 5: Reference Timezone** → Option B (Modified)
+  - UTC for all calculations (see scheduler.js timezone: 'UTC')
+  - Parasha uses Friday 18:00 UTC as sunset approximation
 
 ---
 
