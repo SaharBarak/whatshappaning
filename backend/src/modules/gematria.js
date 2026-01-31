@@ -8,6 +8,7 @@
  */
 
 const path = require('path');
+const axios = require('axios');
 const {
   calculateStandard,
   calculateOrdinal,
@@ -30,8 +31,6 @@ async function convertToHebrewDate(date) {
   const url = `https://www.hebcal.com/converter?cfg=json&date=${dateStr}&g2h=1`;
 
   try {
-    // Note: In production, use a proper HTTP client like axios or node-fetch
-    // For now, we'll use a placeholder that simulates the API response
     const response = await fetchHebcalAPI(url);
 
     return {
@@ -52,9 +51,13 @@ async function convertToHebrewDate(date) {
  * @returns {Promise<Object>} API response
  */
 async function fetchHebcalAPI(url) {
-  // This is a placeholder - in production, replace with actual HTTP client
-  // For MVP, we return sample data
-  throw new Error('HTTP client not configured - using fallback');
+  const response = await axios.get(url, {
+    timeout: 10000,
+    headers: {
+      'User-Agent': 'WhatsHappening/1.0',
+    },
+  });
+  return response.data;
 }
 
 /**

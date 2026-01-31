@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.37 (stable)
+> **Version:** v0.0.38 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed, all documentation gaps resolved
 > **Plan Verification:** VERIFIED - All 26 specs cross-referenced, plan accuracy confirmed
@@ -23,6 +23,12 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Prediction System:** COMPLETE
 - **Accessibility:** COMPLETE - ARIA labels, keyboard navigation (Enter/Space to toggle cards)
 - **Development Environment:** Docker, loop scripts, and related configuration files excluded from version control via .gitignore for security (contain credentials)
+
+### v0.0.38 Changes
+- **Bug Fix:** Implemented actual Hebcal API integration in gematria module
+  - Replaced placeholder `fetchHebcalAPI()` function with working axios HTTP client
+  - Module now fetches real Hebrew date data from `https://www.hebcal.com/converter`
+  - Falls back to calculation if API is unavailable
 
 ### v0.0.37 Changes
 - **Backfill Script:** Implemented standalone historical data bootstrap script at `/backend/scripts/backfill.js`
