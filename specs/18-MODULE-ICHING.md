@@ -57,25 +57,86 @@ function getDailyHexagram(date) {
 
 ## Hexagram Data Structure
 
-Store in `data/iching.json`:
+The complete 64-hexagram database is stored in `/backend/data/iching.json`.
+
+### Data Format
+
+The actual implementation uses a slightly different field naming:
+
 ```json
-{
-  "hexagrams": [
-    {
-      "number": 1,
-      "name": "The Creative",
-      "chineseName": "乾",
-      "pinyin": "qián",
-      "unicode": "䷀",
-      "upperTrigram": "Qian",
-      "lowerTrigram": "Qian",
-      "judgment": "The Creative works sublime success, furthering through perseverance.",
-      "image": "The movement of heaven is full of power.",
-      "keywords": ["strength", "initiative", "creation", "heaven"]
-    }
-  ]
-}
+[
+  {
+    "number": 1,
+    "name": "The Creative",
+    "chinese": "乾",
+    "pinyin": "qián",
+    "unicode": "䷀",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "The Creative works sublime success, furthering through perseverance.",
+    "image": "The movement of heaven is full of power.",
+    "keywords": ["strength", "initiative", "creation", "heaven"]
+  },
+  {
+    "number": 29,
+    "name": "The Abysmal",
+    "chinese": "坎",
+    "pinyin": "kǎn",
+    "unicode": "䷜",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Repetition of danger. If sincere, success in the heart.",
+    "image": "Water flows on and reaches the goal.",
+    "keywords": ["danger", "depth", "persistence", "flow"]
+  }
+]
 ```
+
+### Field Name Differences
+
+| Spec Field | Implementation Field | Notes |
+|------------|---------------------|-------|
+| `chineseName` | `chinese` | Shortened field name |
+| `hexagram` | `unicode` | Clearer naming |
+| `upperTrigram` (string) | `upperTrigram` (object) | Enhanced with symbol, element, attribute |
+| `lowerTrigram` (string) | `lowerTrigram` (object) | Enhanced with symbol, element, attribute |
+
+### Trigram Object Structure
+
+Each trigram includes:
+- `name`: Trigram name (Qian, Kun, Zhen, Kan, Gen, Xun, Li, Dui)
+- `symbol`: Unicode trigram character (☰, ☷, ☳, ☵, ☶, ☴, ☲, ☱)
+- `element`: Associated element (Heaven, Earth, Thunder, Water, Mountain, Wind, Fire, Lake)
+- `attribute`: Descriptive quality (Creative, Receptive, Arousing, etc.)
+
+### Complete Data Location
+
+The full 64-hexagram database is at:
+```
+/backend/data/iching.json
+```
+
+This file contains all 64 hexagrams with complete metadata, judgment texts, images, and keywords.
 
 ## Output Example
 
@@ -134,6 +195,23 @@ If changing lines are included:
 Changing: lines 3, 5
 Transforms to: #47 Oppression
 ```
+
+### Transformation Algorithm
+
+When lines change, a yang (solid) line becomes yin (broken) and vice versa:
+
+```javascript
+function transformHexagram(hexagramNumber, changingLines) {
+  // Convert hexagram to binary (6 bits, line 1 = LSB)
+  // For each changing line, flip the bit
+  // Convert back to hexagram number (1-64)
+
+  // Example: Hexagram 1 (all yang) with lines 3,5 changing:
+  // Binary: 111111 → flip bits 3,5 → 101011 → Hexagram 47
+}
+```
+
+**Implementation Note:** The current implementation calculates changing lines (25% chance per line) but the transformation to a resulting hexagram is computed dynamically based on the bit-flip algorithm.
 
 ## Update Frequency
 Daily at 00:00 UTC

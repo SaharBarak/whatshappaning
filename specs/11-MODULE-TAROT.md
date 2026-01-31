@@ -95,28 +95,88 @@ function seededRandom(seed) {
 
 ## Card Database
 
-Store card data in JSON:
+The complete 78-card deck is stored in `/backend/data/tarot.json`.
+
+### Data Structure
+
 ```json
-{
-  "major": [
-    {
-      "number": 0,
-      "name": "The Fool",
-      "keywords": ["beginnings", "innocence", "spontaneity", "free spirit"],
-      "element": "Air",
-      "planet": "Uranus",
-      "uprightMeaning": "New beginnings, optimism, trust in life",
-      "reversedMeaning": "Holding back, recklessness, risk-taking"
-    }
-  ],
-  "minor": {
-    "wands": [...],
-    "cups": [...],
-    "swords": [...],
-    "pentacles": [...]
+[
+  {
+    "id": 0,
+    "name": "The Fool",
+    "number": "0",
+    "arcana": "Major",
+    "suit": null,
+    "element": "Air",
+    "planet": "Uranus",
+    "zodiac": null,
+    "keywords": ["beginnings", "innocence", "spontaneity", "free spirit"],
+    "uprightMeaning": "New beginnings, optimism, trust in life",
+    "reversedMeaning": "Holding back, recklessness, risk-taking"
+  },
+  {
+    "id": 22,
+    "name": "Ace of Wands",
+    "number": "Ace",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "element": "Fire",
+    "planet": null,
+    "zodiac": null,
+    "keywords": ["inspiration", "new opportunities", "growth", "potential"],
+    "uprightMeaning": "Inspiration, new opportunities, growth, potential",
+    "reversedMeaning": "Delays, lack of motivation, creative blocks"
+  },
+  {
+    "id": 35,
+    "name": "King of Wands",
+    "number": "King",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "element": "Fire",
+    "planet": null,
+    "zodiac": "Sagittarius/Aries",
+    "keywords": ["leadership", "vision", "entrepreneur", "honor"],
+    "uprightMeaning": "Natural-born leader, vision, entrepreneur, honor",
+    "reversedMeaning": "Impulsiveness, overbearing, unachievable expectations"
   }
-}
+]
 ```
+
+### Card ID Mapping
+
+| ID Range | Cards | Description |
+|----------|-------|-------------|
+| 0-21 | Major Arcana | The Fool (0) through The World (21) |
+| 22-35 | Wands | Ace through King of Wands |
+| 36-49 | Cups | Ace through King of Cups |
+| 50-63 | Swords | Ace through King of Swords |
+| 64-77 | Pentacles | Ace through King of Pentacles |
+
+### Number Field Format
+
+- **Major Arcana**: Roman numerals (0, I, II... XXI)
+- **Numbered Minor**: "Ace", "2", "3"... "10"
+- **Court Cards**: "Page", "Knight", "Queen", "King"
+
+### Element Associations
+
+| Suit | Element |
+|------|---------|
+| Wands | Fire |
+| Cups | Water |
+| Swords | Air |
+| Pentacles | Earth |
+| Major Arcana | Varies by card |
+
+### Complete Data Location
+
+The full 78-card database with all meanings is at:
+```
+/backend/data/tarot.json
+```
+
+This file contains complete card data for all 22 Major Arcana and 56 Minor Arcana cards.
 
 ## Output Example
 

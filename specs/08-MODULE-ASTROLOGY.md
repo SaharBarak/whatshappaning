@@ -78,6 +78,71 @@ function getPlanetPosition(julianDay, planet) {
 }
 ```
 
+## Installation & Configuration
+
+### Swiss Ephemeris Setup
+
+The module uses Swiss Ephemeris for precise astronomical calculations. It is configured as an **optional dependency**:
+
+```bash
+npm install --ignore-optional  # Installs without swisseph (uses fallback)
+npm install                    # Attempts swisseph installation
+```
+
+**Ephemeris Files:**
+- Swiss Ephemeris requires ephemeris data files for precise calculations
+- Default paths: `/usr/share/swisseph/` (Unix) or system default
+- The `swisseph` npm package includes embedded ephemeris data
+- Environment variable: `SE_EPHE_PATH` (if custom path needed)
+
+**Fallback Strategy:**
+When Swiss Ephemeris is unavailable (installation fails, files missing), the module automatically falls back to simplified Meeus algorithms:
+- Accuracy loss: ~1-2° for planetary positions
+- Output includes `estimated: true` flag
+- Output includes explanatory note message
+
+### Eclipse Data Source
+
+Eclipse data is currently **hardcoded** in the module:
+
+```javascript
+const UPCOMING_ECLIPSES = [
+  { type: 'Solar', date: '2026-02-17T12:01:00Z' },
+  { type: 'Lunar', date: '2026-03-03T11:33:00Z' },
+  { type: 'Solar', date: '2026-08-12T17:46:00Z' },
+  { type: 'Lunar', date: '2026-08-28T04:13:00Z' }
+];
+```
+
+**Maintenance Requirements:**
+- Update eclipse data annually for upcoming eclipses
+- Source: NASA Eclipse Predictions or Swiss Ephemeris library
+- After the last hardcoded date, `nextEclipse` returns `type: 'Unknown'`
+
+**Future Enhancement:** Fetch eclipse data dynamically from NASA or compute using Swiss Ephemeris.
+
+### Graceful Degradation
+
+The module implements graceful degradation to ensure it always returns valid data:
+
+| Condition | Behavior | Quality Indicator |
+|-----------|----------|-------------------|
+| Swiss Ephemeris available | Precise calculations | `estimated: false` |
+| Swiss Ephemeris unavailable | Meeus approximation | `estimated: true` + note |
+| Eclipse data outdated | Returns Unknown type | `type: 'Unknown'` |
+| API/calculation error | Partial data with note | Error message in note |
+
+### Data Quality Indicators
+
+When data quality is degraded, the output includes:
+
+```json
+{
+  "estimated": true,
+  "note": "Using simplified calculations. Swiss Ephemeris not available."
+}
+```
+
 ## Output Example
 
 ```json

@@ -101,6 +101,64 @@ function getPlanetaryHour(date, sunrise, sunset) {
 }
 ```
 
+### Day Rulers Index Mapping
+
+The `dayRulers` array maps JavaScript's `Date.getDay()` output (0=Sunday through 6=Saturday) to planet indices:
+
+```javascript
+const DAY_RULERS = {
+  0: 'Sun',      // Sunday (getDay() returns 0)
+  1: 'Moon',     // Monday
+  2: 'Mars',     // Tuesday
+  3: 'Mercury',  // Wednesday
+  4: 'Jupiter',  // Thursday
+  5: 'Venus',    // Friday
+  6: 'Saturn'    // Saturday
+};
+```
+
+## Sunrise/Sunset Data Source
+
+### Current Implementation (MVP)
+
+The current implementation uses **fixed times** as a workaround for the MVP:
+
+```javascript
+// Fixed sunrise/sunset for MVP (spec gap workaround)
+const SUNRISE_HOUR = 6;  // 6:00 AM local time
+const SUNSET_HOUR = 18;  // 6:00 PM local time
+```
+
+**Implications:**
+- Each planetary "hour" is exactly 60 minutes (not traditional unequal hours)
+- Does not vary by season or latitude
+- Approximation is sufficient for general use
+
+### Future Enhancement
+
+For location-aware planetary hours, integrate with an astronomical API:
+
+**Option 1: Open-Meteo API (Recommended)**
+```javascript
+const response = await fetch(
+  `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=sunrise,sunset`
+);
+const { sunrise, sunset } = await response.json().daily;
+```
+
+**Option 2: Calculate from coordinates**
+- Use astronomical algorithms (NOAA Solar Calculator)
+- Requires latitude/longitude input
+
+### Impact of Fixed Times
+
+| Condition | Traditional | Current Implementation |
+|-----------|-------------|------------------------|
+| Summer (long days) | Day hours > 60 min | Day hours = 60 min |
+| Winter (short days) | Day hours < 60 min | Day hours = 60 min |
+| Polar regions | Variable | Day hours = 60 min |
+| Equinox | ~60 min | 60 min (accurate) |
+
 ## Output Example
 
 ```json
