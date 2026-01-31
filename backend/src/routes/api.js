@@ -302,7 +302,7 @@ router.get('/patterns', async (req, res) => {
       topMatches: result.topMatches,
       analysis: result.analysis,
       note: result.matchCount === 0
-        ? 'No patterns with >75% similarity found. This requires historical data.'
+        ? 'No patterns with >80% similarity found. This requires at least 30 historical data points.'
         : undefined,
     });
   } catch (err) {

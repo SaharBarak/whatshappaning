@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.33 (stable)
+> **Version:** v0.0.34 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed, all documentation gaps resolved
 > **Plan Verification:** VERIFIED - All 26 specs cross-referenced, plan accuracy confirmed
@@ -23,6 +23,11 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Prediction System:** COMPLETE
 - **Accessibility:** COMPLETE - ARIA labels, keyboard navigation (Enter/Space to toggle cards)
 - **Development Environment:** Docker, loop scripts, and related configuration files excluded from version control via .gitignore for security (contain credentials)
+
+### v0.0.34 Changes
+- **API Spec Compliance:** Fixed pattern matching note message in /api/patterns endpoint
+  - Changed threshold message from ">75% similarity" to ">80% similarity" per spec 01-BACKEND-API.md line 252
+  - Added "at least 30 historical data points" clarification per spec
 
 ### v0.0.33 Changes
 - **Frontend Spec Compliance:** Removed labels from indices bar to match spec 02-FRONTEND-UI.md line 83 ("No labels, just values")
