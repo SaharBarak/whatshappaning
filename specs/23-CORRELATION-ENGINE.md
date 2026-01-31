@@ -112,9 +112,9 @@ const CONTINUOUS_THRESHOLDS = {
 - Multiple thresholds per feature test different intensity levels
 - This approach preserves interpretability over arbitrary binning
 
-## Outcome Targets (12 Dependent Variables)
+## Outcome Targets (11 Dependent Variables)
 
-### Market Outcomes (7)
+### Market Outcomes (6)
 
 | Target | Type | Definition |
 |--------|------|------------|
@@ -538,7 +538,7 @@ CREATE TABLE historical_features (
   vix DECIMAL(5,2),
   sentiment_aggregate DECIMAL(5,2),
 
-  -- Outcome columns (12)
+  -- Outcome columns (11)
   spx_direction BOOLEAN,
   spx_volatile BOOLEAN,
   btc_direction BOOLEAN,

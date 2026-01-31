@@ -246,6 +246,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 | Table naming | spec 01 vs spec 14 | Use spec 14 naming (`snapshots` not `data_snapshots`) |
 | Module count | spec 15 vs spec 00 | Use 16 modules (spec 00 is authoritative) |
 | Feature count | spec 23 | Treat enumeration as authoritative (36 features including day_of_week) |
+| Outcome count | spec 23 | Header said "12 outcomes" and "7 market outcomes" but table listed 11 total (6 market) - **FIXED** |
 | Ap Index | spec 09 title mentions it but body omits it | Add Ap index calculation from Kp (daily average) |
 | Dreamspell output | spec 05 | JSON shows Guide/Analog/Antipode powers but no calculation defined |
 | Trigram format | spec 18 | Example shows string but output shows object - use object format |

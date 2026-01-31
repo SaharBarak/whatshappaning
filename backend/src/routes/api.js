@@ -310,6 +310,13 @@ router.get('/correlations', async (req, res) => {
       query += ` AND outcome = $${params.length}`;
     }
 
+    // Filter by feature name if provided
+    // The features column is JSONB, so we check if the key exists in the object
+    if (feature) {
+      params.push(feature);
+      query += ` AND features ? $${params.length}`;
+    }
+
     query += ' ORDER BY lift DESC, sample_size DESC LIMIT 100';
 
     const result = await db.query(query, params);
@@ -393,28 +400,91 @@ router.post('/backtest', async (req, res) => {
       });
     }
 
-    // Build query to filter historical features
-    // This is a simplified implementation
-    const result = await db.query(
-      `SELECT COUNT(*) as total,
-              COUNT(*) FILTER (WHERE ${outcome} = true) as positive
-       FROM historical_features
-       WHERE date >= $1 AND date <= $2`,
-      [startDate || '2000-01-01', endDate || new Date().toISOString().split('T')[0]]
-    );
+    // Build query with feature filtering
+    // Features object maps column names to values or conditions
+    // Supports: exact match, >=, <=, >, < operators for continuous values
+    let whereConditions = [`date >= $1`, `date <= $2`];
+    const params = [
+      startDate || '2000-01-01',
+      endDate || new Date().toISOString().split('T')[0],
+    ];
+
+    // Add feature conditions
+    for (const [featureName, featureValue] of Object.entries(features)) {
+      // Validate feature name to prevent SQL injection (only allow alphanumeric and underscore)
+      if (!/^[a-z_][a-z0-9_]*$/i.test(featureName)) {
+        return res.status(400).json({
+          error: 'Invalid feature name',
+          feature: featureName,
+        });
+      }
+
+      if (typeof featureValue === 'string') {
+        // Handle comparison operators
+        if (featureValue.startsWith('>=')) {
+          params.push(parseFloat(featureValue.slice(2)));
+          whereConditions.push(`${featureName} >= $${params.length}`);
+        } else if (featureValue.startsWith('<=')) {
+          params.push(parseFloat(featureValue.slice(2)));
+          whereConditions.push(`${featureName} <= $${params.length}`);
+        } else if (featureValue.startsWith('>')) {
+          params.push(parseFloat(featureValue.slice(1)));
+          whereConditions.push(`${featureName} > $${params.length}`);
+        } else if (featureValue.startsWith('<')) {
+          params.push(parseFloat(featureValue.slice(1)));
+          whereConditions.push(`${featureName} < $${params.length}`);
+        } else {
+          // Exact string match
+          params.push(featureValue);
+          whereConditions.push(`${featureName} = $${params.length}`);
+        }
+      } else if (typeof featureValue === 'boolean') {
+        params.push(featureValue);
+        whereConditions.push(`${featureName} = $${params.length}`);
+      } else if (typeof featureValue === 'number') {
+        params.push(featureValue);
+        whereConditions.push(`${featureName} = $${params.length}`);
+      }
+    }
+
+    const query = `
+      SELECT COUNT(*) as total,
+             COUNT(*) FILTER (WHERE ${outcome} = true) as positive
+      FROM historical_features
+      WHERE ${whereConditions.join(' AND ')}
+    `;
+
+    const result = await db.query(query, params);
 
     const total = parseInt(result.rows[0].total, 10);
     const positive = parseInt(result.rows[0].positive, 10);
+    const probability = total > 0 ? positive / total : 0;
+
+    // Calculate Wilson confidence interval for the result
+    let confidenceInterval = null;
+    if (total >= 30) {
+      const z = 1.96; // 95% confidence
+      const p = probability;
+      const n = total;
+      const denominator = 1 + z * z / n;
+      const center = (p + z * z / (2 * n)) / denominator;
+      const spread = (z / denominator) * Math.sqrt(p * (1 - p) / n + z * z / (4 * n * n));
+      confidenceInterval = [
+        Math.max(0, center - spread),
+        Math.min(1, center + spread),
+      ];
+    }
 
     res.json({
       features,
       outcome,
-      dateRange: { start: startDate, end: endDate },
+      dateRange: { start: startDate || '2000-01-01', end: endDate },
       results: {
         totalSamples: total,
         positiveOutcomes: positive,
-        probability: total > 0 ? positive / total : 0,
-        note: 'Full feature filtering will be implemented in Phase 5',
+        probability,
+        confidenceInterval,
+        sufficient: total >= 30,
       },
     });
   } catch (err) {
