@@ -147,7 +147,7 @@ When data quality is degraded, the output includes:
 
 ```json
 {
-  "timestamp": "2025-01-31T12:00:00Z",
+  "timestamp": "2026-01-31T12:00:00Z",
   "planets": [
     {
       "planet": "Sun",
@@ -191,14 +191,14 @@ When data quality is degraded, the output includes:
   ],
   "retrogrades": ["None currently"],
   "nextEclipse": {
-    "type": "Lunar",
-    "date": "2025-03-14",
-    "daysUntil": 42
+    "type": "Solar",
+    "date": "2026-02-17",
+    "daysUntil": 17
   },
   "voidOfCourseMoon": {
     "active": false,
-    "nextStart": "2025-02-01T08:23:00Z",
-    "nextEnd": "2025-02-01T14:15:00Z"
+    "nextStart": "2026-02-01T08:23:00Z",
+    "nextEnd": "2026-02-01T14:15:00Z"
   }
 }
 ```
