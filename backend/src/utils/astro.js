@@ -219,16 +219,25 @@ function findAspect(long1, long2) {
 
 /**
  * Determine if aspect is applying (forming) or separating
- * This is a simplified calculation
- * @param {number} fasterLong - Faster planet's longitude
- * @param {number} slowerLong - Slower planet's longitude
+ * Simplified calculation based on angular distance to exact aspect
+ * @param {number} long1 - First body's longitude
+ * @param {number} long2 - Second body's longitude
  * @param {number} aspectAngle - The aspect angle (0, 60, 90, 120, 180)
  * @returns {boolean} True if applying
  */
-function isAspectApplying(fasterLong, slowerLong, aspectAngle) {
-  // Simplified: assumes Moon or faster planet is first argument
-  // In reality, need to know both planets' speeds
-  return true; // Placeholder
+function isAspectApplying(long1, long2, aspectAngle) {
+  // Calculate actual angle between the two bodies
+  let angle = Math.abs(long1 - long2);
+  if (angle > 180) angle = 360 - angle;
+
+  // Simplified: if actual angle is less than exact aspect angle, consider it applying
+  // For conjunction (0°), if normalized difference suggests bodies are approaching
+  if (aspectAngle === 0) {
+    const diff = ((long1 - long2 + 360) % 360);
+    return diff > 180 || diff < 10;
+  }
+
+  return angle < aspectAngle;
 }
 
 /**
