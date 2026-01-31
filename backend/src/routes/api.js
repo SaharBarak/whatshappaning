@@ -18,6 +18,7 @@ const { getAllModuleData, getModuleData } = require('../scheduler');
 const cache = require('../utils/cache');
 const correlation = require('../correlation');
 const { extractFeatures } = require('../correlation/features');
+const prediction = require('../prediction');
 
 // Module list for validation
 const VALID_MODULES = [
@@ -153,7 +154,8 @@ router.get('/history/:module', async (req, res) => {
 
 /**
  * GET /api/predictions
- * Returns today's full prediction payload
+ * Returns today's full prediction payload using the prediction module
+ * with proper log-odds combination and comprehensive factor analysis
  */
 router.get('/predictions', async (req, res) => {
   try {
@@ -163,87 +165,17 @@ router.get('/predictions', async (req, res) => {
       return res.json(cached);
     }
 
-    // Get correlation results
-    const correlations = await db.query(
-      `SELECT * FROM correlation_results
-       WHERE is_significant = true
-       ORDER BY outcome, probability DESC`
-    );
-
-    // Group by outcome
-    const predictionsByOutcome = {};
-    for (const corr of correlations.rows) {
-      if (!predictionsByOutcome[corr.outcome]) {
-        predictionsByOutcome[corr.outcome] = [];
+    // Gather current module data
+    const moduleDataMap = {};
+    for (const moduleName of VALID_MODULES) {
+      const snapshot = await db.getLatestSnapshot(moduleName);
+      if (snapshot && snapshot.data) {
+        moduleDataMap[moduleName] = snapshot.data;
       }
-      predictionsByOutcome[corr.outcome].push(corr);
     }
 
-    // Build predictions
-    const predictions = VALID_OUTCOMES.map(outcome => {
-      const factors = predictionsByOutcome[outcome] || [];
-      const topFactors = factors.slice(0, 5);
-
-      // Calculate combined probability (simplified)
-      const baseRate = factors[0]?.base_rate || 0.5;
-      let probability = baseRate;
-
-      if (topFactors.length > 0) {
-        const avgLift = topFactors.reduce((sum, f) => sum + parseFloat(f.lift || 1), 0) / topFactors.length;
-        probability = Math.min(0.95, Math.max(0.05, baseRate * avgLift));
-      }
-
-      return {
-        outcome: formatOutcomeName(outcome),
-        outcomeId: outcome,
-        probability: Math.round(probability * 100) / 100,
-        confidenceInterval: topFactors[0]
-          ? [parseFloat(topFactors[0].confidence_low), parseFloat(topFactors[0].confidence_high)]
-          : [probability - 0.1, probability + 0.1],
-        sampleSize: topFactors[0]?.sample_size || 0,
-        baseRate: parseFloat(baseRate),
-        confidence: getConfidenceLevel(topFactors[0]),
-        factors: topFactors.map(f => ({
-          feature: JSON.stringify(f.features),
-          contribution: parseFloat(f.probability) - parseFloat(f.base_rate || 0.5),
-          standalone: parseFloat(f.probability),
-          sampleSize: f.sample_size,
-        })),
-      };
-    });
-
-    // Get pattern alerts by extracting today's features from module data
-    let patternAlerts = [];
-    try {
-      const moduleDataMap = {};
-      for (const moduleName of VALID_MODULES) {
-        const snapshot = await db.getLatestSnapshot(moduleName);
-        if (snapshot && snapshot.data) {
-          moduleDataMap[moduleName] = snapshot.data;
-        }
-      }
-
-      if (Object.keys(moduleDataMap).length > 0) {
-        const todayFeatures = extractFeatures(moduleDataMap, new Date());
-        const patternAlert = await correlation.findPatternMatches(todayFeatures);
-        if (patternAlert) {
-          patternAlerts = [patternAlert];
-        }
-      }
-    } catch (patternErr) {
-      console.error('Error generating pattern alerts:', patternErr.message);
-      // Continue without pattern alerts - don't fail the whole request
-    }
-
-    const response = {
-      date: new Date().toISOString().split('T')[0],
-      generatedAt: new Date().toISOString(),
-      predictions,
-      patternAlerts,
-      actionSuggestions: generateSuggestions(predictions),
-      summary: generateSummary(predictions),
-      disclaimer: 'These predictions are based on historical statistical correlations and are provided for informational/entertainment purposes only. Past patterns do not guarantee future outcomes. This is not financial, medical, or professional advice.',
-    };
+    // Use the prediction module for proper statistical calculation
+    const response = await prediction.generatePredictions(moduleDataMap);
 
     // Cache for 3 hours
     cache.set('api:predictions', response, 3 * 60 * 60 * 1000);
@@ -257,7 +189,7 @@ router.get('/predictions', async (req, res) => {
 
 /**
  * GET /api/predictions/:outcome
- * Returns prediction for a specific outcome
+ * Returns prediction for a specific outcome using the prediction module
  */
 router.get('/predictions/:outcome', async (req, res) => {
   try {
@@ -270,18 +202,22 @@ router.get('/predictions/:outcome', async (req, res) => {
       });
     }
 
-    const correlations = await db.query(
-      `SELECT * FROM correlation_results
-       WHERE outcome = $1 AND is_significant = true
-       ORDER BY probability DESC
-       LIMIT 10`,
-      [outcome]
-    );
+    // Gather current module data
+    const moduleDataMap = {};
+    for (const moduleName of VALID_MODULES) {
+      const snapshot = await db.getLatestSnapshot(moduleName);
+      if (snapshot && snapshot.data) {
+        moduleDataMap[moduleName] = snapshot.data;
+      }
+    }
+
+    // Use the prediction module for proper statistical calculation
+    const result = await prediction.getPredictionForOutcome(moduleDataMap, outcome);
 
     res.json({
       outcome: formatOutcomeName(outcome),
       outcomeId: outcome,
-      factors: correlations.rows,
+      ...result,
     });
   } catch (err) {
     console.error('Error in /api/predictions/:outcome:', err);
@@ -333,11 +269,11 @@ router.get('/correlations', async (req, res) => {
 
 /**
  * GET /api/patterns
- * Returns current pattern matches
+ * Returns current pattern matches using the prediction module
  */
 router.get('/patterns', async (req, res) => {
   try {
-    // Extract today's features from module data
+    // Gather current module data
     const moduleDataMap = {};
     for (const moduleName of VALID_MODULES) {
       const snapshot = await db.getLatestSnapshot(moduleName);
@@ -353,24 +289,21 @@ router.get('/patterns', async (req, res) => {
       });
     }
 
+    // Use the prediction module for pattern matching
+    const result = await prediction.getPatternMatches(moduleDataMap);
+
+    // Also include today's features for transparency
     const todayFeatures = extractFeatures(moduleDataMap, new Date());
 
-    // Find pattern matches
-    const patternAlert = await correlation.findPatternMatches(todayFeatures);
-
-    if (!patternAlert) {
-      return res.json({
-        patterns: [],
-        todayFeatures: todayFeatures,
-        note: 'No patterns with >80% similarity found. This requires at least 30 historical data points.',
-      });
-    }
-
     res.json({
-      patterns: [patternAlert],
+      patterns: result.alerts || [],
       todayFeatures: todayFeatures,
-      matchCount: patternAlert.matchCount,
-      avgSimilarity: patternAlert.avgSimilarity,
+      matchCount: result.matchCount,
+      topMatches: result.topMatches,
+      analysis: result.analysis,
+      note: result.matchCount === 0
+        ? 'No patterns with >75% similarity found. This requires historical data.'
+        : undefined,
     });
   } catch (err) {
     console.error('Error in /api/patterns:', err);
@@ -552,52 +485,6 @@ function formatOutcomeName(outcomeId) {
     fear_spike: 'Fear Spike',
   };
   return names[outcomeId] || outcomeId;
-}
-
-function generateSuggestions(predictions) {
-  const suggestions = [];
-
-  // Find high probability negative outcomes
-  const volatilePred = predictions.find(p => p.outcomeId === 'spx_volatile');
-  if (volatilePred && volatilePred.probability > 0.6) {
-    suggestions.push({
-      category: 'Markets',
-      suggestion: 'Elevated caution',
-      reasoning: `${Math.round(volatilePred.probability * 100)}% volatility probability`,
-      confidence: volatilePred.confidence,
-    });
-  }
-
-  // Default favorable suggestions
-  suggestions.push({
-    category: 'General',
-    suggestion: 'Review and planning',
-    reasoning: 'Always favorable for reflection and preparation',
-    confidence: 'Low',
-    disclaimer: 'Based on general patterns',
-  });
-
-  return suggestions;
-}
-
-function generateSummary(predictions) {
-  const highRiskPredictions = predictions.filter(p => p.probability > 0.6);
-  const stableIndicators = predictions.filter(p => p.probability < 0.3);
-
-  let tensionScore = 0;
-  for (const p of predictions) {
-    if (p.outcomeId.includes('volatile') || p.outcomeId.includes('spike') || p.outcomeId.includes('drop')) {
-      tensionScore += p.probability * 2;
-    }
-  }
-  tensionScore = Math.min(10, tensionScore);
-
-  return {
-    overallTension: tensionScore > 6 ? 'high' : tensionScore > 3 ? 'medium' : 'low',
-    tensionScore: Math.round(tensionScore * 10) / 10,
-    topRisks: highRiskPredictions.map(p => p.outcome),
-    stableFactors: stableIndicators.map(p => `Low ${p.outcome} probability`),
-  };
 }
 
 module.exports = router;

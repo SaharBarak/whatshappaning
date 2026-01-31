@@ -10,6 +10,7 @@ const config = require('./config');
 const db = require('./db');
 const cache = require('./utils/cache');
 const logger = require('./utils/logger');
+const correlation = require('./correlation');
 
 // Module registry - will be populated dynamically
 const modules = new Map();
@@ -208,7 +209,69 @@ function startScheduler() {
     timezone: 'UTC'
   });
 
+  // Schedule daily historical data update (after daily modules complete)
+  // Runs at 00:30 UTC to give daily modules time to complete
+  cron.schedule('30 0 * * *', async () => {
+    logger.info('Running daily historical data update');
+    try {
+      await runHistoricalUpdate();
+    } catch (err) {
+      logger.error('Failed to update historical data:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
+  // Schedule weekly correlation recomputation (Sunday 2:00 AM UTC)
+  // Per spec 23-CORRELATION-ENGINE: Weekly full refresh
+  cron.schedule('0 2 * * 0', async () => {
+    logger.info('Running weekly correlation recomputation');
+    try {
+      await correlation.runFullAnalysis();
+      logger.info('Weekly correlation recomputation complete');
+    } catch (err) {
+      logger.error('Failed to run correlation analysis:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
   logger.info('Scheduler started');
+}
+
+/**
+ * Run daily historical data update
+ * Gathers all current module data and updates the historical_features table
+ * This is called after daily modules complete to ensure today's data is captured
+ */
+async function runHistoricalUpdate() {
+  logger.info('Running historical data update...');
+
+  try {
+    // Gather all current module data
+    const moduleDataMap = {};
+    for (const name of modules.keys()) {
+      const data = await getModuleData(name);
+      if (data) {
+        moduleDataMap[name] = data;
+      }
+    }
+
+    if (Object.keys(moduleDataMap).length === 0) {
+      logger.warn('No module data available for historical update');
+      return;
+    }
+
+    // Update today's historical record
+    await correlation.runDailyUpdate(moduleDataMap);
+
+    logger.info('Historical data update complete');
+  } catch (err) {
+    logger.error('Historical data update failed:', err.message);
+    throw err;
+  }
 }
 
 /**
@@ -280,6 +343,7 @@ module.exports = {
   startScheduler,
   stopScheduler,
   runInitialCollection,
+  runHistoricalUpdate,
   getModuleData,
   getAllModuleData,
 };

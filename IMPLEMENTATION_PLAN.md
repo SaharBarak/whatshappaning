@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.29 (stable)
+> **Version:** v0.0.30 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed, all documentation gaps resolved
 > **Plan Verification:** VERIFIED - All 26 specs cross-referenced, plan accuracy confirmed
@@ -23,6 +23,15 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Prediction System:** COMPLETE
 - **Accessibility:** COMPLETE - ARIA labels, keyboard navigation (Enter/Space to toggle cards)
 - **Development Environment:** Docker, loop scripts, and related configuration files excluded from version control via .gitignore for security (contain credentials)
+
+### Recent Improvements (v0.0.30)
+- **API Statistical Accuracy:** Refactored prediction endpoints to use prediction module for proper log-odds combination
+  - `/api/predictions` now uses `prediction.generatePredictions()` for correct statistical calculation
+  - `/api/predictions/:outcome` now uses `prediction.getPredictionForOutcome()`
+  - `/api/patterns` now uses `prediction.getPatternMatches()`
+- **Scheduler Automation:** Enhanced automated data maintenance
+  - Daily historical data updates at 00:30 UTC via `runHistoricalUpdate()`
+  - Weekly correlation recomputation on Sundays at 2:00 AM UTC
 
 ### Verified Assets
 - [x] 26 specification documents in `/specs/` (complete, including 25-HISTORICAL-DATA-BOOTSTRAP.md)
