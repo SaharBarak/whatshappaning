@@ -668,6 +668,8 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ## Missing Specification Items
 
+> **Note:** These are **documentation gaps**, not implementation gaps. The actual functionality for these items has been implemented in the codebase. These checkboxes track spec documentation updates needed to reflect the implementation.
+
 - [ ] Create `specs/25-HISTORICAL-DATA-BOOTSTRAP.md` - Bootstrap process, data sources, bulk import
 - [ ] Update `specs/08-MODULE-ASTROLOGY.md` - Swiss Ephemeris file config, eclipse source, ephemeris file management
 - [ ] Update `specs/03-MODULE-MOON.md` - Void of Course algorithm detail, fallback strategy
@@ -679,19 +681,22 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - [ ] Update `specs/23-CORRELATION-ENGINE.md` - Complete KEY_COMBINATIONS list (only 4 defined), continuous feature binning strategy
 - [ ] Update `specs/01-BACKEND-API.md` - Response formats for /api/history/:module, error response schema, pagination
 
-## Missing Static Data Files (Must Create Before Module Implementation)
+## Static Data Files [COMPLETE]
 
-| File | Contents | Source Needed |
-|------|----------|---------------|
-| `/backend/data/tarot.json` | 78 cards: id, name, arcana, suit, keywords, element, upright/reversed meanings | Rider-Waite-Smith public domain |
-| `/backend/data/iching.json` | 64 hexagrams: number, name, chinese, pinyin, unicode, trigrams, judgment, image, keywords | I Ching translations |
-| `/backend/data/trigrams.json` | 8 trigrams: name, chinese, symbol, element, attribute | Standard reference |
-| `/backend/data/tzolkin_signs.json` | 20 day signs: name, glyph, direction, meaning | Mayan calendar reference |
-| `/backend/data/tzolkin_tones.json` | 13 tones: number, name, meaning, energy | Mayan calendar reference |
-| `/backend/data/dreamspell_seals.json` | 20 seals: name, color, earth family, guide/analog/antipode/occult relationships | Dreamspell reference |
-| `/backend/data/meteor_showers.json` | 8+ showers: name, peak dates, ZHR, radiant, active period | IMO annual data |
-| `/backend/data/parasha.json` | 54 portions: name, hebrew, book, chapters, haftarah | Hebcal reference |
-| `/backend/data/hebrew_months.json` | 12-13 months: name, hebrew, gematria, season | Hebrew calendar reference |
+> **Note:** All required static data files are complete. Some data (meteor showers, parashiot, Hebrew months) is embedded directly in the module source code rather than separate JSON files.
+
+**External data files:**
+- `/backend/data/tarot.json` (78 cards)
+- `/backend/data/iching.json` (64 hexagrams)
+- `/backend/data/trigrams.json` (8 trigrams)
+- `/backend/data/tzolkin_signs.json` (20 day signs)
+- `/backend/data/tzolkin_tones.json` (13 tones)
+- `/backend/data/dreamspell_seals.json` (20 seals)
+
+**Inline data (embedded in modules):**
+- Meteor showers data: `METEOR_SHOWERS` array in `/backend/src/modules/cosmic.js`
+- Parashiot data: `PARASHIOT` array in `/backend/src/modules/parasha.js`
+- Hebrew months: calculated dynamically in `/backend/src/modules/gematria.js`
 
 ## Spec Internal Inconsistencies
 
