@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.35 (stable)
+> **Version:** v0.0.36 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed, all documentation gaps resolved
 > **Plan Verification:** VERIFIED - All 26 specs cross-referenced, plan accuracy confirmed
@@ -23,6 +23,14 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Prediction System:** COMPLETE
 - **Accessibility:** COMPLETE - ARIA labels, keyboard navigation (Enter/Space to toggle cards)
 - **Development Environment:** Docker, loop scripts, and related configuration files excluded from version control via .gitignore for security (contain credentials)
+
+### v0.0.36 Changes
+- **Spec Fix:** Fixed CSS example in 02-FRONTEND-UI.md to match text requirement "4 columns desktop, 2 tablet, 1 mobile"
+  - Corrected responsive breakpoints in spec CSS example (was showing 2 columns at mobile, should be 1)
+  - Added proper 900px breakpoint for desktop transition
+- **Spec Fix:** Fixed outcome count in 23-CORRELATION-ENGINE.md line 264
+  - Changed "36 features × 12 outcomes = 432+ tests" to "36 features × 11 outcomes = 396+ tests"
+  - Spec incorrectly stated 12 outcomes when only 11 are defined
 
 ### v0.0.35 Changes
 - **API Spec Compliance:** Added missing `avgSimilarity` field to /api/patterns endpoint response per spec 01-BACKEND-API.md line 243

@@ -261,7 +261,7 @@ A lift > 1 indicates the feature increases the outcome probability; lift < 1 ind
 
 ### 6. Multiple Comparison Correction
 
-With 36 features × 12 outcomes = 432+ tests, we apply Benjamini-Hochberg correction to control false discovery rate:
+With 36 features × 11 outcomes = 396+ tests, we apply Benjamini-Hochberg correction to control false discovery rate:
 
 ```javascript
 function benjaminiHochbergCorrection(results, alpha = 0.05) {
