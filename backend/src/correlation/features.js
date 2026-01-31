@@ -384,6 +384,9 @@ function binContinuousFeature(value, featureName, options = {}) {
 function getContinuousThresholds(featureName) {
   const thresholds = {
     kp_index: ['>=5', '>=7', '<3'],
+    ap_index: ['>=50', '>=100', '<20'],              // Storm levels (minor/major/quiet)
+    solar_wind_speed: ['>=500', '>=600', '<400'],    // Elevated/high/normal km/s
+    sunspot_number: ['>=100', '>=200', '<50'],       // Active/very active/quiet
     vix: ['>=20', '>=30', '<15'],
     fear_greed_cnn: ['<=25', '>=75', '<=40', '>=60'],
     fear_greed_crypto: ['<=25', '>=75', '<=40', '>=60'],

@@ -419,7 +419,7 @@ CREATE TABLE daily_data (
 ```sql
 CREATE TABLE correlation_results (
   id SERIAL PRIMARY KEY,
-  type VARCHAR(20) NOT NULL,
+  correlation_type VARCHAR(20) NOT NULL,
   features JSONB NOT NULL,
   outcome VARCHAR(50) NOT NULL,
   probability DECIMAL(5,4),

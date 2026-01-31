@@ -94,6 +94,9 @@ For continuous features, we use threshold conditions rather than discrete bins. 
 ```javascript
 const CONTINUOUS_THRESHOLDS = {
   kp_index: ['>=5', '>=7', '<3'],           // Storm levels
+  ap_index: ['>=50', '>=100', '<20'],       // Storm levels (minor/major/quiet)
+  solar_wind_speed: ['>=500', '>=600', '<400'], // Elevated/high/normal km/s
+  sunspot_number: ['>=100', '>=200', '<50'], // Active/very active/quiet
   vix: ['>=20', '>=30', '<15'],             // Volatility levels
   fear_greed_cnn: ['<=25', '>=75', '<=40', '>=60'],    // Fear/greed zones
   fear_greed_crypto: ['<=25', '>=75', '<=40', '>=60'], // Fear/greed zones
@@ -471,7 +474,7 @@ async function scoreTodaysFeatures(todayFeatures) {
 ```sql
 CREATE TABLE correlation_results (
   id SERIAL PRIMARY KEY,
-  type VARCHAR(20) NOT NULL,           -- 'single' or 'combination'
+  correlation_type VARCHAR(20) NOT NULL, -- 'single' or 'combination'
   features JSONB NOT NULL,             -- Feature(s) and value(s)
   outcome VARCHAR(50) NOT NULL,        -- Outcome name
   probability DECIMAL(5,4),            -- Conditional probability

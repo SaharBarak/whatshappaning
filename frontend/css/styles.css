@@ -558,6 +558,12 @@ body {
   letter-spacing: 0.1em;
   color: var(--text-secondary);
   text-transform: uppercase;
+  flex: 1;
+}
+
+.module-header .freshness-badge {
+  margin-left: auto;
+  text-transform: capitalize;
 }
 
 .module-primary {

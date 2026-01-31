@@ -4,6 +4,7 @@
  */
 
 import { config } from '../config.js';
+import { calculateFreshness } from '../api.js';
 
 // Module-specific renderers
 const moduleRenderers = {
@@ -54,11 +55,11 @@ export function renderModules(modules, expanded, onToggle) {
   }
 
   container.innerHTML = config.moduleOrder.map(name => {
-    const moduleData = modules[name];
+    const moduleWrapper = modules[name];
     const moduleConfig = config.modules[name] || { icon: '📊', name: name.toUpperCase() };
     const isExpanded = expanded.has(name);
 
-    if (!moduleData) {
+    if (!moduleWrapper) {
       return `
         <div class="module-card" data-module="${name}"
              onclick="window.toggleModule && window.toggleModule('${name}')"
@@ -73,13 +74,19 @@ export function renderModules(modules, expanded, onToggle) {
       `;
     }
 
+    // Extract data and collectedAt from wrapper (API returns { data, collectedAt })
+    const moduleData = moduleWrapper.data || moduleWrapper;
+    const collectedAt = moduleWrapper.collectedAt;
+    const freshness = collectedAt ? calculateFreshness(collectedAt) : 'stale';
+
     const renderer = moduleRenderers[name] || renderGeneric;
-    return renderer(name, moduleData, moduleConfig, isExpanded);
+    return renderer(name, moduleData, moduleConfig, isExpanded, freshness);
   }).join('');
 }
 
 // Helper to create module card wrapper
-function createModuleCard(name, config, isExpanded, primary, secondary, details = '') {
+function createModuleCard(name, config, isExpanded, primary, secondary, details = '', freshness = 'live') {
+  const freshnessClass = `freshness-${freshness}`;
   return `
     <div class="module-card ${isExpanded ? 'expanded' : ''}" data-module="${name}"
          onclick="window.toggleModule && window.toggleModule('${name}')"
@@ -87,6 +94,7 @@ function createModuleCard(name, config, isExpanded, primary, secondary, details 
       <div class="module-header">
         <span class="module-icon">${config.icon}</span>
         <span class="module-name">${config.name}</span>
+        <span class="freshness-badge ${freshnessClass}">${freshness}</span>
       </div>
       <div class="module-primary">${primary}</div>
       <div class="module-secondary">${secondary}</div>
@@ -103,7 +111,7 @@ function detailRow(label, value) {
 
 // === Module-specific renderers ===
 
-function renderMoon(name, data, config, isExpanded) {
+function renderMoon(name, data, config, isExpanded, freshness) {
   const primary = `${data.phaseName || data.phase || '--'}`;
   const secondary = `${data.illumination ? Math.round(data.illumination) + '%' : '--'} ${data.sign || ''}`;
 
@@ -116,10 +124,10 @@ function renderMoon(name, data, config, isExpanded) {
     ${detailRow('Next Phase', data.nextPhase?.phase)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderTzolkin(name, data, config, isExpanded) {
+function renderTzolkin(name, data, config, isExpanded, freshness) {
   const primary = `${data.tone || '--'} ${data.daySignName || data.daySign || ''}`;
   const secondary = data.meaning || '--';
 
@@ -130,10 +138,10 @@ function renderTzolkin(name, data, config, isExpanded) {
     ${detailRow('Meaning', data.meaning)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderDreamspell(name, data, config, isExpanded) {
+function renderDreamspell(name, data, config, isExpanded, freshness) {
   const primary = `Kin ${data.kin || '--'}`;
   const secondary = `${data.sealName || data.seal || '--'}`;
 
@@ -146,10 +154,10 @@ function renderDreamspell(name, data, config, isExpanded) {
     ${detailRow('Guide', data.guidePower)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderParasha(name, data, config, isExpanded) {
+function renderParasha(name, data, config, isExpanded, freshness) {
   const primary = data.name || '--';
   const secondary = data.hebrewName || '--';
 
@@ -161,10 +169,10 @@ function renderParasha(name, data, config, isExpanded) {
     ${detailRow('Hebrew Date', data.hebrewDate)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderGematria(name, data, config, isExpanded) {
+function renderGematria(name, data, config, isExpanded, freshness) {
   const primary = `${data.dateGematria || '--'} → ${data.reducedValue || '--'}`;
   const secondary = data.hebrewDate || '--';
 
@@ -175,10 +183,10 @@ function renderGematria(name, data, config, isExpanded) {
     ${detailRow('Parasha Gematria', data.parashaGematria)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderNumerology(name, data, config, isExpanded) {
+function renderNumerology(name, data, config, isExpanded, freshness) {
   const primary = `Day: ${data.universalDay || '--'}`;
   const secondary = data.currentHourRuler ? `♃ ${data.currentHourRuler}` : (data.dayRuler || '--');
 
@@ -189,10 +197,10 @@ function renderNumerology(name, data, config, isExpanded) {
     ${detailRow('Current Hour', data.currentHourRuler)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderIching(name, data, config, isExpanded) {
+function renderIching(name, data, config, isExpanded, freshness) {
   const primary = `${data.number || '--'} ${data.chinese || ''}`;
   const secondary = data.name || '--';
 
@@ -205,10 +213,10 @@ function renderIching(name, data, config, isExpanded) {
     ${detailRow('Keywords', Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderTarot(name, data, config, isExpanded) {
+function renderTarot(name, data, config, isExpanded, freshness) {
   const cardDisplay = data.number !== undefined ? (data.number === 0 ? '0' : romanize(data.number) || data.number) : '--';
   const primary = cardDisplay;
   const secondary = data.name || data.card || '--';
@@ -221,10 +229,10 @@ function renderTarot(name, data, config, isExpanded) {
     ${detailRow('Interpretation', data.interpretation)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderSolar(name, data, config, isExpanded) {
+function renderSolar(name, data, config, isExpanded, freshness) {
   const kp = data.kpIndex !== undefined ? `Kp:${data.kpIndex}` : 'Kp:--';
   const flare = data.flareClass || '--';
   const primary = `${kp} ${flare}`;
@@ -238,10 +246,10 @@ function renderSolar(name, data, config, isExpanded) {
     ${detailRow('Solar Wind', data.solarWind?.speed ? Math.round(data.solarWind.speed) + ' km/s' : null)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderSchumann(name, data, config, isExpanded) {
+function renderSchumann(name, data, config, isExpanded, freshness) {
   const freq = data.baseFrequency ? `${data.baseFrequency}Hz` : '--';
   const primary = freq;
   const secondary = data.activity || 'Normal';
@@ -254,10 +262,10 @@ function renderSchumann(name, data, config, isExpanded) {
     ${detailRow('Estimated', data.isEstimated ? 'Yes' : 'No')}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderCosmic(name, data, config, isExpanded) {
+function renderCosmic(name, data, config, isExpanded, freshness) {
   const level = data.cosmicRayLevel ? `${Math.round(data.cosmicRayLevel)}%` : '--';
   const primary = `Rays:${level}`;
   const showers = data.activeShowers?.length > 0 ? data.activeShowers[0].name : 'No shower';
@@ -270,10 +278,10 @@ function renderCosmic(name, data, config, isExpanded) {
     ${detailRow('Next Peak', data.nextPeak?.name)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderAstrology(name, data, config, isExpanded) {
+function renderAstrology(name, data, config, isExpanded, freshness) {
   // Find Sun and Moon from planets
   const sun = data.planets?.find(p => p.name === 'Sun');
   const moon = data.planets?.find(p => p.name === 'Moon');
@@ -293,10 +301,10 @@ function renderAstrology(name, data, config, isExpanded) {
     ${detailRow('Aspects', data.aspects?.length || 0)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderMarkets(name, data, config, isExpanded) {
+function renderMarkets(name, data, config, isExpanded, freshness) {
   const spxChange = data.spx?.changePercent;
   const spxDisplay = spxChange !== undefined ? `SPX ${spxChange >= 0 ? '+' : ''}${spxChange.toFixed(1)}%` : 'SPX --';
   const vix = data.vix?.value !== undefined ? `VIX:${data.vix.value.toFixed(1)}` : 'VIX:--';
@@ -314,10 +322,10 @@ function renderMarkets(name, data, config, isExpanded) {
     ${detailRow('Crypto F&G', data.cryptoFearGreed?.value)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderGeophysical(name, data, config, isExpanded) {
+function renderGeophysical(name, data, config, isExpanded, freshness) {
   const quakeCount = data.quakeCount !== undefined ? `Quakes:${data.quakeCount}` : 'Quakes:--';
   const maxMag = data.maxMagnitude !== undefined ? `M${data.maxMagnitude.toFixed(1)}+: ${data.significantQuakes?.length || 0}` : '--';
 
@@ -331,10 +339,10 @@ function renderGeophysical(name, data, config, isExpanded) {
     ${detailRow('Activity Level', data.activityLevel)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderSentiment(name, data, config, isExpanded) {
+function renderSentiment(name, data, config, isExpanded, freshness) {
   const aggregate = data.aggregate !== undefined ? data.aggregate : '--';
   const trend = data.trend || '';
   const trendArrow = trend === 'up' ? '▲' : trend === 'down' ? '▼' : '';
@@ -349,10 +357,10 @@ function renderSentiment(name, data, config, isExpanded) {
     ${detailRow('Label', data.label)}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderNews(name, data, config, isExpanded) {
+function renderNews(name, data, config, isExpanded, freshness) {
   const themeCount = data.themes?.length || 0;
   const dominant = data.dominantTheme || '--';
 
@@ -370,14 +378,14 @@ function renderNews(name, data, config, isExpanded) {
     ${themesList}
   `;
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, details);
+  return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
-function renderGeneric(name, data, config, isExpanded) {
+function renderGeneric(name, data, config, isExpanded, freshness) {
   const primary = JSON.stringify(data).substring(0, 20) + '...';
   const secondary = '--';
 
-  return createModuleCard(name, config, isExpanded, primary, secondary, '');
+  return createModuleCard(name, config, isExpanded, primary, secondary, '', freshness);
 }
 
 // Roman numeral helper for Tarot
