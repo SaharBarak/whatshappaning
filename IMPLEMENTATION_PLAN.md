@@ -124,7 +124,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 - [x] historical.js (data ingestion, backfill)
 - [x] features.js (35+ features)
-- [x] outcomes.js (12 binary outcomes)
+- [x] outcomes.js (11 binary outcomes)
 - [x] statistics.js (Wilson CI, chi-square, conditional probability)
 - [x] compute.js (single/combination correlations, Bonferroni correction)
 - [x] patterns.js (feature similarity, historical matching)
