@@ -29,15 +29,6 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - [x] Phase 2 local calculation modules complete (6 modules + 2 data files)
 - [x] Phase 3 external API modules complete (10 modules: moon, astrology, solar, markets, geophysical, parasha, schumann, news, cosmic, sentiment)
 
-### Deep Spec Analysis Findings (2026-01-31)
-- **78 gaps identified** across all specs (verified with 25 parallel subagent analysis)
-- **9 static data files** must be created before module implementation
-- **10 specs require updates** with missing algorithms or data
-- **8 module calculations** have undefined dependencies (VOC, Dreamspell powers, chi-square helpers, pattern matching, etc.)
-- **4 external APIs** have unreliable or undefined access (Schumann, Cosmic rays, CNN F&G, CBOE Put/Call)
-- **Multiple comparison correction** needed in correlation engine (432+ statistical tests)
-- **3 key helper functions** undefined in correlation engine (buildContingencyTable, calculateChiSquare, chiSquarePValue)
-
 ---
 
 # PRIORITIZED IMPLEMENTATION CHECKLIST
@@ -50,578 +41,124 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ## PHASE 0: PRE-IMPLEMENTATION DECISIONS [COMPLETE]
 
-> **All decisions resolved - recommended options implemented.**
+> All decisions resolved - recommended options implemented.
 
-### Resolved Decisions
-
-- [x] **DECISION 1: Update Frequencies** → Option B
-  - Using 3hr intervals across the board (see config.js schedules)
-  - Documented deviation from spec, safer for free API tiers
-
-- [x] **DECISION 2: I Ching Changing Lines** → Option B
-  - Excluded for MVP - static daily reading only (see iching.js)
-  - Simpler implementation, changing lines marked as TODO
-
-- [x] **DECISION 3: Tarot Reversals** → Option B
-  - Excluded for MVP - upright readings only (see tarot.js)
-  - Simpler interpretation without reversed meanings
-
-- [x] **DECISION 4: Continuous Outcomes** → Option B
-  - Binary outcomes only (see outcomes.js - 11 binary outcomes)
-  - Simpler chi-square model, spx_return field exists but unused
-
-- [x] **DECISION 5: Reference Timezone** → Option B (Modified)
-  - UTC for all calculations (see scheduler.js timezone: 'UTC')
-  - Parasha uses Friday 18:00 UTC as sunset approximation
+- [x] **DECISION 1: Update Frequencies** - Using 3hr intervals (config.js schedules)
+- [x] **DECISION 2: I Ching Changing Lines** - Excluded for MVP (static daily reading)
+- [x] **DECISION 3: Tarot Reversals** - Excluded for MVP (upright readings only)
+- [x] **DECISION 4: Continuous Outcomes** - Binary outcomes only
+- [x] **DECISION 5: Reference Timezone** - UTC for all calculations
 
 ---
 
-## PHASE 1: FOUNDATION [BLOCKING - All other phases depend on this]
+## PHASE 1: FOUNDATION [COMPLETE]
 
-> **Priority:** CRITICAL - No parallel work possible until complete.
-> **Dependencies:** None
-> **Estimated effort:** 2-3 days
+> **Status:** All 7 sections complete - project structure, database schema, core backend, scheduler, API routes, utilities, Docker
 
-### 1.1 Project Structure
-
-- [x] Create `/backend/` directory structure per spec 15
-  ```
-  /backend/src/           - Main source directory
-  /backend/src/routes/    - API route handlers
-  /backend/src/modules/   - 16 data collection modules
-  /backend/src/indices/   - 3 composite index calculators
-  /backend/src/correlation/ - Correlation engine
-  /backend/src/prediction/  - Prediction system
-  /backend/src/utils/     - Helper utilities
-  /backend/data/          - Static data files (tarot.json, iching.json)
-  /backend/migrations/    - SQL migration files
-  ```
-
-- [x] Create `/frontend/` directory structure per spec 15
-  ```
-  /frontend/css/                    - Stylesheets
-  /frontend/js/                     - JavaScript modules
-  /frontend/js/components/          - UI components
-  /frontend/js/components/modules/  - Module-specific renderers (16 files)
-  ```
-
-- [x] Create `/backend/package.json` with dependencies:
-  - express, cors, pg, node-cron, dotenv
-  - swisseph (Swiss Ephemeris for astrology)
-  - yahoo-finance2 (markets data)
-  - rss-parser (news feeds)
-  - @google/generative-ai (Gemini for news analysis)
-  - google-trends-api (sentiment)
-  - axios, cheerio (scraping fallbacks)
-
-### 1.2 Database Schema [12 Tables Required]
-
-- [x] Create `/backend/migrations/001_initial.sql` with ALL 12 tables:
-
-  **Core Tables (spec 14):**
-  - [x] `snapshots` - Time-series module data (90 days retention)
-  - [x] `daily_data` - Daily aggregations + ADD `numerology JSONB`, `iching JSONB` columns (missing from spec 14)
-  - [x] `indices_history` - Index trends (1 year retention)
-  - [x] `news_themes` - News analysis (30 days retention)
-  - [x] `system_status` - Health monitoring (7 days retention)
-
-  **Market Tables (spec 20):**
-  - [x] `market_daily` - OHLCV data for SPX, BTC, VIX, Gold, DXY
-  - [x] `market_sentiment` - Fear/greed metrics, put/call ratio
-
-  **Geophysical Tables (spec 21):**
-  - [x] `quakes_daily` - Earthquake statistics
-  - [x] `geophysical_daily` - AP index, pressure, UV, AQI, tides
-
-  **Sentiment Tables (spec 22):**
-  - [x] `sentiment_daily` - Sentiment component scores
-
-  **Correlation Tables (spec 23):**
-  - [x] `correlation_results` - Pre-computed correlations with Wilson CI
-  - [x] `historical_features` - 35 feature columns + 12 outcome columns
-
-- [x] Create all 9 required indexes:
-  - `idx_snapshots_module_time` ON snapshots (module, collected_at DESC)
-  - `idx_snapshots_time` ON snapshots (collected_at DESC)
-  - `idx_indices_time` ON indices_history (calculated_at DESC)
-  - `idx_news_time` ON news_themes (analyzed_at DESC)
-  - `idx_status_module_time` ON system_status (module, checked_at DESC)
-  - `idx_market_symbol_date` ON market_daily (symbol, date DESC)
-  - `idx_corr_outcome` ON correlation_results (outcome)
-  - `idx_corr_significant` ON correlation_results (is_significant, outcome)
-  - `idx_historical_features_date` ON historical_features (date)
-
-### 1.3 Core Backend
-
-- [x] Create `/backend/src/config.js` - Environment variables (PORT, DATABASE_URL, GEMINI_API_KEY, NODE_ENV)
-- [x] Create `/backend/src/db.js` - Connection pool + query helpers (saveSnapshot, getLatestSnapshot, saveDailyData, saveSystemStatus)
-- [x] Create `/backend/src/index.js` - Express app entry point with CORS, JSON parsing, route mounting
-
-### 1.4 Scheduler Framework
-
-- [x] Create `/backend/src/scheduler.js` - Cron job orchestration, dynamic module loader, error handling
-- [x] Create `/backend/src/utils/cache.js` - In-memory TTL cache (default 5 min)
-
-### 1.5 API Routes
-
-- [x] Create `/backend/src/routes/api.js` with endpoints:
-  - `GET /api/current` - All current module data + indices (16 modules)
-  - `GET /api/history/:module` - Historical data (query: `days`, default 7, max 90)
-  - `GET /api/predictions` - Today's full predictions
-  - `GET /api/predictions/:outcome` - Specific outcome prediction
-  - `GET /api/correlations` - ADD query params: `feature`, `outcome`, `minSampleSize`, `minLift`
-  - `GET /api/patterns` - Current pattern matches
-  - `POST /api/backtest` - Custom backtest (body: features, outcome, startDate, endDate)
-
-- [x] Create `/backend/src/routes/health.js` - Health check endpoints (/health, /health/detailed)
-
-### 1.6 Utility Modules
-
-- [x] Create `/backend/src/utils/hebrew.js` - Gematria values (aleph=1 to tav=400), Hebrew date parsing
-- [x] Create `/backend/src/utils/astro.js` - Swiss Ephemeris wrapper, Julian day, aspects, zodiac, retrograde detection
-- [x] Create `/backend/src/utils/dateSeeding.js` - Deterministic RNG for Tarot/I Ching selection
-
-### 1.7 Environment & Docker
-
-- [x] Create `/backend/.env.example` - Template with all required environment variables
-- [x] Create `/backend/Dockerfile` - Multi-stage build for production
-- [x] Create `/backend/docker-compose.yml` - PostgreSQL for local development
-  - NOTE: Root `docker-compose.yml` is for Claude Code sandbox, not application
-  - Application docker-compose needs: PostgreSQL service, backend service, volume mounts
+- [x] 1.1 Project Structure (`/backend/`, `/frontend/` directories)
+- [x] 1.2 Database Schema (12 tables, 9 indexes)
+- [x] 1.3 Core Backend (config.js, db.js, index.js)
+- [x] 1.4 Scheduler Framework (scheduler.js, cache.js)
+- [x] 1.5 API Routes (api.js, health.js)
+- [x] 1.6 Utility Modules (hebrew.js, astro.js, dateSeeding.js)
+- [x] 1.7 Environment & Docker
 
 ---
 
-## PHASE 2: LOCAL CALCULATION MODULES [No External Dependencies]
+## PHASE 2: LOCAL CALCULATION MODULES [COMPLETE]
 
-> **Priority:** HIGH - Enables all indices and correlation
-> **Dependencies:** Phase 1 complete
-> **Parallelizable:** Yes - all 6 modules can be developed simultaneously
-> **Estimated effort:** 2-3 days
+> **Status:** All 6 modules complete with static data files
 
-### Modules (in implementation order)
-
-- [x] Create `/backend/src/modules/tzolkin.js`
-  - Algorithm: GMT correlation 584283
-  - Output: tone (1-13), toneName, daySign (20 signs), daySignName, meaning
-  - Schedule: Daily at 00:00 UTC
-
-- [x] Create `/backend/src/modules/dreamspell.js`
-  - Algorithm: Epoch 1987-07-26, skip Feb 29
-  - **CRITICAL:** Feb 29 handling undefined in spec - implement as "Day Out of Time" (same kin as Feb 28)
-  - Output: kin (1-260), seal (20 seals), tone (13 tones), wavespell, isGAP
-  - **ADD:** guidePower, analogPower, antipodePower, occultPower (in spec output but calculation missing)
-  - Schedule: Daily at 00:00 UTC
-
-- [x] Create `/backend/data/tarot.json` - 78 cards with id, name, arcana, suit, keywords, element
-- [x] Create `/backend/src/modules/tarot.js`
-  - Algorithm: hash(YYYY-MM-DD) % 78
-  - Output: card, number, arcana, suit, keywords, interpretation
-  - Schedule: Daily at 00:00 UTC
-
-- [x] Create `/backend/src/modules/numerology.js`
-  - Algorithm: Reduce date digits to single/master number (11, 22, 33 preserved)
-  - Output: universalDay, dayMeaning, dayRuler, planetaryHours[], currentHourRuler
-  - **DEPENDENCY:** Requires sunrise/sunset data (source undefined in spec - use Open-Meteo or Hebcal)
-  - Schedule:
-    - Universal day: Daily at 00:00 UTC
-    - Planetary hours: Every 30 minutes (spec 17 requirement)
-
-- [x] Create `/backend/data/iching.json` - 64 hexagrams with number, name, chinese, trigrams, judgment
-- [x] Create `/backend/src/modules/iching.js`
-  - Algorithm: hash(YYYY-MM-DD) % 64 + 1
-  - Output: number, name, chinese, upperTrigram, lowerTrigram, judgment, keywords
-  - Schedule: Daily at 00:00 UTC
-
-- [x] Create `/backend/src/modules/gematria.js`
-  - Dependencies: utils/hebrew.js, parasha module
-  - Output: hebrewDate, dateGematria, reducedValue, parashaGematria
-  - Schedule: Daily at 00:00 UTC
+- [x] tzolkin.js (GMT correlation 584283)
+- [x] dreamspell.js (Epoch 1987-07-26, Feb 29 handling)
+- [x] tarot.js + tarot.json (78 cards)
+- [x] numerology.js (universal day, planetary hours)
+- [x] iching.js + iching.json (64 hexagrams)
+- [x] gematria.js (Hebrew date, gematria values)
 
 ---
 
-## PHASE 3: EXTERNAL API MODULES [Risk: API Failures]
+## PHASE 3: EXTERNAL API MODULES [COMPLETE]
 
-> **Priority:** HIGH - Required for indices and correlation
-> **Dependencies:** Phase 1 complete
-> **Parallelizable:** Yes - all 10 modules can be developed simultaneously
-> **Risk:** External API failures - each module needs fallback strategy
-> **Estimated effort:** 4-5 days
+> **Status:** All 10 modules complete with fallback strategies
 
-### High Priority (needed for indices/correlation)
-
-- [x] Create `/backend/src/modules/moon.js`
-  - Primary: Swiss Ephemeris | Fallback: Farmsense API
-  - Output: phase, phaseName, illumination, age, sign, voidOfCourse, nextPhase
-  - Schedule: Every 3 hours
-  - **NOTE:** Swiss Ephemeris falls back to Meeus calculations when swisseph npm package is not installed
-
-- [x] Create `/backend/src/modules/astrology.js`
-  - Primary: Swiss Ephemeris (local - no external dependency)
-  - **SETUP:** Download and configure ephemeris files (.se1) - location and size unspecified in spec
-  - Output: planets[] (12 bodies), aspects[], retrogrades[], eclipseInfo, voidOfCourseMoon
-  - **GAP:** VOC calculation algorithm not specified - requires tracking Moon's last/next aspects
-  - **GAP:** Eclipse data source not specified (Swiss Ephemeris can calculate)
-  - Schedule: Every 3 hours
-  - **NOTE:** Swiss Ephemeris falls back to Meeus calculations when swisseph npm package is not installed
-
-- [x] Create `/backend/src/modules/solar.js`
-  - Primary: NOAA SWPC (5 endpoints) | Fallback: Cache last known
-  - Output: kpIndex, apIndex, flareClass, sunspotNumber, solarWind
-  - Schedule: Every 3 hours
-
-- [x] Create `/backend/src/modules/markets.js`
-  - Primary: Yahoo Finance + CoinGecko + Fear/Greed APIs | Fallback: Cache
-  - Output: spx{}, btc{}, vix{}, gold{}, dxy{}, cryptoFearGreed{}
-  - **GAP:** Put/Call Ratio and VIX Term Structure (spec 20) - CBOE data access undefined
-    - Option A: Scrape from CBOE website (unreliable)
-    - Option B: Use yahoo-finance2 for VIX only, skip Put/Call for MVP
-  - **GAP:** Volume anomaly detection thresholds undefined (spec shows output but no rules)
-  - Schedule: Every 3 hours (spec requires 15min - see DECISION 1)
-  - **NOTE:** yahoo-finance2 requires dynamic import due to ESM-only package
-
-- [x] Create `/backend/src/modules/geophysical.js`
-  - Primary: USGS + Open-Meteo + NOAA Tides | Fallback: Cache
-  - Output: quakeCount, maxMagnitude, significantQuakes[], weather{}, activityLevel
-  - **GAP:** Activity level thresholds undefined - need baseline "average" for comparison
-    - Implement: Use rolling 30-day average as baseline (spec 21 mentions but doesn't define)
-    - Levels: Low (<50% avg), Normal (50-150%), Elevated (150-300%), High (>300%)
-  - **GAP:** Seismic energy formula defined (log10(E) = 1.5*M + 4.8) but no baseline specified
-  - Schedule: Every 3 hours (spec requires hourly - see DECISION 1)
-
-### Medium Priority
-
-- [x] Create `/backend/src/modules/parasha.js`
-  - Primary: Hebcal API | Fallback: Static 54 portions
-  - Output: name, hebrewName, book, chapters, hebrewDate, shabbatTime
-  - Schedule: Weekly (Friday sunset)
-  - **GAP:** Hebrew leap year handling undefined - double parashiot (combined portions) in non-leap years
-  - **GAP:** Holiday conflict handling - major holidays interrupt regular Torah reading schedule
-
-- [x] Create `/backend/src/modules/schumann.js` [HIGH RISK - Unreliable source]
-  - Primary: Tomsk Observatory image scraping (http://sosrff.tsu.ru/new/shm.jpg)
-  - **GAP:** Image parsing algorithm undefined - spectrogram is visual, not structured data
-  - **WORKAROUND:** Cache spectrogram image + estimate amplitude from Kp correlation
-  - Fallback: Estimate from Kp index (high Kp → elevated Schumann activity)
-  - Output: baseFrequency, amplitude, activity, source, isEstimated, spectrogramUrl
-  - Schedule: Every 3 hours
-
-- [x] Create `/backend/src/modules/news.js` [Requires GEMINI_API_KEY]
-  - Primary: RSS feeds (BBC, AP, Reuters) + Gemini analysis | Fallback: Cache
-  - Output: themes[], dominantTheme, sentiment, articleCount
-  - Schedule: Every 3 hours
-
-- [x] Create `/backend/src/modules/cosmic.js`
-  - Primary: NOAA cosmic ray data + static meteor calendar
-  - **GAP:** No confirmed API for cosmic ray data (spec mentions Oulu, Moscow monitors but no API)
-  - **WORKAROUND:** Estimate cosmic rays from solar activity (inverse correlation: high solar = low cosmic)
-  - Meteor showers: Use static `/backend/data/meteor_showers.json` (annual calendar)
-  - Output: cosmicRayLevel, neutronCount (estimated), activeShowers[], nextPeak
-  - Schedule: Every 3 hours
-
-- [x] Create `/backend/src/modules/sentiment.js`
-  - Primary: Crypto F&G + CNN F&G + Google Trends | Fallback: Cache
-  - Output: cryptoFearGreed, cnnFearGreed, trends{}, aggregate
-  - **GAP:** newsSentiment source/implementation undefined (spec mentions 20% weight but no details)
-  - **GAP:** socialMood source/implementation undefined (spec mentions 20% weight but no details)
-  - **GAP:** CNN F&G scraping - no code provided, endpoint is unofficial (`production.dataviz.cnn.io`)
-    - Implement: Use axios + cheerio to scrape, or treat as unreliable and weight toward Crypto F&G
-  - **GAP:** Put/Call Ratio source (CBOE) - access method not detailed, may require paid API
-  - **WORKAROUND:** Redistribute weights: Crypto 30%, CNN 30%, Google Trends 40% (if social/news unavailable)
-  - Schedule: Every 3 hours (spec requires hourly - see DECISION 1)
+- [x] moon.js (Swiss Ephemeris / Farmsense fallback)
+- [x] astrology.js (Swiss Ephemeris / Meeus fallback)
+- [x] solar.js (NOAA SWPC)
+- [x] markets.js (Yahoo Finance + CoinGecko)
+- [x] geophysical.js (USGS + Open-Meteo)
+- [x] parasha.js (Hebcal API)
+- [x] schumann.js (Tomsk Observatory / Kp estimation)
+- [x] news.js (RSS feeds + Gemini analysis)
+- [x] cosmic.js (NOAA + static meteor calendar)
+- [x] sentiment.js (Crypto F&G + CNN F&G + Google Trends)
 
 ---
 
-## PHASE 4: COMPOSITE INDICES [Requires Phase 2+3 Data]
+## PHASE 4: COMPOSITE INDICES [COMPLETE]
 
-> **Priority:** MEDIUM - Required for predictions
-> **Dependencies:** Phases 2 and 3 modules complete
-> **Estimated effort:** 1 day
+> **Status:** All 3 indices complete
 
-- [x] Create `/backend/src/indices/solarGeo.js`
-  - Formula: Kp(40%) + Flare(30%) + Schumann(20%) + Wind(10%)
-  - Levels: Calm (0-2), Low (2-4), Moderate (4-6), Elevated (6-8), High (8-10)
-  - **GAP:** "trend" field shown in spec 13 output but calculation undefined
-    - Implement: Compare current value to 24h ago - "rising" if +0.5, "falling" if -0.5, else "stable"
-  - Update: Every 3 hours
-
-- [x] Create `/backend/src/indices/astroEvents.js`
-  - Points: Retrogrades (+1 each, Mercury +1 bonus), Eclipse proximity (+2-4), Major aspects (+1), VOC (+0.5), Full/New moon (+1)
-  - Levels: Quiet (0), Low (1-2), Active (3-4), Busy (5-6), Intense (7+)
-  - **GAP:** Define "outer planets" for major aspect scoring (assume: Jupiter, Saturn, Uranus, Neptune, Pluto)
-  - **GAP:** Define aspect types that count as "major" (assume: conjunction, opposition only for outer planets)
-  - Update: Every 3 hours
-
-- [x] Create `/backend/src/indices/calendarSync.js`
-  - Points: GAP day (+2), Wavespell start (+1), Rosh Chodesh (+1), Full/New moon on Shabbat (+1), Matching numbers (+1)
-  - Levels: None (0), Low (1), Moderate (2-3), High (4-5), Rare (6+)
-  - **Include 52 GAP_DAYS array per spec 13**
-  - Update: Daily
+- [x] solarGeo.js (Kp 40% + Flare 30% + Schumann 20% + Wind 10%)
+- [x] astroEvents.js (Retrogrades, eclipses, aspects, VOC, moon phases)
+- [x] calendarSync.js (GAP days, wavespell, Rosh Chodesh, matching numbers)
 
 ---
 
-## PHASE 5: CORRELATION ENGINE [Requires ALL Modules + Historical Data]
+## PHASE 5: CORRELATION ENGINE [COMPLETE]
 
-> **Priority:** CRITICAL - Core differentiator of the application
-> **Dependencies:** ALL Phase 2+3 modules complete, 30+ days of collected data
-> **Estimated effort:** 4-5 days
-> **Statistical Requirements:**
-> - Minimum sample size: n >= 30
-> - Wilson confidence intervals (not normal approximation)
-> - Chi-square test with p < 0.05
-> - Probability bounds: 5%-95%
+> **Status:** All components complete (4 test files, 157 tests)
 
-### Historical Data
-
-- [x] Create `/backend/src/correlation/historical.js`
-  - Data ingestion and backfill scripts
-  - Sources: S&P 500 (1950+), Bitcoin (2014+), Earthquakes (2000+), Solar/Kp (1930+)
-
-### Feature Engineering
-
-- [x] Create `/backend/src/correlation/features.js`
-  - 35+ features from spec 23:
-    - Cosmic/Esoteric (23): moon_phase, moon_sign, moon_illumination, moon_void_of_course, tzolkin_tone, tzolkin_sign, dreamspell_kin, dreamspell_wavespell, mercury_retrograde, venus_retrograde, mars_retrograde, planets_retrograde_count, sun_sign, major_aspects_count, eclipse_proximity, hebrew_day, hebrew_month, parasha_index, numerology_day, tarot_card, iching_hexagram, planetary_hour, day_of_week
-    - Geophysical (9): kp_index, ap_index, solar_flare_class, sunspot_number, solar_wind_speed, schumann_amplitude, quake_count_24h, quake_max_magnitude, **quake_energy_log** (ADD - missing from plan)
-    - Sentiment (4): fear_greed_cnn, fear_greed_crypto, vix, sentiment_aggregate (consider adding **put_call_ratio**)
-
-### Outcomes
-
-- [x] Create `/backend/src/correlation/outcomes.js`
-  - 12 binary outcomes from spec 23:
-    - Market: spx_direction, spx_volatile, btc_direction, btc_volatile, vix_spike, gold_direction
-    - Geophysical: major_quake, quake_above_avg, geomag_storm
-    - Sentiment: sentiment_drop, fear_spike
-  - (spx_return continuous outcome excluded per DECISION 4)
-
-### Statistical Engine
-
-- [x] Create `/backend/src/correlation/statistics.js`
-  - **Wilson Confidence Interval**: `center = (p + z^2/2n) / (1 + z^2/n)`
-  - **Chi-Square Test**: Contingency table, chi-square statistic, p-value
-  - **Conditional Probability**: P(outcome | feature)
-  - **Validation**: Require n >= 30, p < 0.05
-  - **CRITICAL GAP:** Must implement these helper functions (undefined in spec 23):
-    - `buildContingencyTable(data, feature, outcome)` - Create 2x2 contingency table
-    - `calculateChiSquare(table)` - Compute chi-square statistic from table
-    - `chiSquarePValue(chiSq, df)` - Look up p-value from chi-square distribution
-  - **ADD:** Continuous feature binning strategy (spec 23 undefined - implement quartiles or custom thresholds)
-
-### Computation
-
-- [x] Create `/backend/src/correlation/compute.js`
-  - Single feature correlations (all feature x outcome combinations)
-  - Key combinations (spec 23 only defines 4 - need to expand):
-    1. Mercury retrograde + Full Moon
-    2. High Kp (>=5) + New Moon
-    3. Multiple retrogrades (>=3) + VIX elevated (>=20)
-    4. Eclipse proximity (<=7 days) + Fear index (<=30)
-    5. **ADD:** VOC Moon + Major aspect count (>=3)
-    6. **ADD:** GAP day + Mercury retrograde
-    7. **ADD:** Hebrew month start + Full moon
-    8. **ADD:** Solar flare (M+) + High Schumann amplitude
-  - Schedule: Weekly full (Sunday), daily incremental
-  - Storage: correlation_results table (only if n >= 30 and p < 0.05)
-  - **CRITICAL:** Add Bonferroni correction for multiple comparisons (36 features × 12 outcomes = 432 tests)
-
-### Pattern Matching
-
-- [x] Create `/backend/src/correlation/patterns.js`
-  - Feature similarity scoring (>80% match threshold)
-  - Historical date matching and outcome analysis
-  - Match score: Categorical (exact=1, else=0), Continuous (within 10%=0.5, exact=1)
-  - **CRITICAL GAP:** Must implement these functions (undefined in spec 23/24):
-    - `matchesFeatures(todayFeatures, correlationCondition)` - Match today's data to correlation rules
-    - `calculateSimilarity(featuresA, featuresB)` - Compute similarity % between feature sets
-    - `groupAndAnalyzeMatches(matches)` - Aggregate multiple historical matches
-  - **ADD:** Define feature weighting (are all features equally important? spec unclear)
-
-> **Note:** Tests are included for Phase 5 (4 test files with 157 tests).
+- [x] historical.js (data ingestion, backfill)
+- [x] features.js (35+ features)
+- [x] outcomes.js (12 binary outcomes)
+- [x] statistics.js (Wilson CI, chi-square, conditional probability)
+- [x] compute.js (single/combination correlations, Bonferroni correction)
+- [x] patterns.js (feature similarity, historical matching)
 
 ---
 
-## PHASE 6: PREDICTION SYSTEM [Requires Correlation Engine]
+## PHASE 6: PREDICTION SYSTEM [COMPLETE]
 
-> **Priority:** CRITICAL - User-facing predictions
-> **Dependencies:** Phase 5 complete
-> **Estimated effort:** 3-4 days
+> **Status:** All components complete (2 test files, 59 tests)
 
-### Prediction Calculator
-
-- [x] Create `/backend/src/prediction/calculator.js`
-  - Get today's features from all modules
-  - Find matching correlations from database
-  - Log-odds combination:
-    ```
-    combinedLogOdds = log(baseRate / (1-baseRate))
-    for each factor: lift = probability / baseRate, weight = log(sampleSize) / 10
-    combinedLogOdds += log(lift) * weight
-    probability = 1 / (1 + exp(-combinedLogOdds))
-    ```
-  - Apply bounds: 5% to 95%
-
-### Factor Analysis
-
-- [x] Create `/backend/src/prediction/factors.js`
-  - Individual factor contribution calculation
-  - Lift: probability / base_rate
-  - Rank factors by impact
-
-### Confidence Assessment
-
-- [x] Create `/backend/src/prediction/confidence.js`
-  - Levels per spec 24:
-    - Very High: n > 200, CI width < 0.15, p < 0.001
-    - High: n > 100, CI width < 0.20, p < 0.01
-    - Medium: n > 50, CI width < 0.30, p < 0.05
-    - Low: n > 30, CI width < 0.40, p < 0.10
-    - Insufficient: n < 30 or p > 0.10
-
-### Alerts and Suggestions
-
-- [x] Create `/backend/src/prediction/alerts.js`
-  - Pattern match detection (>80% similarity)
-  - Historical outcome retrieval for matching dates
-
-- [x] Create `/backend/src/prediction/suggestions.js`
-  - Favorable/Caution categorization
-  - **Required disclaimer:**
-    > "These predictions are based on historical statistical correlations and are provided for informational/entertainment purposes only. Past patterns do not guarantee future outcomes. This is not financial, medical, or professional advice."
-
-### Prediction Summary [NEW - Missing from original plan]
-
-- [x] Create `/backend/src/prediction/summary.js`
-  - `overallTension`: "high" | "medium" | "low"
-  - `tensionScore`: 0.0-10.0
-  - `topRisks[]`: Array of highest probability negative outcomes
-  - `stableFactors[]`: Array of stability indicators
-
-### API Integration
-
-- [x] Update `/backend/src/routes/api.js` with full prediction endpoints
-  - Full payload generation per spec 24
-  - Caching: Regenerate every 3 hours
-
-> **Note:** Tests are included for Phase 6 (2 test files with 59 tests).
+- [x] calculator.js (log-odds combination, 5%-95% bounds)
+- [x] factors.js (lift calculation, factor ranking)
+- [x] confidence.js (Very High/High/Medium/Low/Insufficient levels)
+- [x] alerts.js (pattern match detection)
+- [x] suggestions.js (favorable/caution categorization, disclaimer)
+- [x] summary.js (tension score, top risks, stable factors)
+- [x] API integration (full prediction endpoints)
 
 ---
 
-## PHASE 7: FRONTEND [Can Start After Phase 1]
+## PHASE 7: FRONTEND [COMPLETE]
 
-> **Priority:** MEDIUM - User interface
-> **Dependencies:** Phase 1 (structure), All backend phases (testing)
-> **Parallelizable:** Can begin structure after Phase 1; full testing needs complete backend
-> **Estimated effort:** 4-5 days
+> **Status:** All components complete with full accessibility
 
-### 7.1 Core Structure
-
-- [x] Create `/frontend/index.html` - Semantic HTML5, meta viewport, ES module scripts
-- [x] Create `/frontend/css/styles.css`
-  - CSS variables: --bg-primary (#0a0a0f), --bg-card (#12121a), --text-primary (#e0e0e0)
-  - Confidence colors: --confidence-high (#4ade80), --confidence-medium (#fbbf24), --confidence-low (#f87171)
-  - Typography: Inter (body), JetBrains Mono (numbers)
-  - Responsive grid: 4 cols desktop, 2 tablet, 1 mobile
-
-### 7.2 JavaScript Core
-
-- [x] Create `/frontend/js/config.js` - API URL detection (localhost vs production)
-- [x] Create `/frontend/js/api.js` - Fetch wrapper, caching, retry logic
-- [x] Create `/frontend/js/app.js` - Main orchestration, 30min auto-refresh
-
-### 7.3 Prediction Components [Primary UI]
-
-- [x] Create `/frontend/js/components/predictions.js`
-  - Probability bar visualization
-  - Confidence interval display [low-high%]
-  - Sample size badges (n=XX)
-  - Factor expansion (collapsible)
-
-- [x] Create `/frontend/js/components/alerts.js`
-  - Pattern alert panel (conditional - only show if match >80%)
-  - Match score badge, historical dates
-
-### 7.4 Supporting Components
-
-- [x] Create `/frontend/js/components/indices.js` - Three indices inline display with trend arrows
-- [x] Create `/frontend/js/components/states.js` - Loading skeletons, error states, freshness badges
-- [x] Create `/frontend/js/components/suggestions.js` - Favorable/Caution lists, **mandatory disclaimer**
-
-### 7.5 Module Cards (16 total)
-
-- [x] All 16 module renderers consolidated in `/frontend/js/components/modules.js`
-  - Includes: moon, tzolkin, dreamspell, parasha, gematria, numerology, iching, tarot, solar, schumann, cosmic, astrology, markets, geophysical, sentiment, news
-  - Deviation from spec: Single file vs. separate files per module (simpler architecture)
-
-### 7.6 Accessibility & UX (Gap from Spec 02)
-
-- [x] Add ARIA labels to all interactive elements
-- [x] Implement keyboard navigation for expandable cards (Enter/Space to toggle)
-- [x] Define tablet breakpoint (900px breakpoint for 3-column grid between mobile and desktop)
-- [x] Font loading strategy (FOUT via Google Fonts display=swap)
-- [x] Define animation durations (--transition-fast: 0.15s, --transition-normal: 0.3s CSS variables)
-
-### 7.7 Deployment
-
-- [x] Create `/frontend/vercel.json` - SPA rewrites, cache headers (max-age=300)
+- [x] 7.1 Core Structure (index.html, styles.css)
+- [x] 7.2 JavaScript Core (config.js, api.js, app.js)
+- [x] 7.3 Prediction Components (predictions.js, alerts.js)
+- [x] 7.4 Supporting Components (indices.js, states.js, suggestions.js)
+- [x] 7.5 Module Cards (16 renderers in modules.js)
+- [x] 7.6 Accessibility & UX (ARIA labels, keyboard nav, responsive grid)
+- [x] 7.7 Deployment (vercel.json)
 
 ---
 
 ## PHASE 8: INTEGRATION & PRODUCTION
 
 > **Priority:** FINAL - Testing and deployment
-> **Dependencies:** All previous phases functional
-> **Estimated effort:** 3-4 days
+> **Status:** 8.1-8.6 complete, only 8.7 Deployment remaining
 
-### 8.1 Data Flow Verification
+- [x] 8.1 Data Flow Verification
+- [x] 8.2 Fallback & Error Handling
+- [x] 8.3 Data Retention Jobs
+- [x] 8.4 Performance (rate limiting, caching, indexes)
+- [x] 8.5 Testing (unit, integration, statistical validation)
+- [x] 8.6 Pattern Alert Integration
 
-- [x] Verify module -> scheduler -> database flow (all 16 modules)
-- [x] Verify database -> API -> frontend flow
-- [x] Test correlation engine with real data (minimum 30 samples)
-- [x] Test prediction generation end-to-end
-- [x] Verify all 3 indices calculate correctly
-
-### 8.2 Fallback & Error Handling
-
-- [x] Fallbacks implemented for external APIs per spec 16:
-  - Moon: Swiss Ephemeris -> Farmsense API -> Meeus algorithms (3-tier)
-  - Astrology: Swiss Ephemeris -> local Meeus calculations
-  - Parasha: Hebcal API -> static 54-portion cycle
-  - Solar: NOAA endpoints -> in-memory cache with stale flag
-  - Schumann: Tomsk check -> Kp estimation -> baseline default
-  - News: RSS feeds -> cached headlines -> raw counts
-  - Markets: Yahoo Finance with error objects on partial failure
-  - Geophysical: USGS -> null values with graceful degradation
-  - Sentiment: Multiple sources with weight redistribution
-  - Local modules (tzolkin, dreamspell, numerology, tarot, iching): No fallbacks needed - pure local calculation
-- [x] Add stale data flags when using cached data
-- [x] Error logging to stdout (console.error used throughout - Railway captures stdout/stderr)
-- [x] System_status tracking implemented in scheduler.js (lines 112, 121) and health.js
-
-### 8.3 Data Retention Jobs
-
-- [x] Cleanup cron job implemented in scheduler.js (daily at 01:00 UTC)
-  - Uses db.cleanupOldData() with configured retention periods
-  - Snapshots: 90 days, system_status: 7 days, news_themes: 30 days, indices_history: 365 days
-
-### 8.4 Performance
-
-- [x] Add rate limiting (100 req/min/IP)
-- [x] API response caching (5 min TTL)
-- [x] Database indexes verified in migration (all 9 indexes properly defined in 001_initial.sql)
-
-### 8.5 Testing
-
-- [x] Unit tests for local modules (Tzolkin, Dreamspell, Tarot, Numerology, I Ching, Gematria)
-- [x] Integration tests for API endpoints
-- [x] Statistical engine validation (Wilson interval, chi-square)
-
-### 8.6 Pattern Alert Integration
-
-- [x] Pattern matching integrated into /api/predictions endpoint
-  - Uses `correlation.findPatternMatches()` and `features.extractFeatures()` to analyze today's data
-- [x] Pattern matching integrated into /api/patterns endpoint
-  - Uses actual pattern matching logic from correlation engine
-
-### 8.7 Deployment
+### 8.7 Deployment [REMAINING]
 
 - [ ] Railway setup:
   - Connect GitHub repository
@@ -768,41 +305,6 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   - Medium: n > 50, CI width < 0.30, p < 0.05
   - Low: n > 30, CI width < 0.40, p < 0.10
   - Insufficient: n < 30 or p > 0.10
-
----
-
-# CRITICAL PATH DIAGRAM
-
-```
-PHASE 0 (Decisions) -----> PHASE 1 (Foundation) -----> PHASE 2 (Local Modules) ----+
-                                   |                            |                   |
-                                   |                            v                   |
-                                   +----------------> PHASE 3 (External APIs) ------+
-                                                                                    |
-                                                                                    v
-                                                                         PHASE 4 (Indices)
-                                                                                    |
-                                                                                    v
-                                                                         PHASE 5 (Correlation)
-                                                                                    |
-                                                                                    v
-                                                                         PHASE 6 (Predictions)
-                                                                                    |
-                                   PHASE 7 (Frontend) <-----------------------------+
-                                          |                                         |
-                                          v                                         |
-                                   PHASE 8 (Integration) <--------------------------+
-```
-
-**Blocking Dependencies:**
-- Phase 0: MUST complete before any code
-- Phase 1: BLOCKS all other phases
-- Phase 2+3: Can run in parallel after Phase 1
-- Phase 4: Requires Phase 2+3 data
-- Phase 5: Requires ALL modules + 30+ days of data
-- Phase 6: Requires Phase 5 (Correlation Engine)
-- Phase 7: Can start structure after Phase 1, needs all backend for testing
-- Phase 8: Requires all phases functional
 
 ---
 
