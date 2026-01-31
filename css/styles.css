@@ -486,28 +486,22 @@ body {
   margin-bottom: var(--spacing-lg);
 }
 
-/* Data Grid */
+/* Data Grid - 4 columns desktop, 2 tablet, 1 mobile per spec */
 .data-grid {
   display: grid;
   gap: var(--spacing-sm);
   grid-template-columns: repeat(4, 1fr);
 }
 
-@media (max-width: 1199px) {
-  .data-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
 @media (max-width: 900px) {
   .data-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 640px) {
   .data-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 

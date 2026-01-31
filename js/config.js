@@ -69,7 +69,7 @@ export const config = {
     cosmic: { icon: '☄️', name: 'COSMIC' },
     astrology: { icon: '♈', name: 'ASTROLOGY' },
     markets: { icon: '📈', name: 'MARKETS' },
-    geophysical: { icon: '🌋', name: 'GEO' },
+    geophysical: { icon: '🌍', name: 'GEO' },
     sentiment: { icon: '😰', name: 'SENTIMENT' },
     news: { icon: '📰', name: 'NEWS' }
   },
