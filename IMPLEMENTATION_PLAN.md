@@ -4,10 +4,10 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ---
 
-## PROJECT STATUS: GREENFIELD - ~15% COMPLETE
+## PROJECT STATUS: GREENFIELD - ~50% COMPLETE
 
 > **Last Updated:** 2026-01-31
-> **Implementation Progress:** ~15% - Phase 2 local calculation modules complete
+> **Implementation Progress:** ~50% - Phase 3 external API modules complete
 > **Spec Analysis:** Complete - 25 specs analyzed, 78 gaps identified, 5 decisions required, 10 specs need updates
 > **Plan Verification:** VERIFIED - All 25 specs cross-referenced with parallel subagents, plan accuracy confirmed
 
@@ -15,7 +15,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Backend:** IN PROGRESS - `/backend/` directory structure created
 - **Frontend:** NOT STARTED - `/frontend/` directory does not exist
 - **Database:** NOT STARTED - No migrations or schema deployed
-- **Modules:** 6/16 implemented (Tzolkin, Dreamspell, Tarot, Numerology, I Ching, Gematria)
+- **Modules:** 16/16 implemented
 - **Indices:** 0/3 implemented
 - **Correlation Engine:** NOT STARTED
 - **Prediction System:** NOT STARTED
@@ -25,6 +25,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - [x] Docker configuration for Claude Code development environment (root `docker-compose.yml`)
 - [x] This implementation plan (comprehensive, cross-verified with all specs)
 - [x] Phase 2 local calculation modules complete (6 modules + 2 data files)
+- [x] Phase 3 external API modules complete (10 modules: moon, astrology, solar, markets, geophysical, parasha, schumann, news, cosmic, sentiment)
 
 ### Deep Spec Analysis Findings (2026-01-31)
 - **78 gaps identified** across all specs (verified with 25 parallel subagent analysis)
@@ -251,25 +252,27 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### High Priority (needed for indices/correlation)
 
-- [ ] Create `/backend/src/modules/moon.js`
+- [x] Create `/backend/src/modules/moon.js`
   - Primary: Swiss Ephemeris | Fallback: Farmsense API
   - Output: phase, phaseName, illumination, age, sign, voidOfCourse, nextPhase
   - Schedule: Every 3 hours
+  - **NOTE:** Swiss Ephemeris falls back to Meeus calculations when swisseph npm package is not installed
 
-- [ ] Create `/backend/src/modules/astrology.js`
+- [x] Create `/backend/src/modules/astrology.js`
   - Primary: Swiss Ephemeris (local - no external dependency)
   - **SETUP:** Download and configure ephemeris files (.se1) - location and size unspecified in spec
   - Output: planets[] (12 bodies), aspects[], retrogrades[], eclipseInfo, voidOfCourseMoon
   - **GAP:** VOC calculation algorithm not specified - requires tracking Moon's last/next aspects
   - **GAP:** Eclipse data source not specified (Swiss Ephemeris can calculate)
   - Schedule: Every 3 hours
+  - **NOTE:** Swiss Ephemeris falls back to Meeus calculations when swisseph npm package is not installed
 
-- [ ] Create `/backend/src/modules/solar.js`
+- [x] Create `/backend/src/modules/solar.js`
   - Primary: NOAA SWPC (5 endpoints) | Fallback: Cache last known
   - Output: kpIndex, apIndex, flareClass, sunspotNumber, solarWind
   - Schedule: Every 3 hours
 
-- [ ] Create `/backend/src/modules/markets.js`
+- [x] Create `/backend/src/modules/markets.js`
   - Primary: Yahoo Finance + CoinGecko + Fear/Greed APIs | Fallback: Cache
   - Output: spx{}, btc{}, vix{}, gold{}, dxy{}, cryptoFearGreed{}
   - **GAP:** Put/Call Ratio and VIX Term Structure (spec 20) - CBOE data access undefined
@@ -277,8 +280,9 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
     - Option B: Use yahoo-finance2 for VIX only, skip Put/Call for MVP
   - **GAP:** Volume anomaly detection thresholds undefined (spec shows output but no rules)
   - Schedule: Every 3 hours (spec requires 15min - see DECISION 1)
+  - **NOTE:** yahoo-finance2 requires dynamic import due to ESM-only package
 
-- [ ] Create `/backend/src/modules/geophysical.js`
+- [x] Create `/backend/src/modules/geophysical.js`
   - Primary: USGS + Open-Meteo + NOAA Tides | Fallback: Cache
   - Output: quakeCount, maxMagnitude, significantQuakes[], weather{}, activityLevel
   - **GAP:** Activity level thresholds undefined - need baseline "average" for comparison
@@ -289,14 +293,14 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 
 ### Medium Priority
 
-- [ ] Create `/backend/src/modules/parasha.js`
+- [x] Create `/backend/src/modules/parasha.js`
   - Primary: Hebcal API | Fallback: Static 54 portions
   - Output: name, hebrewName, book, chapters, hebrewDate, shabbatTime
   - Schedule: Weekly (Friday sunset)
   - **GAP:** Hebrew leap year handling undefined - double parashiot (combined portions) in non-leap years
   - **GAP:** Holiday conflict handling - major holidays interrupt regular Torah reading schedule
 
-- [ ] Create `/backend/src/modules/schumann.js` [HIGH RISK - Unreliable source]
+- [x] Create `/backend/src/modules/schumann.js` [HIGH RISK - Unreliable source]
   - Primary: Tomsk Observatory image scraping (http://sosrff.tsu.ru/new/shm.jpg)
   - **GAP:** Image parsing algorithm undefined - spectrogram is visual, not structured data
   - **WORKAROUND:** Cache spectrogram image + estimate amplitude from Kp correlation
@@ -304,12 +308,12 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   - Output: baseFrequency, amplitude, activity, source, isEstimated, spectrogramUrl
   - Schedule: Every 3 hours
 
-- [ ] Create `/backend/src/modules/news.js` [Requires GEMINI_API_KEY]
+- [x] Create `/backend/src/modules/news.js` [Requires GEMINI_API_KEY]
   - Primary: RSS feeds (BBC, AP, Reuters) + Gemini analysis | Fallback: Cache
   - Output: themes[], dominantTheme, sentiment, articleCount
   - Schedule: Every 3 hours
 
-- [ ] Create `/backend/src/modules/cosmic.js`
+- [x] Create `/backend/src/modules/cosmic.js`
   - Primary: NOAA cosmic ray data + static meteor calendar
   - **GAP:** No confirmed API for cosmic ray data (spec mentions Oulu, Moscow monitors but no API)
   - **WORKAROUND:** Estimate cosmic rays from solar activity (inverse correlation: high solar = low cosmic)
@@ -317,7 +321,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
   - Output: cosmicRayLevel, neutronCount (estimated), activeShowers[], nextPeak
   - Schedule: Every 3 hours
 
-- [ ] Create `/backend/src/modules/sentiment.js`
+- [x] Create `/backend/src/modules/sentiment.js`
   - Primary: Crypto F&G + CNN F&G + Google Trends | Fallback: Cache
   - Output: cryptoFearGreed, cnnFearGreed, trends{}, aggregate
   - **GAP:** newsSentiment source/implementation undefined (spec mentions 20% weight but no details)
