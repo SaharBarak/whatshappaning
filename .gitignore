@@ -3,3 +3,17 @@ node_modules/
 .DS_Store
 *.log
 .claude/
+
+# Development environment files (contain credentials)
+docker-compose.yml
+docker-entrypoint.sh
+Dockerfile
+.dockerignore
+ralph-docker.sh
+loop.sh
+PROMPT_build.md
+PROMPT_plan.md
+
+# Metrics files
+ralph_metrics.csv
+ralph_metrics.jsonl
