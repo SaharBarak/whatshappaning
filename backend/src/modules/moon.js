@@ -19,6 +19,14 @@ const {
   calculateSimpleMoonPhase,
 } = require('../utils/astro');
 
+// Import astrology module for VOC calculation
+let astrology = null;
+try {
+  astrology = require('./astrology');
+} catch (err) {
+  // VOC will use fallback stub if astrology unavailable
+}
+
 // Try to load swisseph
 let swisseph = null;
 try {
@@ -269,6 +277,38 @@ function calculateNextPhase(fromDate, currentPhase) {
 }
 
 /**
+ * Get Void of Course Moon status using astrology module
+ * @param {Date} date - Date to calculate for
+ * @returns {Promise<Object>} VOC status { active, start, end }
+ */
+async function getVoidOfCourse(date) {
+  // Default fallback
+  const fallback = { active: false, start: null, end: null };
+
+  if (!astrology) {
+    return fallback;
+  }
+
+  try {
+    // Get astrology data which includes VOC calculation
+    const astroData = await astrology.collect();
+
+    if (astroData && astroData.voidOfCourseMoon) {
+      return {
+        active: astroData.voidOfCourseMoon.active || false,
+        start: astroData.voidOfCourseMoon.nextStart || null,
+        end: astroData.voidOfCourseMoon.nextEnd || null,
+      };
+    }
+
+    return fallback;
+  } catch (err) {
+    console.error('VOC calculation failed:', err.message);
+    return fallback;
+  }
+}
+
+/**
  * Collect moon data from the best available source
  * @returns {Promise<Object>} Moon data
  */
@@ -307,6 +347,9 @@ async function collect() {
   // Get emoji
   const emoji = getPhaseEmoji(phaseName);
 
+  // Get Void of Course status from astrology module
+  const voidOfCourse = await getVoidOfCourse(now);
+
   return {
     phase: normalizedPhase,
     phaseName: normalizedPhase,
@@ -318,11 +361,7 @@ async function collect() {
       phase: nextPhase.phase,
       date: nextPhase.date,
     },
-    voidOfCourse: {
-      active: false,
-      start: null,
-      end: null,
-    },
+    voidOfCourse,
     collectedAt: now.toISOString(),
     _meta: {
       source: source,
@@ -364,6 +403,9 @@ async function calculate(date = new Date()) {
   const nextPhase = calculateNextPhase(date, phaseName);
   const emoji = getPhaseEmoji(phaseName);
 
+  // Get Void of Course status from astrology module
+  const voidOfCourse = await getVoidOfCourse(date);
+
   return {
     phase: normalizedPhase,
     phaseName: normalizedPhase,
@@ -375,11 +417,7 @@ async function calculate(date = new Date()) {
       phase: nextPhase.phase,
       date: nextPhase.date,
     },
-    voidOfCourse: {
-      active: false,
-      start: null,
-      end: null,
-    },
+    voidOfCourse,
     calculatedAt: date.toISOString(),
     _meta: {
       source: source,
