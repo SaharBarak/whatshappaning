@@ -1,0 +1,222 @@
+[
+  {
+    "number": 0,
+    "name": "Imix",
+    "englishName": "Dragon",
+    "glyph": "🐊",
+    "direction": "East",
+    "color": "Red",
+    "element": "Water",
+    "meaning": "Birth, nurturing, being, primordial mother",
+    "keywords": ["creation", "trust", "primal waters", "source"]
+  },
+  {
+    "number": 1,
+    "name": "Ik",
+    "englishName": "Wind",
+    "glyph": "💨",
+    "direction": "North",
+    "color": "White",
+    "element": "Air",
+    "meaning": "Communication, spirit, breath, inspiration",
+    "keywords": ["breath", "spirit", "communication", "inspiration"]
+  },
+  {
+    "number": 2,
+    "name": "Akbal",
+    "englishName": "Night",
+    "glyph": "🌙",
+    "direction": "West",
+    "color": "Blue",
+    "element": "Earth",
+    "meaning": "Darkness, introspection, dreams, abundance",
+    "keywords": ["darkness", "mystery", "dreams", "abundance"]
+  },
+  {
+    "number": 3,
+    "name": "Kan",
+    "englishName": "Seed",
+    "glyph": "🌱",
+    "direction": "South",
+    "color": "Yellow",
+    "element": "Fire",
+    "meaning": "Seed, flowering, potential, germination",
+    "keywords": ["seed", "potential", "flowering", "awareness"]
+  },
+  {
+    "number": 4,
+    "name": "Chicchan",
+    "englishName": "Serpent",
+    "glyph": "🐍",
+    "direction": "East",
+    "color": "Red",
+    "element": "Fire",
+    "meaning": "Life force, kundalini, passion, instinct",
+    "keywords": ["life force", "passion", "vitality", "instinct"]
+  },
+  {
+    "number": 5,
+    "name": "Cimi",
+    "englishName": "Death",
+    "glyph": "💀",
+    "direction": "North",
+    "color": "White",
+    "element": "Water",
+    "meaning": "Death, transformation, release, surrender",
+    "keywords": ["death", "transformation", "release", "surrender"]
+  },
+  {
+    "number": 6,
+    "name": "Manik",
+    "englishName": "Hand",
+    "glyph": "🤚",
+    "direction": "West",
+    "color": "Blue",
+    "element": "Air",
+    "meaning": "Accomplishment, healing, completion",
+    "keywords": ["healing", "accomplishment", "gateway", "knowing"]
+  },
+  {
+    "number": 7,
+    "name": "Lamat",
+    "englishName": "Star",
+    "glyph": "⭐",
+    "direction": "South",
+    "color": "Yellow",
+    "element": "Fire",
+    "meaning": "Harmony, elegance, beauty, playfulness",
+    "keywords": ["star", "elegance", "beauty", "art"]
+  },
+  {
+    "number": 8,
+    "name": "Muluc",
+    "englishName": "Moon",
+    "glyph": "🌊",
+    "direction": "East",
+    "color": "Red",
+    "element": "Water",
+    "meaning": "Universal water, purification, flow",
+    "keywords": ["water", "purification", "flow", "emotion"]
+  },
+  {
+    "number": 9,
+    "name": "Oc",
+    "englishName": "Dog",
+    "glyph": "🐕",
+    "direction": "North",
+    "color": "White",
+    "element": "Earth",
+    "meaning": "Loyalty, guidance, heart, companionship",
+    "keywords": ["loyalty", "heart", "guide", "companion"]
+  },
+  {
+    "number": 10,
+    "name": "Chuen",
+    "englishName": "Monkey",
+    "glyph": "🐒",
+    "direction": "West",
+    "color": "Blue",
+    "element": "Air",
+    "meaning": "Artistry, playfulness, illusion, magic",
+    "keywords": ["play", "magic", "illusion", "artist"]
+  },
+  {
+    "number": 11,
+    "name": "Eb",
+    "englishName": "Road",
+    "glyph": "🛤️",
+    "direction": "South",
+    "color": "Yellow",
+    "element": "Earth",
+    "meaning": "Human, free will, abundance, grass",
+    "keywords": ["road", "humanity", "free will", "service"]
+  },
+  {
+    "number": 12,
+    "name": "Ben",
+    "englishName": "Reed",
+    "glyph": "🎋",
+    "direction": "East",
+    "color": "Red",
+    "element": "Fire",
+    "meaning": "Skywalker, pillar, between worlds",
+    "keywords": ["pillars", "sky-earth", "space", "growth"]
+  },
+  {
+    "number": 13,
+    "name": "Ix",
+    "englishName": "Jaguar",
+    "glyph": "🐆",
+    "direction": "North",
+    "color": "White",
+    "element": "Earth",
+    "meaning": "Wizard, shaman, heart-knowing, magic",
+    "keywords": ["jaguar", "wizard", "timelessness", "receptivity"]
+  },
+  {
+    "number": 14,
+    "name": "Men",
+    "englishName": "Eagle",
+    "glyph": "🦅",
+    "direction": "West",
+    "color": "Blue",
+    "element": "Air",
+    "meaning": "Vision, mind, technical mastery",
+    "keywords": ["eagle", "vision", "mind", "messenger"]
+  },
+  {
+    "number": 15,
+    "name": "Cib",
+    "englishName": "Owl",
+    "glyph": "🦉",
+    "direction": "South",
+    "color": "Yellow",
+    "element": "Fire",
+    "meaning": "Warrior, wisdom, death, grace",
+    "keywords": ["warrior", "wisdom", "fearlessness", "death"]
+  },
+  {
+    "number": 16,
+    "name": "Caban",
+    "englishName": "Earth",
+    "glyph": "🌍",
+    "direction": "East",
+    "color": "Red",
+    "element": "Earth",
+    "meaning": "Earth force, synchronicity, navigation",
+    "keywords": ["earth", "evolution", "navigation", "grounding"]
+  },
+  {
+    "number": 17,
+    "name": "Etznab",
+    "englishName": "Mirror",
+    "glyph": "🪞",
+    "direction": "North",
+    "color": "White",
+    "element": "Air",
+    "meaning": "Reflection, truth, clarity, hall of mirrors",
+    "keywords": ["mirror", "truth", "clarity", "reflection"]
+  },
+  {
+    "number": 18,
+    "name": "Cauac",
+    "englishName": "Storm",
+    "glyph": "⛈️",
+    "direction": "West",
+    "color": "Blue",
+    "element": "Water",
+    "meaning": "Storm, transformation, self-generation",
+    "keywords": ["storm", "transformation", "catalyst", "energy"]
+  },
+  {
+    "number": 19,
+    "name": "Ahau",
+    "englishName": "Sun",
+    "glyph": "☀️",
+    "direction": "South",
+    "color": "Yellow",
+    "element": "Fire",
+    "meaning": "Light, mastery, enlightenment, completion",
+    "keywords": ["sun", "lord", "enlightenment", "ascension"]
+  }
+]

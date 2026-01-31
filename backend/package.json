@@ -1,0 +1,40 @@
+{
+  "name": "whats-happening-backend",
+  "version": "1.0.0",
+  "description": "Data-driven prediction dashboard correlating cosmic/esoteric data with real-world outcomes",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test src/**/*.test.js",
+    "migrate": "node scripts/migrate.js"
+  },
+  "keywords": [
+    "astrology",
+    "predictions",
+    "correlations",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pg": "^8.11.3",
+    "node-cron": "^3.0.3",
+    "dotenv": "^16.3.1",
+    "yahoo-finance2": "^2.11.0",
+    "rss-parser": "^3.13.0",
+    "@google/generative-ai": "^0.21.0",
+    "google-trends-api": "^4.9.2",
+    "axios": "^1.6.5",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "optionalDependencies": {
+    "swisseph": "^0.5.17"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

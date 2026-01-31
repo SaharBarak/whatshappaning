@@ -1,0 +1,222 @@
+[
+  {
+    "number": 1,
+    "name": "Red Dragon",
+    "keyword": "Birth",
+    "color": "Red",
+    "earthFamily": "Gateway",
+    "guide": [1, 13, 9, 5, 1],
+    "analog": 8,
+    "antipode": 11,
+    "occult": 20
+  },
+  {
+    "number": 2,
+    "name": "White Wind",
+    "keyword": "Spirit",
+    "color": "White",
+    "earthFamily": "Core",
+    "guide": [2, 14, 10, 6, 2],
+    "analog": 7,
+    "antipode": 12,
+    "occult": 19
+  },
+  {
+    "number": 3,
+    "name": "Blue Night",
+    "keyword": "Abundance",
+    "color": "Blue",
+    "earthFamily": "Signal",
+    "guide": [3, 15, 11, 7, 3],
+    "analog": 8,
+    "antipode": 13,
+    "occult": 18
+  },
+  {
+    "number": 4,
+    "name": "Yellow Seed",
+    "keyword": "Flowering",
+    "color": "Yellow",
+    "earthFamily": "Polar",
+    "guide": [4, 16, 12, 8, 4],
+    "analog": 1,
+    "antipode": 14,
+    "occult": 17
+  },
+  {
+    "number": 5,
+    "name": "Red Serpent",
+    "keyword": "Life Force",
+    "color": "Red",
+    "earthFamily": "Polar",
+    "guide": [5, 17, 13, 9, 5],
+    "analog": 10,
+    "antipode": 15,
+    "occult": 16
+  },
+  {
+    "number": 6,
+    "name": "White Worldbridger",
+    "keyword": "Death",
+    "color": "White",
+    "earthFamily": "Signal",
+    "guide": [6, 18, 14, 10, 6],
+    "analog": 9,
+    "antipode": 16,
+    "occult": 15
+  },
+  {
+    "number": 7,
+    "name": "Blue Hand",
+    "keyword": "Accomplishment",
+    "color": "Blue",
+    "earthFamily": "Core",
+    "guide": [7, 19, 15, 11, 7],
+    "analog": 2,
+    "antipode": 17,
+    "occult": 14
+  },
+  {
+    "number": 8,
+    "name": "Yellow Star",
+    "keyword": "Elegance",
+    "color": "Yellow",
+    "earthFamily": "Gateway",
+    "guide": [8, 20, 16, 12, 8],
+    "analog": 3,
+    "antipode": 18,
+    "occult": 13
+  },
+  {
+    "number": 9,
+    "name": "Red Moon",
+    "keyword": "Universal Water",
+    "color": "Red",
+    "earthFamily": "Gateway",
+    "guide": [9, 1, 17, 13, 9],
+    "analog": 6,
+    "antipode": 19,
+    "occult": 12
+  },
+  {
+    "number": 10,
+    "name": "White Dog",
+    "keyword": "Love",
+    "color": "White",
+    "earthFamily": "Core",
+    "guide": [10, 2, 18, 14, 10],
+    "analog": 5,
+    "antipode": 20,
+    "occult": 11
+  },
+  {
+    "number": 11,
+    "name": "Blue Monkey",
+    "keyword": "Magic",
+    "color": "Blue",
+    "earthFamily": "Signal",
+    "guide": [11, 3, 19, 15, 11],
+    "analog": 10,
+    "antipode": 1,
+    "occult": 10
+  },
+  {
+    "number": 12,
+    "name": "Yellow Human",
+    "keyword": "Free Will",
+    "color": "Yellow",
+    "earthFamily": "Polar",
+    "guide": [12, 4, 20, 16, 12],
+    "analog": 9,
+    "antipode": 2,
+    "occult": 9
+  },
+  {
+    "number": 13,
+    "name": "Red Skywalker",
+    "keyword": "Space",
+    "color": "Red",
+    "earthFamily": "Polar",
+    "guide": [13, 5, 1, 17, 13],
+    "analog": 8,
+    "antipode": 3,
+    "occult": 8
+  },
+  {
+    "number": 14,
+    "name": "White Wizard",
+    "keyword": "Timelessness",
+    "color": "White",
+    "earthFamily": "Signal",
+    "guide": [14, 6, 2, 18, 14],
+    "analog": 7,
+    "antipode": 4,
+    "occult": 7
+  },
+  {
+    "number": 15,
+    "name": "Blue Eagle",
+    "keyword": "Vision",
+    "color": "Blue",
+    "earthFamily": "Core",
+    "guide": [15, 7, 3, 19, 15],
+    "analog": 6,
+    "antipode": 5,
+    "occult": 6
+  },
+  {
+    "number": 16,
+    "name": "Yellow Warrior",
+    "keyword": "Intelligence",
+    "color": "Yellow",
+    "earthFamily": "Gateway",
+    "guide": [16, 8, 4, 20, 16],
+    "analog": 5,
+    "antipode": 6,
+    "occult": 5
+  },
+  {
+    "number": 17,
+    "name": "Red Earth",
+    "keyword": "Navigation",
+    "color": "Red",
+    "earthFamily": "Gateway",
+    "guide": [17, 9, 5, 1, 17],
+    "analog": 4,
+    "antipode": 7,
+    "occult": 4
+  },
+  {
+    "number": 18,
+    "name": "White Mirror",
+    "keyword": "Endlessness",
+    "color": "White",
+    "earthFamily": "Core",
+    "guide": [18, 10, 6, 2, 18],
+    "analog": 3,
+    "antipode": 8,
+    "occult": 3
+  },
+  {
+    "number": 19,
+    "name": "Blue Storm",
+    "keyword": "Self-Generation",
+    "color": "Blue",
+    "earthFamily": "Signal",
+    "guide": [19, 11, 7, 3, 19],
+    "analog": 2,
+    "antipode": 9,
+    "occult": 2
+  },
+  {
+    "number": 20,
+    "name": "Yellow Sun",
+    "keyword": "Enlightenment",
+    "color": "Yellow",
+    "earthFamily": "Polar",
+    "guide": [20, 12, 8, 4, 20],
+    "analog": 1,
+    "antipode": 10,
+    "occult": 1
+  }
+]

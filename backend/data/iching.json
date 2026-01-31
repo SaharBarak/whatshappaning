@@ -1,0 +1,1410 @@
+[
+  {
+    "number": 1,
+    "name": "The Creative",
+    "chinese": "乾",
+    "pinyin": "qián",
+    "unicode": "䷀",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "The Creative works sublime success, furthering through perseverance.",
+    "image": "The movement of heaven is full of power. Thus the superior man makes himself strong and untiring.",
+    "keywords": ["strength", "initiative", "creation", "heaven", "power"]
+  },
+  {
+    "number": 2,
+    "name": "The Receptive",
+    "chinese": "坤",
+    "pinyin": "kūn",
+    "unicode": "䷁",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "The Receptive brings about sublime success, furthering through the perseverance of a mare.",
+    "image": "The earth's condition is receptive devotion. Thus the superior man who has breadth of character carries the outer world.",
+    "keywords": ["receptivity", "devotion", "yielding", "earth", "nurturing"]
+  },
+  {
+    "number": 3,
+    "name": "Difficulty at the Beginning",
+    "chinese": "屯",
+    "pinyin": "zhūn",
+    "unicode": "䷂",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Difficulty at the Beginning works supreme success, furthering through perseverance. Nothing should be undertaken.",
+    "image": "Clouds and thunder: the image of Difficulty at the Beginning. Thus the superior man brings order out of confusion.",
+    "keywords": ["beginnings", "chaos", "struggle", "perseverance", "growth"]
+  },
+  {
+    "number": 4,
+    "name": "Youthful Folly",
+    "chinese": "蒙",
+    "pinyin": "méng",
+    "unicode": "䷃",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Youthful Folly has success. It is not I who seek the young fool; the young fool seeks me.",
+    "image": "A spring wells up at the foot of the mountain: the image of Youth. Thus the superior man fosters his character by thoroughness in all that he does.",
+    "keywords": ["inexperience", "teaching", "learning", "education", "development"]
+  },
+  {
+    "number": 5,
+    "name": "Waiting",
+    "chinese": "需",
+    "pinyin": "xū",
+    "unicode": "䷄",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "Waiting. If you are sincere, you have light and success. Perseverance brings good fortune.",
+    "image": "Clouds rise up to heaven: the image of Waiting. Thus the superior man eats and drinks, is joyous and of good cheer.",
+    "keywords": ["patience", "nourishment", "timing", "anticipation", "preparation"]
+  },
+  {
+    "number": 6,
+    "name": "Conflict",
+    "chinese": "訟",
+    "pinyin": "sòng",
+    "unicode": "䷅",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Conflict. You are sincere and are being obstructed. A cautious halt halfway brings good fortune.",
+    "image": "Heaven and water go their opposite ways: the image of Conflict. Thus in all his transactions the superior man carefully considers the beginning.",
+    "keywords": ["opposition", "dispute", "caution", "retreat", "resolution"]
+  },
+  {
+    "number": 7,
+    "name": "The Army",
+    "chinese": "師",
+    "pinyin": "shī",
+    "unicode": "䷆",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "The Army needs perseverance and a strong man. Good fortune without blame.",
+    "image": "In the middle of the earth is water: the image of the Army. Thus the superior man increases his masses by generosity toward the people.",
+    "keywords": ["discipline", "leadership", "organization", "collective", "strategy"]
+  },
+  {
+    "number": 8,
+    "name": "Holding Together",
+    "chinese": "比",
+    "pinyin": "bǐ",
+    "unicode": "䷇",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Holding Together brings good fortune. Inquire of the oracle once again whether you possess sublimity, constancy, and perseverance; then there is no blame.",
+    "image": "On the earth is water: the image of Holding Together. Thus the kings of antiquity bestowed the different states as fiefs and cultivated friendly relations with the feudal lords.",
+    "keywords": ["union", "alliance", "support", "cooperation", "relationships"]
+  },
+  {
+    "number": 9,
+    "name": "Small Taming",
+    "chinese": "小畜",
+    "pinyin": "xiǎo chù",
+    "unicode": "䷈",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "Small Taming has success. Dense clouds, no rain from our western region.",
+    "image": "The wind drives across heaven: the image of the Small Taming. Thus the superior man refines the outward aspect of his nature.",
+    "keywords": ["restraint", "accumulation", "patience", "refinement", "potential"]
+  },
+  {
+    "number": 10,
+    "name": "Treading",
+    "chinese": "履",
+    "pinyin": "lǚ",
+    "unicode": "䷉",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "Treading. Treading upon the tail of the tiger. It does not bite the man. Success.",
+    "image": "Heaven above, the lake below: the image of Treading. Thus the superior man discriminates between high and low, and thereby fortifies the thinking of the people.",
+    "keywords": ["conduct", "propriety", "caution", "respect", "harmony"]
+  },
+  {
+    "number": 11,
+    "name": "Peace",
+    "chinese": "泰",
+    "pinyin": "tài",
+    "unicode": "䷊",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "Peace. The small departs, the great approaches. Good fortune. Success.",
+    "image": "Heaven and earth unite: the image of Peace. Thus the ruler divides and completes the course of heaven and earth, and so aids the people.",
+    "keywords": ["harmony", "prosperity", "balance", "unity", "success"]
+  },
+  {
+    "number": 12,
+    "name": "Standstill",
+    "chinese": "否",
+    "pinyin": "pǐ",
+    "unicode": "䷋",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Standstill. Evil people do not further the perseverance of the superior man. The great departs; the small approaches.",
+    "image": "Heaven and earth do not unite: the image of Standstill. Thus the superior man falls back upon his inner worth in order to escape the difficulties.",
+    "keywords": ["stagnation", "obstruction", "withdrawal", "decline", "separation"]
+  },
+  {
+    "number": 13,
+    "name": "Fellowship with Men",
+    "chinese": "同人",
+    "pinyin": "tóng rén",
+    "unicode": "䷌",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "Fellowship with Men in the open. Success. It furthers one to cross the great water. The perseverance of the superior man furthers.",
+    "image": "Heaven together with fire: the image of Fellowship with Men. Thus the superior man organizes the clans and makes distinctions between things.",
+    "keywords": ["community", "partnership", "collaboration", "openness", "brotherhood"]
+  },
+  {
+    "number": 14,
+    "name": "Possession in Great Measure",
+    "chinese": "大有",
+    "pinyin": "dà yǒu",
+    "unicode": "䷍",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "Possession in Great Measure. Supreme success.",
+    "image": "Fire in heaven above: the image of Possession in Great Measure. Thus the superior man curbs evil and furthers good, and thereby obeys the benevolent will of heaven.",
+    "keywords": ["abundance", "wealth", "blessing", "responsibility", "sharing"]
+  },
+  {
+    "number": 15,
+    "name": "Modesty",
+    "chinese": "謙",
+    "pinyin": "qiān",
+    "unicode": "䷎",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Modesty creates success. The superior man carries things through.",
+    "image": "Within the earth, a mountain: the image of Modesty. Thus the superior man reduces that which is too much, and augments that which is too little.",
+    "keywords": ["humility", "balance", "virtue", "equality", "success"]
+  },
+  {
+    "number": 16,
+    "name": "Enthusiasm",
+    "chinese": "豫",
+    "pinyin": "yù",
+    "unicode": "䷏",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Enthusiasm. It furthers one to install helpers and to set armies marching.",
+    "image": "Thunder comes resounding out of the earth: the image of Enthusiasm. Thus the ancient kings made music in order to honor merit, and offered it with splendor to the Supreme Deity.",
+    "keywords": ["joy", "inspiration", "motivation", "music", "celebration"]
+  },
+  {
+    "number": 17,
+    "name": "Following",
+    "chinese": "隨",
+    "pinyin": "suí",
+    "unicode": "䷐",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Following has supreme success. Perseverance furthers. No blame.",
+    "image": "Thunder in the middle of the lake: the image of Following. Thus the superior man at nightfall goes indoors for rest and recuperation.",
+    "keywords": ["adaptation", "acceptance", "timing", "rest", "following"]
+  },
+  {
+    "number": 18,
+    "name": "Work on What Has Been Spoiled",
+    "chinese": "蠱",
+    "pinyin": "gǔ",
+    "unicode": "䷑",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "Work on What Has Been Spoiled has supreme success. It furthers one to cross the great water. Before the starting point, three days. After the starting point, three days.",
+    "image": "The wind blows low on the mountain: the image of Decay. Thus the superior man stirs up the people and strengthens their spirit.",
+    "keywords": ["decay", "correction", "repair", "restoration", "renewal"]
+  },
+  {
+    "number": 19,
+    "name": "Approach",
+    "chinese": "臨",
+    "pinyin": "lín",
+    "unicode": "䷒",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "Approach has supreme success. Perseverance furthers. When the eighth month comes, there will be misfortune.",
+    "image": "The earth above the lake: the image of Approach. Thus the superior man is inexhaustible in his will to teach, and without limits in his tolerance and protection of the people.",
+    "keywords": ["advancement", "leadership", "teaching", "growth", "spring"]
+  },
+  {
+    "number": 20,
+    "name": "Contemplation",
+    "chinese": "觀",
+    "pinyin": "guān",
+    "unicode": "䷓",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Contemplation. The ablution has been made, but not yet the offering. Full of trust they look up to him.",
+    "image": "The wind blows over the earth: the image of Contemplation. Thus the kings of old visited the regions of the world, contemplated the people, and gave them instruction.",
+    "keywords": ["observation", "meditation", "awareness", "example", "influence"]
+  },
+  {
+    "number": 21,
+    "name": "Biting Through",
+    "chinese": "噬嗑",
+    "pinyin": "shì kè",
+    "unicode": "䷔",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Biting Through has success. It is favorable to let justice be administered.",
+    "image": "Thunder and lightning: the image of Biting Through. Thus the kings of former times made firm the laws through clearly defined penalties.",
+    "keywords": ["justice", "decision", "obstacles", "punishment", "resolution"]
+  },
+  {
+    "number": 22,
+    "name": "Grace",
+    "chinese": "賁",
+    "pinyin": "bì",
+    "unicode": "䷕",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "Grace has success. In small matters it is favorable to undertake something.",
+    "image": "Fire at the foot of the mountain: the image of Grace. Thus does the superior man proceed when clearing up current affairs, but he dare not decide controversial issues in this way.",
+    "keywords": ["beauty", "form", "elegance", "appearance", "culture"]
+  },
+  {
+    "number": 23,
+    "name": "Splitting Apart",
+    "chinese": "剝",
+    "pinyin": "bō",
+    "unicode": "䷖",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Splitting Apart. It does not further one to go anywhere.",
+    "image": "The mountain rests on the earth: the image of Splitting Apart. Thus those above can ensure their position only by giving generously to those below.",
+    "keywords": ["disintegration", "erosion", "decline", "yielding", "caution"]
+  },
+  {
+    "number": 24,
+    "name": "Return",
+    "chinese": "復",
+    "pinyin": "fù",
+    "unicode": "䷗",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Return. Success. Going out and coming in without error. Friends come without blame. To and fro goes the way. On the seventh day comes return.",
+    "image": "Thunder within the earth: the image of the Turning Point. Thus the kings of antiquity closed the passes at the time of solstice.",
+    "keywords": ["renewal", "revival", "turning point", "winter solstice", "regeneration"]
+  },
+  {
+    "number": 25,
+    "name": "Innocence",
+    "chinese": "無妄",
+    "pinyin": "wú wàng",
+    "unicode": "䷘",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Innocence. Supreme success. Perseverance furthers. If someone is not as he should be, he has misfortune, and it does not further him to undertake anything.",
+    "image": "Under heaven thunder rolls: all things attain the natural state of innocence. Thus the kings of old, rich in virtue, and in harmony with the time, fostered and nourished all beings.",
+    "keywords": ["spontaneity", "naturalness", "authenticity", "simplicity", "truth"]
+  },
+  {
+    "number": 26,
+    "name": "Taming Power of the Great",
+    "chinese": "大畜",
+    "pinyin": "dà chù",
+    "unicode": "䷙",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "The Taming Power of the Great. Perseverance furthers. Not eating at home brings good fortune. It furthers one to cross the great water.",
+    "image": "Heaven within the mountain: the image of the Taming Power of the Great. Thus the superior man acquires much knowledge of the words and deeds of the past, in order to strengthen his character.",
+    "keywords": ["accumulation", "restraint", "strength", "nourishment", "tradition"]
+  },
+  {
+    "number": 27,
+    "name": "The Corners of the Mouth",
+    "chinese": "頤",
+    "pinyin": "yí",
+    "unicode": "䷚",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "The Corners of the Mouth. Perseverance brings good fortune. Pay heed to the providing of nourishment and to what a man seeks to fill his own mouth with.",
+    "image": "At the foot of the mountain, thunder: the image of Providing Nourishment. Thus the superior man is careful of his words and temperate in eating and drinking.",
+    "keywords": ["nourishment", "nutrition", "speech", "sustenance", "care"]
+  },
+  {
+    "number": 28,
+    "name": "Preponderance of the Great",
+    "chinese": "大過",
+    "pinyin": "dà guò",
+    "unicode": "䷛",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "Preponderance of the Great. The ridgepole sags to the breaking point. It furthers one to have somewhere to go. Success.",
+    "image": "The lake rises above the trees: the image of Preponderance of the Great. Thus the superior man, when he stands alone, is unconcerned, and if he has to renounce the world, he is undaunted.",
+    "keywords": ["excess", "crisis", "extraordinary", "burden", "action"]
+  },
+  {
+    "number": 29,
+    "name": "The Abysmal",
+    "chinese": "坎",
+    "pinyin": "kǎn",
+    "unicode": "䷜",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "The Abysmal repeated. If you are sincere, you have success in your heart, and whatever you do succeeds.",
+    "image": "Water flows on uninterruptedly and reaches its goal: the image of the Abysmal repeated. Thus the superior man walks in lasting virtue and carries on the business of teaching.",
+    "keywords": ["danger", "depth", "persistence", "flow", "courage"]
+  },
+  {
+    "number": 30,
+    "name": "The Clinging",
+    "chinese": "離",
+    "pinyin": "lí",
+    "unicode": "䷝",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "The Clinging. Perseverance furthers. It brings success. Care of the cow brings good fortune.",
+    "image": "That which is bright rises twice: the image of Fire. Thus the great man, by perpetuating this brightness, illumines the four quarters of the world.",
+    "keywords": ["fire", "light", "clarity", "dependence", "illumination"]
+  },
+  {
+    "number": 31,
+    "name": "Influence",
+    "chinese": "咸",
+    "pinyin": "xián",
+    "unicode": "䷞",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Influence. Success. Perseverance furthers. To take a maiden to wife brings good fortune.",
+    "image": "A lake on the mountain: the image of Influence. Thus the superior man encourages people to approach him by his readiness to receive them.",
+    "keywords": ["attraction", "courtship", "receptivity", "stimulation", "connection"]
+  },
+  {
+    "number": 32,
+    "name": "Duration",
+    "chinese": "恆",
+    "pinyin": "héng",
+    "unicode": "䷟",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "Duration. Success. No blame. Perseverance furthers. It furthers one to have somewhere to go.",
+    "image": "Thunder and wind: the image of Duration. Thus the superior man stands firm and does not change his direction.",
+    "keywords": ["continuity", "endurance", "consistency", "marriage", "stability"]
+  },
+  {
+    "number": 33,
+    "name": "Retreat",
+    "chinese": "遯",
+    "pinyin": "dùn",
+    "unicode": "䷠",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Retreat. Success. In what is small, perseverance furthers.",
+    "image": "Mountain under heaven: the image of Retreat. Thus the superior man keeps the inferior man at a distance, not angrily but with reserve.",
+    "keywords": ["withdrawal", "yielding", "retreat", "avoidance", "timing"]
+  },
+  {
+    "number": 34,
+    "name": "The Power of the Great",
+    "chinese": "大壯",
+    "pinyin": "dà zhuàng",
+    "unicode": "䷡",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "The Power of the Great. Perseverance furthers.",
+    "image": "Thunder in heaven above: the image of the Power of the Great. Thus the superior man does not tread upon paths that do not accord with established order.",
+    "keywords": ["strength", "vigor", "power", "righteousness", "restraint"]
+  },
+  {
+    "number": 35,
+    "name": "Progress",
+    "chinese": "晉",
+    "pinyin": "jìn",
+    "unicode": "䷢",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Progress. The powerful prince is honored with horses in large numbers. In a single day he is granted audience three times.",
+    "image": "The sun rises over the earth: the image of Progress. Thus the superior man himself brightens his bright virtue.",
+    "keywords": ["advancement", "success", "daylight", "expansion", "rising"]
+  },
+  {
+    "number": 36,
+    "name": "Darkening of the Light",
+    "chinese": "明夷",
+    "pinyin": "míng yí",
+    "unicode": "䷣",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "Darkening of the Light. In adversity it furthers one to be persevering.",
+    "image": "The light has sunk into the earth: the image of Darkening of the Light. Thus does the superior man live with the great mass: he veils his light, yet still shines.",
+    "keywords": ["adversity", "concealment", "censorship", "darkness", "patience"]
+  },
+  {
+    "number": 37,
+    "name": "The Family",
+    "chinese": "家人",
+    "pinyin": "jiā rén",
+    "unicode": "䷤",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "The Family. The perseverance of the woman furthers.",
+    "image": "Wind comes forth from fire: the image of the Family. Thus the superior man has substance in his words and duration in his way of life.",
+    "keywords": ["family", "home", "relationships", "order", "tradition"]
+  },
+  {
+    "number": 38,
+    "name": "Opposition",
+    "chinese": "睽",
+    "pinyin": "kuí",
+    "unicode": "䷥",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "Opposition. In small matters, good fortune.",
+    "image": "Above, fire; below, the lake: the image of Opposition. Thus amid all fellowship the superior man retains his individuality.",
+    "keywords": ["contradiction", "estrangement", "separation", "polarity", "individuality"]
+  },
+  {
+    "number": 39,
+    "name": "Obstruction",
+    "chinese": "蹇",
+    "pinyin": "jiǎn",
+    "unicode": "䷦",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Obstruction. The southwest furthers. The northeast does not further. It furthers one to see the great man. Perseverance brings good fortune.",
+    "image": "Water on the mountain: the image of Obstruction. Thus the superior man turns his attention to himself and molds his character.",
+    "keywords": ["difficulty", "obstacles", "reflection", "self-examination", "help"]
+  },
+  {
+    "number": 40,
+    "name": "Deliverance",
+    "chinese": "解",
+    "pinyin": "xiè",
+    "unicode": "䷧",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Deliverance. The southwest furthers. If there is no longer anything where one has to go, return brings good fortune. If there is still something where one has to go, hastening brings good fortune.",
+    "image": "Thunder and rain set in: the image of Deliverance. Thus the superior man pardons mistakes and forgives misdeeds.",
+    "keywords": ["liberation", "release", "relief", "forgiveness", "resolution"]
+  },
+  {
+    "number": 41,
+    "name": "Decrease",
+    "chinese": "損",
+    "pinyin": "sǔn",
+    "unicode": "䷨",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "Decrease combined with sincerity brings about supreme good fortune without blame. One may be persevering in this. It furthers one to undertake something. How is this to be carried out? One may use two small bowls for the sacrifice.",
+    "image": "At the foot of the mountain, the lake: the image of Decrease. Thus the superior man controls his anger and restrains his instincts.",
+    "keywords": ["sacrifice", "simplicity", "loss", "reduction", "sincerity"]
+  },
+  {
+    "number": 42,
+    "name": "Increase",
+    "chinese": "益",
+    "pinyin": "yì",
+    "unicode": "䷩",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Increase. It furthers one to undertake something. It furthers one to cross the great water.",
+    "image": "Wind and thunder: the image of Increase. Thus the superior man: if he sees good, he imitates it; if he has faults, he rids himself of them.",
+    "keywords": ["growth", "benefit", "expansion", "improvement", "blessing"]
+  },
+  {
+    "number": 43,
+    "name": "Break-through",
+    "chinese": "夬",
+    "pinyin": "guài",
+    "unicode": "䷪",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "judgment": "Break-through. One must resolutely make the matter known at the court of the king. It must be announced truthfully. Danger. It is necessary to notify one's own city. It does not further to resort to arms.",
+    "image": "The lake has risen up to heaven: the image of Break-through. Thus the superior man dispenses riches downward and refrains from resting on his virtue.",
+    "keywords": ["resolution", "determination", "breakthrough", "displacement", "decision"]
+  },
+  {
+    "number": 44,
+    "name": "Coming to Meet",
+    "chinese": "姤",
+    "pinyin": "gòu",
+    "unicode": "䷫",
+    "upperTrigram": {
+      "name": "Qian",
+      "symbol": "☰",
+      "element": "Heaven",
+      "attribute": "Creative"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "Coming to Meet. The maiden is powerful. One should not marry such a maiden.",
+    "image": "Under heaven, wind: the image of Coming to Meet. Thus does the prince act when disseminating his commands and proclaiming them to the four quarters of heaven.",
+    "keywords": ["temptation", "encounter", "influence", "seduction", "caution"]
+  },
+  {
+    "number": 45,
+    "name": "Gathering Together",
+    "chinese": "萃",
+    "pinyin": "cuì",
+    "unicode": "䷬",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "judgment": "Gathering Together. Success. The king approaches his temple. It furthers one to see the great man. This brings success. Perseverance furthers.",
+    "image": "Over the earth, the lake: the image of Gathering Together. Thus the superior man renews his weapons in order to meet the unforeseen.",
+    "keywords": ["congregation", "assembly", "unity", "collection", "preparation"]
+  },
+  {
+    "number": 46,
+    "name": "Pushing Upward",
+    "chinese": "升",
+    "pinyin": "shēng",
+    "unicode": "䷭",
+    "upperTrigram": {
+      "name": "Kun",
+      "symbol": "☷",
+      "element": "Earth",
+      "attribute": "Receptive"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "Pushing Upward has supreme success. One must see the great man. Fear not. Departure toward the south brings good fortune.",
+    "image": "Within the earth, wood grows: the image of Pushing Upward. Thus the superior man of devoted character heaps up small things in order to achieve something high and great.",
+    "keywords": ["ascent", "growth", "effort", "advancement", "achievement"]
+  },
+  {
+    "number": 47,
+    "name": "Oppression",
+    "chinese": "困",
+    "pinyin": "kùn",
+    "unicode": "䷮",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Oppression. Success. Perseverance. The great man brings about good fortune. No blame. When one has something to say, it is not believed.",
+    "image": "There is no water in the lake: the image of Exhaustion. Thus the superior man stakes his life on following his will.",
+    "keywords": ["exhaustion", "adversity", "confinement", "endurance", "faith"]
+  },
+  {
+    "number": 48,
+    "name": "The Well",
+    "chinese": "井",
+    "pinyin": "jǐng",
+    "unicode": "䷯",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "The Well. The town may be changed, but the well cannot be changed. It neither decreases nor increases. They come and go and draw from the well.",
+    "image": "Water over wood: the image of the Well. Thus the superior man encourages the people at their work, and exhorts them to help one another.",
+    "keywords": ["nourishment", "resources", "community", "unchanging", "service"]
+  },
+  {
+    "number": 49,
+    "name": "Revolution",
+    "chinese": "革",
+    "pinyin": "gé",
+    "unicode": "䷰",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "Revolution. On your own day you are believed. Supreme success, furthering through perseverance. Remorse disappears.",
+    "image": "Fire in the lake: the image of Revolution. Thus the superior man sets the calendar in order and makes the seasons clear.",
+    "keywords": ["change", "transformation", "molting", "renewal", "revolution"]
+  },
+  {
+    "number": 50,
+    "name": "The Cauldron",
+    "chinese": "鼎",
+    "pinyin": "dǐng",
+    "unicode": "䷱",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "The Cauldron. Supreme good fortune. Success.",
+    "image": "Fire over wood: the image of the Cauldron. Thus the superior man consolidates his fate by making his position correct.",
+    "keywords": ["nourishment", "transformation", "sacrifice", "offering", "culture"]
+  },
+  {
+    "number": 51,
+    "name": "The Arousing",
+    "chinese": "震",
+    "pinyin": "zhèn",
+    "unicode": "䷲",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "judgment": "Shock brings success. Shock comes—oh, oh! Laughing words—ha, ha! The shock terrifies for a hundred miles, and he does not let fall the sacrificial spoon and chalice.",
+    "image": "Thunder repeated: the image of Shock. Thus in fear and trembling the superior man sets his life in order and examines himself.",
+    "keywords": ["shock", "thunder", "arousal", "movement", "awakening"]
+  },
+  {
+    "number": 52,
+    "name": "Keeping Still",
+    "chinese": "艮",
+    "pinyin": "gèn",
+    "unicode": "䷳",
+    "upperTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Keeping Still. Keeping his back still so that he no longer feels his body. He goes into his courtyard and does not see his people. No blame.",
+    "image": "Mountains standing close together: the image of Keeping Still. Thus the superior man does not permit his thoughts to go beyond his situation.",
+    "keywords": ["stillness", "meditation", "rest", "mountain", "limits"]
+  },
+  {
+    "number": 53,
+    "name": "Development",
+    "chinese": "漸",
+    "pinyin": "jiàn",
+    "unicode": "䷴",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Development. The maiden is given in marriage. Good fortune. Perseverance furthers.",
+    "image": "On the mountain, a tree: the image of Development. Thus the superior man abides in dignity and virtue, in order to improve the mores.",
+    "keywords": ["gradual progress", "development", "marriage", "steady growth", "order"]
+  },
+  {
+    "number": 54,
+    "name": "The Marrying Maiden",
+    "chinese": "歸妹",
+    "pinyin": "guī mèi",
+    "unicode": "䷵",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "The Marrying Maiden. Undertakings bring misfortune. Nothing that would further.",
+    "image": "Thunder over the lake: the image of the Marrying Maiden. Thus the superior man understands the transitory in the light of the eternity of the end.",
+    "keywords": ["improper relationships", "desire", "passion", "unfavorable", "endings"]
+  },
+  {
+    "number": 55,
+    "name": "Abundance",
+    "chinese": "豐",
+    "pinyin": "fēng",
+    "unicode": "䷶",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "Abundance has success. The king attains abundance. Be not sad. Be like the sun at midday.",
+    "image": "Both thunder and lightning come: the image of Abundance. Thus the superior man decides lawsuits and carries out punishments.",
+    "keywords": ["fullness", "zenith", "prosperity", "culmination", "peak"]
+  },
+  {
+    "number": 56,
+    "name": "The Wanderer",
+    "chinese": "旅",
+    "pinyin": "lǚ",
+    "unicode": "䷷",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "The Wanderer. Success through smallness. Perseverance brings good fortune to the wanderer.",
+    "image": "Fire on the mountain: the image of the Wanderer. Thus the superior man is clear-minded and cautious in imposing penalties, and protracts no lawsuits.",
+    "keywords": ["travel", "stranger", "transience", "caution", "adaptability"]
+  },
+  {
+    "number": 57,
+    "name": "The Gentle",
+    "chinese": "巽",
+    "pinyin": "xùn",
+    "unicode": "䷸",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "judgment": "The Gentle. Success through what is small. It furthers one to have somewhere to go. It furthers one to see the great man.",
+    "image": "Winds following one upon the other: the image of the Gently Penetrating. Thus the superior man spreads his commands abroad and carries out his undertakings.",
+    "keywords": ["wind", "penetration", "gentleness", "persistence", "influence"]
+  },
+  {
+    "number": 58,
+    "name": "The Joyous",
+    "chinese": "兌",
+    "pinyin": "duì",
+    "unicode": "䷹",
+    "upperTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "The Joyous. Success. Perseverance is favorable.",
+    "image": "Lakes resting one on the other: the image of the Joyous. Thus the superior man joins with his friends for discussion and practice.",
+    "keywords": ["joy", "pleasure", "lake", "exchange", "cheerfulness"]
+  },
+  {
+    "number": 59,
+    "name": "Dispersion",
+    "chinese": "渙",
+    "pinyin": "huàn",
+    "unicode": "䷺",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Dispersion. Success. The king approaches his temple. It furthers one to cross the great water. Perseverance furthers.",
+    "image": "The wind drives over the water: the image of Dispersion. Thus the kings of old sacrificed to the Lord and built temples.",
+    "keywords": ["dissolution", "separation", "scattering", "reunification", "spirituality"]
+  },
+  {
+    "number": 60,
+    "name": "Limitation",
+    "chinese": "節",
+    "pinyin": "jié",
+    "unicode": "䷻",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "Limitation. Success. Galling limitation must not be persevered in.",
+    "image": "Water over lake: the image of Limitation. Thus the superior man creates number and measure, and examines the nature of virtue and correct conduct.",
+    "keywords": ["boundaries", "moderation", "restraint", "economy", "discipline"]
+  },
+  {
+    "number": 61,
+    "name": "Inner Truth",
+    "chinese": "中孚",
+    "pinyin": "zhōng fú",
+    "unicode": "䷼",
+    "upperTrigram": {
+      "name": "Xun",
+      "symbol": "☴",
+      "element": "Wind",
+      "attribute": "Gentle"
+    },
+    "lowerTrigram": {
+      "name": "Dui",
+      "symbol": "☱",
+      "element": "Lake",
+      "attribute": "Joyous"
+    },
+    "judgment": "Inner Truth. Pigs and fishes. Good fortune. It furthers one to cross the great water. Perseverance furthers.",
+    "image": "Wind over lake: the image of Inner Truth. Thus the superior man discusses criminal cases in order to delay executions.",
+    "keywords": ["sincerity", "truth", "integrity", "trust", "understanding"]
+  },
+  {
+    "number": 62,
+    "name": "Preponderance of the Small",
+    "chinese": "小過",
+    "pinyin": "xiǎo guò",
+    "unicode": "䷽",
+    "upperTrigram": {
+      "name": "Zhen",
+      "symbol": "☳",
+      "element": "Thunder",
+      "attribute": "Arousing"
+    },
+    "lowerTrigram": {
+      "name": "Gen",
+      "symbol": "☶",
+      "element": "Mountain",
+      "attribute": "Stillness"
+    },
+    "judgment": "Preponderance of the Small. Success. Perseverance furthers. Small things may be done; great things should not be done.",
+    "image": "Thunder on the mountain: the image of Preponderance of the Small. Thus in his conduct the superior man gives preponderance to reverence. In bereavement he gives preponderance to grief. In his expenditures he gives preponderance to thrift.",
+    "keywords": ["small matters", "caution", "humility", "conscientiousness", "details"]
+  },
+  {
+    "number": 63,
+    "name": "After Completion",
+    "chinese": "既濟",
+    "pinyin": "jì jì",
+    "unicode": "䷾",
+    "upperTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "lowerTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "judgment": "After Completion. Success in small matters. Perseverance furthers. At the beginning good fortune, at the end disorder.",
+    "image": "Water over fire: the image of the condition After Completion. Thus the superior man takes thought of misfortune and arms himself against it in advance.",
+    "keywords": ["completion", "success", "order", "vigilance", "transition"]
+  },
+  {
+    "number": 64,
+    "name": "Before Completion",
+    "chinese": "未濟",
+    "pinyin": "wèi jì",
+    "unicode": "䷿",
+    "upperTrigram": {
+      "name": "Li",
+      "symbol": "☲",
+      "element": "Fire",
+      "attribute": "Clinging"
+    },
+    "lowerTrigram": {
+      "name": "Kan",
+      "symbol": "☵",
+      "element": "Water",
+      "attribute": "Abysmal"
+    },
+    "judgment": "Before Completion. Success. But if the little fox, after nearly completing the crossing, gets his tail in the water, there is nothing that would further.",
+    "image": "Fire over water: the image of the condition Before Completion. Thus the superior man is careful in the differentiation of things, so that each finds its place.",
+    "keywords": ["incompletion", "potential", "careful progress", "transition", "beginning"]
+  }
+]

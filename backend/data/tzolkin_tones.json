@@ -1,0 +1,93 @@
+[
+  {
+    "number": 1,
+    "name": "Magnetic",
+    "keyword": "Purpose",
+    "energy": "Unity, attraction, beginning",
+    "question": "What is my purpose?"
+  },
+  {
+    "number": 2,
+    "name": "Lunar",
+    "keyword": "Challenge",
+    "energy": "Polarity, stability, duality",
+    "question": "What is my challenge?"
+  },
+  {
+    "number": 3,
+    "name": "Electric",
+    "keyword": "Service",
+    "energy": "Activation, bonding, creativity",
+    "question": "How can I best serve?"
+  },
+  {
+    "number": 4,
+    "name": "Self-Existing",
+    "keyword": "Form",
+    "energy": "Definition, measurement, order",
+    "question": "What form will my service take?"
+  },
+  {
+    "number": 5,
+    "name": "Overtone",
+    "keyword": "Radiance",
+    "energy": "Empowerment, command, center",
+    "question": "How can I best empower myself?"
+  },
+  {
+    "number": 6,
+    "name": "Rhythmic",
+    "keyword": "Equality",
+    "energy": "Balance, organization, receptivity",
+    "question": "How can I extend my equality to others?"
+  },
+  {
+    "number": 7,
+    "name": "Resonant",
+    "keyword": "Attunement",
+    "energy": "Channeling, inspiration, mysticism",
+    "question": "How can I attune my service to others?"
+  },
+  {
+    "number": 8,
+    "name": "Galactic",
+    "keyword": "Integrity",
+    "energy": "Harmony, modeling, integration",
+    "question": "Do I live what I believe?"
+  },
+  {
+    "number": 9,
+    "name": "Solar",
+    "keyword": "Intention",
+    "energy": "Pulse, realization, completion",
+    "question": "How do I attain my purpose?"
+  },
+  {
+    "number": 10,
+    "name": "Planetary",
+    "keyword": "Manifestation",
+    "energy": "Perfection, production, challenge",
+    "question": "How do I perfect what I do?"
+  },
+  {
+    "number": 11,
+    "name": "Spectral",
+    "keyword": "Liberation",
+    "energy": "Release, dissolution, letting go",
+    "question": "How do I release and let go?"
+  },
+  {
+    "number": 12,
+    "name": "Crystal",
+    "keyword": "Cooperation",
+    "energy": "Dedication, universalization, sharing",
+    "question": "How can I dedicate myself to all that lives?"
+  },
+  {
+    "number": 13,
+    "name": "Cosmic",
+    "keyword": "Presence",
+    "energy": "Transcendence, endurance, magic",
+    "question": "How can I expand my joy and love?"
+  }
+]

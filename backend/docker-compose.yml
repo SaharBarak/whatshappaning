@@ -1,0 +1,44 @@
+# Docker Compose for local development
+# Provides PostgreSQL database for the backend
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: whatshappening-db
+    environment:
+      POSTGRES_USER: whatshappening
+      POSTGRES_PASSWORD: localdev
+      POSTGRES_DB: whatshappening
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U whatshappening"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: whatshappening-backend
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      DATABASE_URL: postgres://whatshappening:localdev@postgres:5432/whatshappening
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data:ro
+    command: npm run dev
+
+volumes:
+  postgres_data:
