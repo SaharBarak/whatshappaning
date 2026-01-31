@@ -18,6 +18,7 @@ const {
   getNotableMeaning,
   getHebrewDay,
 } = require('../utils/hebrew');
+const logger = require('../utils/logger');
 
 /**
  * Convert Gregorian date to Hebrew date using Hebcal API
@@ -40,7 +41,7 @@ async function convertToHebrewDate(date) {
       hebrew: response.hebrew,
     };
   } catch (error) {
-    console.warn('Hebcal API unavailable, using fallback calculation:', error.message);
+    logger.debug('Hebcal API unavailable, using fallback calculation:', error.message);
     return calculateHebrewDateFallback(date);
   }
 }
@@ -115,7 +116,7 @@ async function getCurrentParasha(date) {
     return null;
   } catch (error) {
     // Parasha module not available yet
-    console.log('Parasha module not available:', error.message);
+    logger.debug('Parasha module not available:', error.message);
     return null;
   }
 }

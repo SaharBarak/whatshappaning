@@ -13,6 +13,7 @@
 const axios = require('axios');
 const googleTrends = require('google-trends-api');
 const newsModule = require('./news');
+const logger = require('../utils/logger');
 
 // API endpoints
 const CRYPTO_FEAR_GREED_URL = 'https://api.alternative.me/fng/?limit=1';
@@ -209,7 +210,7 @@ async function fetchGoogleTrends() {
   const cacheAgeMs = GOOGLE_TRENDS_CACHE_HOURS * 60 * 60 * 1000;
 
   if (googleTrendsCache.data && googleTrendsCache.timestamp && now - googleTrendsCache.timestamp < cacheAgeMs) {
-    console.log('Using cached Google Trends data');
+    logger.debug('Using cached Google Trends data');
     return googleTrendsCache.data;
   }
 

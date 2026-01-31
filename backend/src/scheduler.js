@@ -9,6 +9,7 @@ const cron = require('node-cron');
 const config = require('./config');
 const db = require('./db');
 const cache = require('./utils/cache');
+const logger = require('./utils/logger');
 
 // Module registry - will be populated dynamically
 const modules = new Map();
@@ -50,11 +51,11 @@ const activeJobs = new Map();
  */
 function registerModule(name, module) {
   if (typeof module.collect !== 'function') {
-    console.error(`Module ${name} does not have a collect() function`);
+    logger.error(`Module ${name} does not have a collect() function`);
     return;
   }
   modules.set(name, module);
-  console.log(`Registered module: ${name}`);
+  logger.debug(`Registered module: ${name}`);
 }
 
 /**
@@ -72,7 +73,7 @@ async function loadModules() {
       const module = require(`./modules/${name}`);
       registerModule(name, module);
     } catch (err) {
-      console.warn(`Could not load module ${name}:`, err.message);
+      logger.warn(`Could not load module ${name}:`, err.message);
     }
   }
 }
@@ -85,7 +86,7 @@ async function loadModules() {
 async function executeModule(name) {
   const module = modules.get(name);
   if (!module) {
-    console.error(`Module ${name} not found`);
+    logger.error(`Module ${name} not found`);
     return null;
   }
 
@@ -110,11 +111,11 @@ async function executeModule(name) {
     // Log success status
     await db.saveSystemStatus(name, 'success', null, responseTime);
 
-    console.log(`Module ${name} collected successfully (${responseTime}ms)`);
+    logger.debug(`Module ${name} collected successfully (${responseTime}ms)`);
     return data;
   } catch (err) {
     const responseTime = Date.now() - startTime;
-    console.error(`Module ${name} collection failed:`, err.message);
+    logger.error(`Module ${name} collection failed:`, err.message);
 
     // Log error status
     await db.saveSystemStatus(name, 'error', err.message, responseTime);
@@ -122,7 +123,7 @@ async function executeModule(name) {
     // Return cached data as fallback
     const cached = cache.get(`module:${name}`);
     if (cached) {
-      console.log(`Using cached data for ${name}`);
+      logger.debug(`Using cached data for ${name}`);
       return { ...cached, stale: true };
     }
 
@@ -150,9 +151,9 @@ async function executeDailyModules() {
   // Save combined daily data
   try {
     await db.saveDailyData(new Date(), results);
-    console.log('Daily data saved successfully');
+    logger.debug('Daily data saved successfully');
   } catch (err) {
-    console.error('Failed to save daily data:', err.message);
+    logger.error('Failed to save daily data:', err.message);
   }
 
   return results;
@@ -180,7 +181,7 @@ function startScheduler() {
   // Create cron jobs for each schedule group
   for (const [key, group] of Object.entries(scheduleGroups)) {
     const job = cron.schedule(group.schedule, async () => {
-      console.log(`Running scheduled job: ${key}`);
+      logger.debug(`Running scheduled job: ${key}`);
 
       if (group.type === 'daily') {
         await executeDailyModules();
@@ -195,26 +196,26 @@ function startScheduler() {
     });
 
     activeJobs.set(key, job);
-    console.log(`Scheduled job ${key}: ${group.modules.join(', ')}`);
+    logger.debug(`Scheduled job ${key}: ${group.modules.join(', ')}`);
   }
 
   // Schedule daily cleanup
   cron.schedule('0 1 * * *', async () => {
-    console.log('Running daily data cleanup');
+    logger.debug('Running daily data cleanup');
     await db.cleanupOldData();
   }, {
     scheduled: true,
     timezone: 'UTC'
   });
 
-  console.log('Scheduler started');
+  logger.info('Scheduler started');
 }
 
 /**
  * Run initial data collection on startup
  */
 async function runInitialCollection() {
-  console.log('Running initial data collection...');
+  logger.info('Running initial data collection...');
 
   // Collect daily modules first
   await executeDailyModules();
@@ -228,7 +229,7 @@ async function runInitialCollection() {
     await executeModule(name);
   }
 
-  console.log('Initial data collection complete');
+  logger.info('Initial data collection complete');
 }
 
 /**
@@ -237,7 +238,7 @@ async function runInitialCollection() {
 function stopScheduler() {
   for (const [key, job] of activeJobs) {
     job.stop();
-    console.log(`Stopped job: ${key}`);
+    logger.debug(`Stopped job: ${key}`);
   }
   activeJobs.clear();
 }

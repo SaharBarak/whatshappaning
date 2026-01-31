@@ -15,6 +15,7 @@ const Parser = require('rss-parser');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const config = require('../config');
 const cache = require('../utils/cache');
+const logger = require('../utils/logger');
 
 // RSS Feed URLs
 const RSS_FEEDS = {
@@ -208,14 +209,14 @@ async function collect() {
       headlines = getCachedHeadlines();
       usedCache = headlines.length > 0;
       if (usedCache) {
-        console.log('Using cached headlines due to RSS fetch failure');
+        logger.debug('Using cached headlines due to RSS fetch failure');
       }
     } else {
       // Cache successful fetch
       cacheHeadlines(headlines);
     }
   } catch (error) {
-    console.error('Error fetching RSS feeds:', error.message);
+    logger.error('Error fetching RSS feeds:', error.message);
     headlines = getCachedHeadlines();
     usedCache = headlines.length > 0;
   }

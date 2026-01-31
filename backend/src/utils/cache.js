@@ -6,6 +6,7 @@
  */
 
 const config = require('../config');
+const logger = require('./logger');
 
 // Cache storage
 const cache = new Map();
@@ -102,7 +103,7 @@ function cleanup() {
   }
 
   if (cleaned > 0) {
-    console.log(`Cache cleanup: removed ${cleaned} expired entries`);
+    logger.debug(`Cache cleanup: removed ${cleaned} expired entries`);
   }
 }
 

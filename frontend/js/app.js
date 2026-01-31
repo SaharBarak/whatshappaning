@@ -27,8 +27,6 @@ const state = {
  * Initialize the application
  */
 async function init() {
-  console.log('Initializing What\'s Happening...');
-
   // Set up event listeners
   setupEventListeners();
 
@@ -37,8 +35,6 @@ async function init() {
 
   // Set up auto-refresh
   setInterval(refreshData, config.autoRefreshInterval);
-
-  console.log('Application initialized');
 }
 
 /**
@@ -154,9 +150,8 @@ function toggleModule(moduleName) {
  * Set up event listeners
  */
 function setupEventListeners() {
-  // Manual refresh on header click (for debugging/testing)
+  // Manual refresh on header double-click
   document.querySelector('.header-title')?.addEventListener('dblclick', () => {
-    console.log('Manual refresh triggered');
     api.clearCache();
     refreshData();
   });

@@ -17,6 +17,7 @@ const compute = require('./compute');
 const patterns = require('./patterns');
 const historical = require('./historical');
 const config = require('../config');
+const logger = require('../utils/logger');
 
 /**
  * Run full correlation analysis
@@ -24,7 +25,7 @@ const config = require('../config');
  * @returns {Promise<Object>} Analysis results
  */
 async function runFullAnalysis() {
-  console.log('Starting full correlation analysis...');
+  logger.info('Starting full correlation analysis...');
   const startTime = Date.now();
 
   try {
@@ -32,7 +33,7 @@ async function runFullAnalysis() {
     const data = await historical.loadHistoricalFeatures();
 
     if (data.length < config.stats.minSampleSize) {
-      console.warn(`Insufficient data for analysis: ${data.length} records (need ${config.stats.minSampleSize})`);
+      logger.warn(`Insufficient data for analysis: ${data.length} records (need ${config.stats.minSampleSize})`);
       return {
         success: false,
         error: 'Insufficient historical data',
@@ -43,7 +44,7 @@ async function runFullAnalysis() {
 
     // Clear old correlation results
     const cleared = await historical.clearOldCorrelations();
-    console.log(`Cleared ${cleared} old correlation results`);
+    logger.debug(`Cleared ${cleared} old correlation results`);
 
     // Compute all correlations
     const results = compute.computeAllCorrelations(data);
@@ -53,7 +54,7 @@ async function runFullAnalysis() {
 
     const duration = Date.now() - startTime;
 
-    console.log(`Correlation analysis complete: ${results.significant} significant correlations from ${results.total} tests in ${duration}ms`);
+    logger.info(`Correlation analysis complete: ${results.significant} significant from ${results.total} tests (${duration}ms)`);
 
     return {
       success: true,
@@ -64,7 +65,7 @@ async function runFullAnalysis() {
       duration,
     };
   } catch (error) {
-    console.error('Correlation analysis failed:', error);
+    logger.error('Correlation analysis failed:', error);
     return {
       success: false,
       error: error.message,
@@ -79,7 +80,7 @@ async function runFullAnalysis() {
  * @returns {Promise<Object>} Update results
  */
 async function runDailyUpdate(todayModuleData) {
-  console.log('Running daily correlation update...');
+  logger.debug('Running daily correlation update...');
 
   try {
     // Update today's historical record
@@ -106,7 +107,7 @@ async function runDailyUpdate(todayModuleData) {
       significant: results.significant,
     };
   } catch (error) {
-    console.error('Daily update failed:', error);
+    logger.error('Daily update failed:', error);
     return {
       success: false,
       error: error.message,
@@ -195,7 +196,7 @@ async function getPredictions(todayFeatures) {
 
     return predictions;
   } catch (error) {
-    console.error('Error getting predictions:', error);
+    logger.error('Error getting predictions:', error);
     return {};
   }
 }
@@ -218,7 +219,7 @@ async function findPatternMatches(todayFeatures) {
       threshold: 0.80,
     });
   } catch (error) {
-    console.error('Error finding pattern matches:', error);
+    logger.error('Error finding pattern matches:', error);
     return null;
   }
 }
