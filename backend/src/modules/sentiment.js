@@ -5,12 +5,14 @@
  * - Crypto Fear & Greed Index (Alternative.me)
  * - CNN Fear & Greed Index (unofficial, may require scraping)
  * - Google Trends (fear vs optimism terms analysis)
+ * - News Sentiment (from news module's Gemini analysis)
  *
  * Update frequency: Every 3 hours
  */
 
 const axios = require('axios');
 const googleTrends = require('google-trends-api');
+const newsModule = require('./news');
 
 // API endpoints
 const CRYPTO_FEAR_GREED_URL = 'https://api.alternative.me/fng/?limit=1';
@@ -22,11 +24,14 @@ const OPTIMISM_TERMS = ['bull market', 'investment opportunity', 'hope', 'recove
 const GOOGLE_TRENDS_REGION = 'US';
 const GOOGLE_TRENDS_CACHE_HOURS = 6;
 
-// Aggregation weights (when all sources available)
+// Aggregation weights matching spec 22 (redistributed without socialMood)
+// Original spec: cnn=0.25, crypto=0.15, trends=0.20, news=0.20, social=0.20
+// Without social (unavailable): redistribute proportionally
 const WEIGHTS = {
-  cnnFearGreed: 0.3,
-  cryptoFearGreed: 0.3,
-  googleTrends: 0.4,
+  cnnFearGreed: 0.3125, // 0.25 / 0.80
+  cryptoFearGreed: 0.1875, // 0.15 / 0.80
+  googleTrends: 0.25, // 0.20 / 0.80
+  newsSentiment: 0.25, // 0.20 / 0.80
 };
 
 // In-memory cache for Google Trends data (rate-limited)
@@ -40,6 +45,7 @@ let previousValues = {
   cryptoFearGreed: null,
   cnnFearGreed: null,
   googleTrendsScore: null,
+  newsSentimentScore: null,
 };
 
 /**
@@ -272,14 +278,60 @@ function googleTrendsToScore(trendsData) {
 }
 
 /**
+ * Fetch news sentiment from the news module
+ * Converts qualitative sentiment to a 0-100 score
+ * @returns {Promise<Object|null>} News sentiment data or null on failure
+ */
+async function fetchNewsSentiment() {
+  try {
+    const newsData = await newsModule.collect();
+
+    if (!newsData || newsData.overallSentiment === 'Analysis unavailable') {
+      return null;
+    }
+
+    // Convert qualitative sentiment to 0-100 score
+    // calm = 50 (neutral), tense = 25 (fear), positive = 75 (greed), neutral = 50
+    const sentimentScores = {
+      calm: 50,
+      neutral: 50,
+      tense: 25,
+      positive: 75,
+    };
+
+    const sentiment = newsData.overallSentiment.toLowerCase();
+    const score = sentimentScores[sentiment] || 50;
+
+    // Calculate 24h change
+    const change24h =
+      previousValues.newsSentimentScore !== null ? score - previousValues.newsSentimentScore : null;
+
+    // Store current value for next comparison
+    previousValues.newsSentimentScore = score;
+
+    return {
+      score,
+      dominantTone: newsData.overallSentiment,
+      dominantTheme: newsData.dominantTheme,
+      articleCount: newsData.articleCount,
+      change24h,
+    };
+  } catch (error) {
+    console.error('Error fetching news sentiment:', error.message);
+    return null;
+  }
+}
+
+/**
  * Calculate aggregate sentiment from available sources
  * Redistributes weights if some sources are unavailable
  * @param {Object|null} cryptoData - Crypto Fear & Greed data
  * @param {Object|null} cnnData - CNN Fear & Greed data
  * @param {Object|null} trendsData - Google Trends data
+ * @param {Object|null} newsData - News sentiment data
  * @returns {Object} Aggregate sentiment object
  */
-function calculateAggregate(cryptoData, cnnData, trendsData) {
+function calculateAggregate(cryptoData, cnnData, trendsData, newsData) {
   const sources = [];
   let totalWeight = 0;
 
@@ -301,6 +353,11 @@ function calculateAggregate(cryptoData, cnnData, trendsData) {
 
     // Store for 24h change calculation
     previousValues.googleTrendsScore = trendsScore;
+  }
+
+  if (newsData && newsData.score !== null) {
+    sources.push({ score: newsData.score, weight: WEIGHTS.newsSentiment, name: 'news' });
+    totalWeight += WEIGHTS.newsSentiment;
   }
 
   // If no sources available, return neutral
@@ -328,6 +385,8 @@ function calculateAggregate(cryptoData, cnnData, trendsData) {
       change = cryptoData.change24h;
     } else if (source.name === 'cnn' && cnnData) {
       change = cnnData.change24h;
+    } else if (source.name === 'news' && newsData) {
+      change = newsData.change24h;
     }
 
     if (change !== null) {
@@ -354,15 +413,16 @@ function calculateAggregate(cryptoData, cnnData, trendsData) {
 async function collect() {
   const now = new Date();
 
-  // Fetch all data in parallel
-  const [cryptoData, cnnData, trendsData] = await Promise.all([
+  // Fetch all data in parallel (news sentiment last as it involves Gemini call)
+  const [cryptoData, cnnData, trendsData, newsData] = await Promise.all([
     fetchCryptoFearGreed(),
     fetchCNNFearGreed(),
     fetchGoogleTrends(),
+    fetchNewsSentiment(),
   ]);
 
   // Calculate aggregate sentiment
-  const aggregate = calculateAggregate(cryptoData, cnnData, trendsData);
+  const aggregate = calculateAggregate(cryptoData, cnnData, trendsData, newsData);
 
   // Build components object
   const components = {};
@@ -409,6 +469,25 @@ async function collect() {
       optimismIndex: null,
       dominantTerms: [],
       error: 'Failed to fetch Google Trends data',
+    };
+  }
+
+  if (newsData) {
+    components.newsSentiment = {
+      score: newsData.score,
+      dominantTone: newsData.dominantTone,
+      dominantTheme: newsData.dominantTheme,
+      articleCount: newsData.articleCount,
+      change24h: newsData.change24h,
+    };
+  } else {
+    components.newsSentiment = {
+      score: null,
+      dominantTone: null,
+      dominantTheme: null,
+      articleCount: null,
+      change24h: null,
+      error: 'News sentiment unavailable (requires Gemini API)',
     };
   }
 

@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.20 (stable)
+> **Version:** v0.0.21 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed (including new spec 25), decisions resolved, implementation verified
 > **Plan Verification:** VERIFIED - All 25 specs cross-referenced with parallel subagents, plan accuracy confirmed
@@ -217,7 +217,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - [ ] Update `specs/11-MODULE-TAROT.md` - Complete 78-card data (only 1 example provided)
 - [ ] Update `specs/18-MODULE-ICHING.md` - Complete 64-hexagram data (only 1 example provided), changing lines transformation algorithm
 - [ ] Update `specs/17-MODULE-NUMEROLOGY.md` - Sunrise/sunset data source, dayRulers array mapping
-- [ ] Update `specs/22-MODULE-SENTIMENT.md` - News sentiment implementation, social mood implementation
+- [x] Update `specs/22-MODULE-SENTIMENT.md` - News sentiment implementation, social mood implementation
 - [ ] Update `specs/23-CORRELATION-ENGINE.md` - Complete KEY_COMBINATIONS list (only 4 defined), continuous feature binning strategy
 - [ ] Update `specs/01-BACKEND-API.md` - Response formats for /api/history/:module, error response schema, pagination
 
@@ -251,7 +251,8 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 | Confidence levels | spec 24 | "Very High" level defined but no p < 0.001 requirement - add it |
 | Pattern match threshold | specs 23/24 | Both say >80% but calculateSimilarity() gives categorical exact match only |
 | Update frequency | spec 17 | Planetary hours every 30min but module header says daily - use 30min |
-| Sentiment weights | spec 22 | Weights sum to 100% but newsSentiment/socialMood undefined - redistribute |
+| socialMood component | spec 22 (lines 59-62) | Omitted from implementation - Twitter/X API requires $100/mo minimum for Basic tier |
+| Sentiment weights | spec 22 | News sentiment now integrated; weights updated to match spec (socialMood omitted due to API costs) |
 
 ## Module Output Inconsistencies
 
