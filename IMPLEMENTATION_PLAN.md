@@ -7,7 +7,7 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 ## PROJECT STATUS: IMPLEMENTATION COMPLETE - 100% (460 tests pass)
 
 > **Last Updated:** 2026-01-31
-> **Version:** v0.0.32 (stable)
+> **Version:** v0.0.33 (stable)
 > **Implementation Progress:** 100% - All code complete, only external deployment configuration remaining
 > **Spec Analysis:** Complete - 26 specs analyzed, all documentation gaps resolved
 > **Plan Verification:** VERIFIED - All 26 specs cross-referenced, plan accuracy confirmed
@@ -24,7 +24,16 @@ A data-driven prediction dashboard that correlates cosmic/esoteric data with rea
 - **Accessibility:** COMPLETE - ARIA labels, keyboard navigation (Enter/Space to toggle cards)
 - **Development Environment:** Docker, loop scripts, and related configuration files excluded from version control via .gitignore for security (contain credentials)
 
-### Recent Improvements (v0.0.32)
+### v0.0.33 Changes
+- **Frontend Spec Compliance:** Removed labels from indices bar to match spec 02-FRONTEND-UI.md line 83 ("No labels, just values")
+- **Accessibility Enhancements:**
+  - Added ARIA live regions for dynamic content updates (predictions panel, error banner)
+  - Added prediction change highlighting animation when values update (per spec line 282)
+  - Added reduced motion support (@media prefers-reduced-motion)
+  - Added aria-hidden to decorative icons
+  - Added aria-label attributes to indices for screen readers
+
+### v0.0.32 Changes
 - **Documentation Fix:** Fixed outcomes.js code comments - corrected "12 binary outcomes" to "11" and "Market Outcomes (7)" to "(6)" to match spec 23-CORRELATION-ENGINE.md
 
 ### v0.0.31 Changes

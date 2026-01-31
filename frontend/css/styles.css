@@ -149,11 +149,6 @@ body {
   gap: var(--spacing-sm);
 }
 
-.index-label {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-}
-
 .index-value {
   font-size: 1.1rem;
   font-weight: 600;
@@ -830,6 +825,47 @@ body {
 .module-card:focus {
   outline: 2px solid var(--bar-fill);
   outline-offset: 2px;
+}
+
+/* Prediction Change Highlighting */
+.prediction-changed {
+  animation: highlightChange 2s ease-out;
+}
+
+@keyframes highlightChange {
+  0% {
+    background-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  }
+  100% {
+    background-color: var(--bg-card);
+    box-shadow: none;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .live-dot {
+    animation: none;
+  }
+
+  .skeleton::after {
+    animation: none;
+    background: var(--bg-card);
+  }
+
+  .prediction-changed {
+    animation: none;
+    background-color: rgba(59, 130, 246, 0.2);
+  }
 }
 
 /* Print Styles */

@@ -1,9 +1,13 @@
 /**
  * Predictions Component
  * Renders prediction cards with probability bars and contributing factors
+ * Per spec 02-FRONTEND-UI.md line 282: "Predictions: Highlighted when changed"
  */
 
 import { config } from '../config.js';
+
+// Track previous prediction values to detect changes
+let previousPredictions = new Map();
 
 /**
  * Render predictions list
@@ -29,15 +33,29 @@ export function renderPredictions(predictionsData, expanded, onToggle) {
   // Sort by probability (highest first)
   const sortedPredictions = [...predictions].sort((a, b) => b.probability - a.probability);
 
+  // Detect which predictions have changed
+  const changedIds = new Set();
+  sortedPredictions.forEach(prediction => {
+    const prev = previousPredictions.get(prediction.outcomeId);
+    if (prev !== undefined && Math.abs(prev - prediction.probability) >= 0.01) {
+      changedIds.add(prediction.outcomeId);
+    }
+  });
+
   container.innerHTML = sortedPredictions.map(prediction =>
-    renderPrediction(prediction, expanded.has(prediction.outcomeId), onToggle)
+    renderPrediction(prediction, expanded.has(prediction.outcomeId), onToggle, changedIds.has(prediction.outcomeId))
   ).join('');
+
+  // Update previous predictions for next render
+  sortedPredictions.forEach(prediction => {
+    previousPredictions.set(prediction.outcomeId, prediction.probability);
+  });
 }
 
 /**
  * Render a single prediction card
  */
-function renderPrediction(prediction, isExpanded, onToggle) {
+function renderPrediction(prediction, isExpanded, onToggle, hasChanged = false) {
   const {
     outcome,
     outcomeId,
@@ -60,14 +78,16 @@ function renderPrediction(prediction, isExpanded, onToggle) {
   const barClass = getBarClass(probability);
 
   const displayName = config.outcomeNames[outcomeId] || outcome || outcomeId;
+  const changedClass = hasChanged ? 'prediction-changed' : '';
 
   return `
-    <div class="prediction ${isExpanded ? 'expanded' : ''}"
+    <div class="prediction ${isExpanded ? 'expanded' : ''} ${changedClass}"
          data-outcome="${outcomeId}"
          onclick="window.togglePrediction && window.togglePrediction('${outcomeId}')"
          tabindex="0"
          role="button"
-         aria-expanded="${isExpanded}">
+         aria-expanded="${isExpanded}"
+         ${hasChanged ? 'aria-label="' + displayName + ' - value changed"' : ''}>
       <div class="prediction-summary">
         <div class="prediction-header">
           <span class="prediction-name">${displayName}</span>

@@ -1,6 +1,7 @@
 /**
  * Indices Bar Component
  * Renders the three composite indices (Solar-Geo, Astro Events, Calendar Sync)
+ * Per spec 02-FRONTEND-UI.md line 83: "No labels, just values"
  */
 
 /**
@@ -13,16 +14,13 @@ export function renderIndices(indices) {
 
   if (!indices) {
     container.innerHTML = `
-      <div class="index-item">
-        <span class="index-label">Solar-Geo:</span>
+      <div class="index-item" title="Solar-Geo Index">
         <span class="index-value">--</span>
       </div>
-      <div class="index-item">
-        <span class="index-label">Astro Events:</span>
+      <div class="index-item" title="Astro Events Index">
         <span class="index-value">--</span>
       </div>
-      <div class="index-item">
-        <span class="index-label">Calendar Sync:</span>
+      <div class="index-item" title="Calendar Sync Index">
         <span class="index-value">--</span>
       </div>
     `;
@@ -42,13 +40,12 @@ export function renderIndices(indices) {
 }
 
 /**
- * Render a single index
+ * Render a single index (no labels per spec, use title for accessibility)
  */
 function renderIndex(label, data) {
   if (!data) {
     return `
-      <div class="index-item">
-        <span class="index-label">${label}:</span>
+      <div class="index-item" title="${label} Index">
         <span class="index-value">--</span>
       </div>
     `;
@@ -58,12 +55,12 @@ function renderIndex(label, data) {
   const trend = data.trend || 'stable';
   const trendIcon = getTrendIcon(trend);
   const level = data.level || '';
+  const tooltip = level ? `${label}: ${level}` : `${label} Index`;
 
   return `
-    <div class="index-item" title="${level}">
-      <span class="index-label">${label}:</span>
+    <div class="index-item" title="${tooltip}" aria-label="${label}: ${value}">
       <span class="index-value">${value}</span>
-      <span class="index-trend ${trend}">${trendIcon}</span>
+      <span class="index-trend ${trend}" aria-hidden="true">${trendIcon}</span>
     </div>
   `;
 }
