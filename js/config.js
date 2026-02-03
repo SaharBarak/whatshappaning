@@ -14,7 +14,7 @@ function getApiUrl() {
 
   // GitHub Pages deployment
   if (hostname.includes('github.io')) {
-    return 'https://whatshappening-api.onrender.com';
+    return 'https://whatshappening-api-89qq.onrender.com';
   }
 
   // Production - adjust domain as needed
