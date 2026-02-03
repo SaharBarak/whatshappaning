@@ -12,11 +12,13 @@ function getApiUrl() {
     return 'http://localhost:3000';
   }
 
+  // GitHub Pages deployment
+  if (hostname.includes('github.io')) {
+    return 'https://whatshappening-api.onrender.com';
+  }
+
   // Production - adjust domain as needed
-  // If frontend and backend are on same domain, use relative paths
   if (window.location.protocol === 'https:') {
-    // For production with separate backend domain
-    // Update this with your actual backend URL
     return window.API_URL || `${window.location.protocol}//${hostname.replace('www.', 'api.')}`;
   }
 
