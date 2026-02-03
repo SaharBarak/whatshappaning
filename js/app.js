@@ -91,7 +91,21 @@ function render() {
   renderIndices(state.data?.indices);
   renderPredictions(state.predictions, state.expandedPredictions, togglePrediction);
   renderPatternAlert(state.predictions?.patternAlerts);
-  renderModules(state.data?.modules, state.expandedModules, toggleModule);
+
+  // Merge modules from snapshots with dailyData for local calculation modules
+  const mergedModules = { ...state.data?.modules };
+  if (state.data?.dailyData) {
+    const dailyModules = ['tzolkin', 'dreamspell', 'gematria', 'tarot', 'numerology', 'iching', 'parasha'];
+    for (const mod of dailyModules) {
+      if (state.data.dailyData[mod]) {
+        mergedModules[mod] = {
+          data: state.data.dailyData[mod],
+          collectedAt: state.data.dailyData[mod].collectedAt || state.data.dailyData.created_at
+        };
+      }
+    }
+  }
+  renderModules(mergedModules, state.expandedModules, toggleModule);
   renderSuggestions(state.predictions?.actionSuggestions);
 }
 
