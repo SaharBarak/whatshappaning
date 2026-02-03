@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: whatshappening-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: whatshappening-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+
+databases:
+  - name: whatshappening-db
+    databaseName: whatshappening
+    region: oregon
+    plan: free
+    ipAllowList: []

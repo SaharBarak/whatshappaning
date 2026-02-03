@@ -51,11 +51,15 @@ function renderIndex(label, data) {
     `;
   }
 
-  const value = typeof data.value === 'number' ? data.value.toFixed(1) : data.value;
+  // Get value from different possible fields (value, count, or score)
+  let rawValue = data.value ?? data.count ?? data.score ?? null;
+  const value = rawValue !== null && rawValue !== undefined
+    ? (typeof rawValue === 'number' ? rawValue.toFixed(1) : rawValue)
+    : '--';
   const trend = data.trend || 'stable';
   const trendIcon = getTrendIcon(trend);
   const level = data.level || '';
-  const tooltip = level ? `${label}: ${level}` : `${label} Index`;
+  const tooltip = level && level !== 'Unknown' ? `${label}: ${level}` : `${label} Index`;
 
   return `
     <div class="index-item" title="${tooltip}" aria-label="${label}: ${value}">

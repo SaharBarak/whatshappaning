@@ -173,60 +173,71 @@ function renderParasha(name, data, config, isExpanded, freshness) {
 }
 
 function renderGematria(name, data, config, isExpanded, freshness) {
-  const primary = `${data.dateGematria || '--'} → ${data.reducedValue || '--'}`;
+  const primary = `${data.dateStandard || data.dateGematria || '--'} → ${data.dateReduced || data.reducedValue || '--'}`;
   const secondary = data.hebrewDate || '--';
 
   const details = `
     ${detailRow('Hebrew Date', data.hebrewDate)}
-    ${detailRow('Date Gematria', data.dateGematria)}
-    ${detailRow('Reduced', data.reducedValue)}
-    ${detailRow('Parasha Gematria', data.parashaGematria)}
+    ${detailRow('Date Gematria', data.dateStandard || data.dateGematria)}
+    ${detailRow('Reduced', data.dateReduced || data.reducedValue)}
+    ${detailRow('Parasha', data.parashaEnglish)}
+    ${detailRow('Parasha Gematria', data.parashaStandard || data.parashaGematria)}
   `;
 
   return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
 function renderNumerology(name, data, config, isExpanded, freshness) {
-  const primary = `Day: ${data.universalDay || '--'}`;
-  const secondary = data.currentHourRuler ? `♃ ${data.currentHourRuler}` : (data.dayRuler || '--');
+  // Handle nested numerology structure
+  const num = data.numerology || data;
+  const hour = data.planetaryHour || {};
+  const primary = `Day: ${num.universalDay || '--'}`;
+  const secondary = hour.current ? `${hour.symbol || '♃'} ${hour.current}` : (hour.dayRuler || '--');
 
   const details = `
-    ${detailRow('Universal Day', data.universalDay)}
-    ${detailRow('Day Meaning', data.dayMeaning)}
-    ${detailRow('Day Ruler', data.dayRuler)}
-    ${detailRow('Current Hour', data.currentHourRuler)}
+    ${detailRow('Universal Day', num.universalDay)}
+    ${detailRow('Meaning', num.meaning)}
+    ${detailRow('Vibration', num.vibration)}
+    ${detailRow('Day Ruler', hour.dayRuler)}
+    ${detailRow('Current Hour', hour.current)}
   `;
 
   return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
 function renderIching(name, data, config, isExpanded, freshness) {
-  const primary = `${data.number || '--'} ${data.chinese || ''}`;
-  const secondary = data.name || '--';
+  // Handle nested hexagram structure
+  const hex = data.hexagram || data;
+  const primary = `${hex.number || '--'} ${hex.chinese || ''}`;
+  const secondary = hex.name || '--';
 
   const details = `
-    ${detailRow('Hexagram', data.number)}
-    ${detailRow('Name', data.name)}
-    ${detailRow('Chinese', data.chinese)}
-    ${detailRow('Upper Trigram', typeof data.upperTrigram === 'object' ? data.upperTrigram?.name : data.upperTrigram)}
-    ${detailRow('Lower Trigram', typeof data.lowerTrigram === 'object' ? data.lowerTrigram?.name : data.lowerTrigram)}
-    ${detailRow('Keywords', Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords)}
+    ${detailRow('Hexagram', hex.number)}
+    ${detailRow('Name', hex.name)}
+    ${detailRow('Chinese', hex.chinese)}
+    ${detailRow('Upper Trigram', typeof hex.upperTrigram === 'object' ? hex.upperTrigram?.name : hex.upperTrigram)}
+    ${detailRow('Lower Trigram', typeof hex.lowerTrigram === 'object' ? hex.lowerTrigram?.name : hex.lowerTrigram)}
+    ${detailRow('Keywords', Array.isArray(hex.keywords) ? hex.keywords.join(', ') : hex.keywords)}
   `;
 
   return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
 }
 
 function renderTarot(name, data, config, isExpanded, freshness) {
-  const cardDisplay = data.number !== undefined ? (data.number === 0 ? '0' : romanize(data.number) || data.number) : '--';
-  const primary = cardDisplay;
-  const secondary = data.name || data.card || '--';
+  // Handle nested card structure
+  const card = data.card || data;
+  const cardNum = card.number !== undefined ? card.number : null;
+  const cardDisplay = cardNum !== null ? (cardNum === 0 ? '0' : romanize(cardNum) || cardNum) : (card.arcana === 'Minor' ? card.number : '--');
+  const primary = card.name || '--';
+  const secondary = data.meaning || (Array.isArray(card.keywords) ? card.keywords.slice(0, 2).join(', ') : '--');
 
   const details = `
-    ${detailRow('Card', data.name || data.card)}
-    ${detailRow('Arcana', data.arcana)}
-    ${detailRow('Suit', data.suit)}
-    ${detailRow('Keywords', Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords)}
-    ${detailRow('Interpretation', data.interpretation)}
+    ${detailRow('Card', card.name)}
+    ${detailRow('Arcana', card.arcana)}
+    ${detailRow('Suit', card.suit)}
+    ${detailRow('Element', card.element)}
+    ${detailRow('Keywords', Array.isArray(card.keywords) ? card.keywords.join(', ') : card.keywords)}
+    ${detailRow('Meaning', data.meaning)}
   `;
 
   return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);
@@ -343,18 +354,24 @@ function renderGeophysical(name, data, config, isExpanded, freshness) {
 }
 
 function renderSentiment(name, data, config, isExpanded, freshness) {
-  const aggregate = data.aggregate !== undefined ? data.aggregate : '--';
-  const trend = data.trend || '';
+  // Handle nested aggregate structure
+  const agg = data.aggregate || {};
+  const comp = data.components || {};
+  const score = agg.score !== undefined ? agg.score : '--';
+  const label = agg.label || 'Unknown';
+  const trend = agg.trend || '';
   const trendArrow = trend === 'up' ? '▲' : trend === 'down' ? '▼' : '';
+  const change = agg.change24h;
 
-  const primary = `${aggregate} ${data.label || 'Fear'}`;
-  const secondary = `${trendArrow} ${data.change !== undefined ? (data.change >= 0 ? '+' : '') + data.change : '--'}`;
+  const primary = `${score} ${label}`;
+  const secondary = `${trendArrow} ${change !== undefined && change !== null ? (change >= 0 ? '+' : '') + change : '--'}`;
 
   const details = `
-    ${detailRow('Aggregate', data.aggregate)}
-    ${detailRow('Crypto F&G', data.cryptoFearGreed)}
-    ${detailRow('CNN F&G', data.cnnFearGreed)}
-    ${detailRow('Label', data.label)}
+    ${detailRow('Aggregate', score)}
+    ${detailRow('Label', label)}
+    ${detailRow('Crypto F&G', comp.cryptoFearGreed?.score)}
+    ${detailRow('CNN F&G', comp.cnnFearGreed?.score)}
+    ${detailRow('Trend', trend)}
   `;
 
   return createModuleCard(name, config, isExpanded, primary, secondary, details, freshness);

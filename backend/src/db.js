@@ -12,11 +12,15 @@ const { Pool } = require('pg');
 const config = require('./config');
 
 // Create connection pool
+// CockroachDB requires SSL - rejectUnauthorized: false allows self-signed certs
 const pool = new Pool({
   connectionString: config.databaseUrl,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 5000,
+  ssl: config.databaseUrl?.includes('cockroachlabs.cloud')
+    ? { rejectUnauthorized: false }
+    : undefined,
 });
 
 // Log connection errors
