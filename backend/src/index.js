@@ -12,6 +12,7 @@ const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
 const { rateLimiter } = require('./utils/rateLimiter');
 const { startScheduler, runInitialCollection } = require('./scheduler');
+const { migrate } = require('../scripts/migrate');
 
 const app = express();
 
@@ -70,6 +71,14 @@ app.use((err, req, res, next) => {
 
 // Start server
 async function start() {
+  // Run migrations on startup
+  try {
+    console.log('Running database migrations...');
+    await migrate();
+  } catch (err) {
+    console.error('Migration failed:', err.message);
+  }
+
   // Test database connection
   const dbConnected = await db.testConnection();
   if (!dbConnected) {

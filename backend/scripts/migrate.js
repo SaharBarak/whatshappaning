@@ -83,4 +83,9 @@ async function migrate() {
   }
 }
 
-migrate();
+// Run if called directly
+if (require.main === module) {
+  migrate();
+}
+
+module.exports = { migrate };
