@@ -44,12 +44,14 @@ function calculate(date = new Date()) {
   const daysSinceEpoch = julianDay - GMT_CORRELATION;
 
   // Calculate tone (1-13)
+  // The epoch (Long Count 0.0.0.0.0) was 4 Ahau, so we offset by 3
   // Use modulo that handles negative numbers correctly
-  const toneIndex = ((daysSinceEpoch % 13) + 13) % 13;
+  const toneIndex = (((daysSinceEpoch + 3) % 13) + 13) % 13;
   const tone = toneIndex + 1;
 
   // Calculate day sign (0-19)
-  const signIndex = ((daysSinceEpoch % 20) + 20) % 20;
+  // The epoch was Ahau (index 19), so we offset by 19
+  const signIndex = (((daysSinceEpoch + 19) % 20) + 20) % 20;
 
   // Get tone and sign data
   const toneData = tones.find(t => t.number === tone);

@@ -17,8 +17,10 @@ const path = require('path');
 const tones = require(path.join(__dirname, '../../data/tzolkin_tones.json'));
 const seals = require(path.join(__dirname, '../../data/dreamspell_seals.json'));
 
-// Dreamspell epoch: July 26, 1987 (Galactic Synchronization)
-const DREAMSPELL_EPOCH = new Date('1987-07-26T00:00:00Z');
+// Dreamspell epoch: June 23, 1987 (Kin 1: Red Magnetic Dragon)
+// Note: July 26, 1987 was Kin 34 (White Galactic Wizard), not Kin 1.
+// The 260-day Tzolkin cycle began 33 days earlier on June 23, 1987.
+const DREAMSPELL_EPOCH = new Date('1987-06-23T00:00:00Z');
 
 // 52 Galactic Activation Portal (GAP) days
 const GAP_KINS = [
