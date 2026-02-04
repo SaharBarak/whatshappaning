@@ -143,7 +143,9 @@ function renderTzolkin(name, data, config, isExpanded, freshness) {
 
 function renderDreamspell(name, data, config, isExpanded, freshness) {
   const primary = `Kin ${data.kin || '--'}`;
-  const secondary = `${data.sealName || data.seal || '--'}`;
+  const toneName = data.toneName || data.tone || '';
+  const sealName = data.sealName || data.seal || '--';
+  const secondary = toneName ? `${toneName} ${sealName}` : sealName;
 
   const details = `
     ${detailRow('Kin', data.kin)}
