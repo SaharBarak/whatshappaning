@@ -79,11 +79,17 @@
       </div>
     </section>
 
+    <!-- Filter Bar -->
+    <div id="filter-bar" class="filter-bar" role="search" aria-label="Filter predictions">
+      <!-- Filter bar content will be rendered by JavaScript -->
+    </div>
+
     <!-- Predictions Panel -->
     <section class="predictions-panel" id="predictions-panel">
       <div class="section-header">
         <span class="section-icon" aria-hidden="true">📊</span>
         <span class="section-title">PREDICTIONS</span>
+        <span id="predictions-count" class="predictions-count"></span>
       </div>
       <div class="predictions-list" id="predictions-list" aria-live="polite" aria-atomic="false">
         <!-- Predictions will be rendered here -->
