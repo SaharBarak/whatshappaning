@@ -229,6 +229,56 @@ body {
   transform: scale(0.95);
 }
 
+/* Header Share Button - With text label */
+.header-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  height: var(--touch-target);
+  padding: 0 var(--spacing-md);
+  border: 1px solid var(--bg-hover);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-share-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--bar-fill);
+}
+
+.header-share-btn:focus {
+  outline: 2px solid var(--bar-fill);
+  outline-offset: 2px;
+}
+
+.header-share-btn:active {
+  transform: scale(0.95);
+}
+
+.header-share-btn .share-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.header-share-btn .share-btn-text {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .header-share-btn .share-btn-text {
+    display: inline;
+  }
+}
+
 /* Indices Bar - Mobile first */
 .indices-bar {
   display: flex;
@@ -1107,6 +1157,12 @@ body {
 
 .export-icon {
   font-size: 1.5rem;
+}
+
+.export-btn small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
 /* Share Toast */
