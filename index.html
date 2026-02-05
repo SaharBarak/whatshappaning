@@ -12,6 +12,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Prevent flash of wrong theme -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('whatshappening-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || 'system';
+      const effective = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+      if (effective === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      // Update meta theme-color for mobile browsers
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) {
+        meta.setAttribute('content', effective === 'light' ? '#f8fafc' : '#0a0a0f');
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="app">
