@@ -11,6 +11,9 @@ import { renderPatternAlert } from './components/alerts.js';
 import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
+import ga4 from './ga4.js';
+import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
+import consentBanner from './components/consent-banner.js';
 import { init as initPerformance, getMetrics } from './performance.js';
 
 // Application state
@@ -30,6 +33,15 @@ const state = {
 async function init() {
   // Initialize performance monitoring (Core Web Vitals)
   initPerformance();
+  
+  // Initialize GA4 analytics
+  await ga4.init();
+  
+  // Show consent banner if needed
+  consentBanner.init();
+  
+  // Initialize automatic tracking (scroll depth, time on page, errors)
+  initAutoTracking();
 
   // Set up event listeners
   setupEventListeners();
@@ -76,6 +88,9 @@ async function refreshData() {
     console.error('Failed to fetch data:', error);
     state.error = error.message;
     showError(`Failed to load data: ${error.message}`);
+    
+    // Track API error
+    errorEvents.apiError('/api/data', error.status || 0, error.message);
 
     // Still try to render with any cached data
     if (state.data || state.predictions) {
@@ -144,10 +159,17 @@ function updateLiveIndicator() {
  * Toggle prediction expansion
  */
 function togglePrediction(outcomeId) {
-  if (state.expandedPredictions.has(outcomeId)) {
+  const wasExpanded = state.expandedPredictions.has(outcomeId);
+  
+  if (wasExpanded) {
     state.expandedPredictions.delete(outcomeId);
   } else {
     state.expandedPredictions.add(outcomeId);
+    // Track prediction click when expanding
+    const prediction = state.predictions?.outcomes?.find(p => p.outcomeId === outcomeId);
+    if (prediction) {
+      interactionEvents.predictionClick(outcomeId, prediction.type || 'unknown', prediction.confidence || 0);
+    }
   }
   renderPredictions(state.predictions, state.expandedPredictions, togglePrediction);
 }
@@ -156,10 +178,14 @@ function togglePrediction(outcomeId) {
  * Toggle module card expansion
  */
 function toggleModule(moduleName) {
-  if (state.expandedModules.has(moduleName)) {
+  const wasExpanded = state.expandedModules.has(moduleName);
+  
+  if (wasExpanded) {
     state.expandedModules.delete(moduleName);
+    interactionEvents.moduleCollapse(moduleName, moduleName);
   } else {
     state.expandedModules.add(moduleName);
+    interactionEvents.moduleExpand(moduleName, moduleName);
   }
   renderModules(state.data?.modules, state.expandedModules, toggleModule);
 }
