@@ -15,6 +15,8 @@ import ga4 from './ga4.js';
 import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
 import consentBanner from './components/consent-banner.js';
 import { init as initPerformance, getMetrics } from './performance.js';
+import { initShare } from './share.js';
+import { initThemeToggle } from './components/themeToggle.js';
 
 // Application state
 const state = {
@@ -31,6 +33,9 @@ const state = {
  * Initialize the application
  */
 async function init() {
+  // Initialize theme toggle (early to prevent flash of wrong theme)
+  initThemeToggle();
+
   // Initialize performance monitoring (Core Web Vitals)
   initPerformance();
   
@@ -42,6 +47,9 @@ async function init() {
   
   // Initialize automatic tracking (scroll depth, time on page, errors)
   initAutoTracking();
+
+  // Initialize share functionality
+  initShare();
 
   // Set up event listeners
   setupEventListeners();
