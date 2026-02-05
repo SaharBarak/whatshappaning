@@ -61,7 +61,6 @@ function compression(options = {}) {
     const originalWrite = res.write;
     const originalEnd = res.end;
     let chunks = [];
-    let isCompressing = false;
 
     // Override write
     res.write = function(chunk, encoding) {

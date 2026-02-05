@@ -9,14 +9,6 @@
 
 const db = require('../db');
 
-// Confidence level thresholds (matches prediction module)
-const CONFIDENCE_THRESHOLDS = {
-  VERY_HIGH: { minSample: 200, maxCI: 0.15, maxPValue: 0.001 },
-  HIGH: { minSample: 100, maxCI: 0.20, maxPValue: 0.01 },
-  MEDIUM: { minSample: 50, maxCI: 0.30, maxPValue: 0.05 },
-  LOW: { minSample: 30, maxCI: 0.40, maxPValue: 0.10 }
-};
-
 /**
  * Archive a prediction for later accuracy tracking
  * @param {Date} date - Prediction date
@@ -85,9 +77,9 @@ async function getOutcomeAccuracy(outcomeId, days = 90) {
        AVG(CASE WHEN actual_result = true THEN 1 ELSE 0 END) as actual_rate
      FROM prediction_archive
      WHERE outcome_id = $1
-       AND date > NOW() - INTERVAL '${days} days'
+       AND date > NOW() - make_interval(days => $2)
        AND actual_result IS NOT NULL`,
-    [outcomeId]
+    [outcomeId, days]
   );
 
   const row = result.rows[0];
@@ -129,7 +121,7 @@ async function getAccuracyByConfidence(days = 90) {
          WHEN actual_result = false THEN 1 - predicted_probability
        END) as avg_confidence
      FROM prediction_archive
-     WHERE date > NOW() - INTERVAL '${days} days'
+     WHERE date > NOW() - make_interval(days => $1)
        AND actual_result IS NOT NULL
        AND confidence_level IS NOT NULL
      GROUP BY confidence_level
@@ -140,7 +132,8 @@ async function getAccuracyByConfidence(days = 90) {
          WHEN 'Medium' THEN 3
          WHEN 'Low' THEN 4
          ELSE 5
-       END`
+       END`,
+    [days]
   );
 
   return result.rows.map(row => ({
@@ -189,10 +182,11 @@ async function getAccuracyOverTime(days = 90, interval = 'week') {
          (predicted_probability < 0.5 AND actual_result = false)
        ) as correct
      FROM prediction_archive
-     WHERE date > NOW() - INTERVAL '${days} days'
+     WHERE date > NOW() - make_interval(days => $1)
        AND actual_result IS NOT NULL
      GROUP BY ${intervalSql}
-     ORDER BY ${intervalSql}`
+     ORDER BY ${intervalSql}`,
+    [days]
   );
 
   return result.rows.map(row => ({
@@ -221,10 +215,11 @@ async function getOverallAccuracy(days = 90) {
          (predicted_probability < 0.5 AND actual_result = false)
        ) as correct
      FROM prediction_archive
-     WHERE date > NOW() - INTERVAL '${days} days'
+     WHERE date > NOW() - make_interval(days => $1)
        AND actual_result IS NOT NULL
      GROUP BY outcome_id
-     ORDER BY outcome_id`
+     ORDER BY outcome_id`,
+    [days]
   );
 
   // Get overall stats
@@ -239,8 +234,9 @@ async function getOverallAccuracy(days = 90) {
        MIN(date) as first_date,
        MAX(date) as last_date
      FROM prediction_archive
-     WHERE date > NOW() - INTERVAL '${days} days'
-       AND actual_result IS NOT NULL`
+     WHERE date > NOW() - make_interval(days => $1)
+       AND actual_result IS NOT NULL`,
+    [days]
   );
 
   const overall = overallResult.rows[0];
@@ -290,11 +286,11 @@ async function getCalibrationData(days = 90, bins = 10) {
          AVG(predicted_probability) as avg_predicted,
          AVG(CASE WHEN actual_result = true THEN 1.0 ELSE 0.0 END) as actual_rate
        FROM prediction_archive
-       WHERE date > NOW() - INTERVAL '${days} days'
+       WHERE date > NOW() - make_interval(days => $1)
          AND actual_result IS NOT NULL
-         AND predicted_probability >= $1
-         AND predicted_probability < $2`,
-      [lowerBound, upperBound]
+         AND predicted_probability >= $2
+         AND predicted_probability < $3`,
+      [days, lowerBound, upperBound]
     );
 
     const row = result.rows[0];
