@@ -70,11 +70,60 @@ WhatsHappening has powerful data but:
 
 ## Success Criteria
 
-- [ ] **API Keys**: Generate and manage keys
-- [ ] **Rate Limiting**: Enforce tier limits
+- [x] **API Keys**: Generate and manage keys
+- [x] **Rate Limiting**: Enforce tier limits
 - [ ] **Documentation**: Interactive Swagger docs
-- [ ] **Usage Tracking**: Dashboard with stats
+- [x] **Usage Tracking**: Dashboard with stats
 - [ ] **Webhooks**: Real-time event delivery
+
+---
+
+## Backend Implementation (Stream)
+
+### Database Schema (`migrations/002_api_keys.sql`)
+- `api_keys` - Key storage with tier and limits
+- `api_usage` - Daily usage tracking per key
+- `api_request_log` - Detailed request logs (7d retention)
+- `api_tiers` - Reference table for tier limits
+
+### Service Layer (`src/services/apiKeyService.js`)
+- `createKey({ name, tier, ownerEmail })` - Generate new API key
+- `validateKey(secretKey)` - Validate and return key info
+- `getKeyById(keyId)` - Get key by public ID
+- `listKeys({ activeOnly, tier, limit })` - List all keys
+- `revokeKey(keyId)` - Revoke a key
+- `updateKeyTier(keyId, tier)` - Change tier
+- `recordUsage(keyId, endpoint)` - Track usage
+- `getUsageStats(keyId, days)` - Get usage statistics
+- `isLimitExceeded(keyId, dailyLimit)` - Check daily limit
+
+### Middleware (`src/middleware/apiKeyAuth.js`)
+- `apiKeyAuth({ required })` - Configurable auth middleware
+- `requireApiKeyAuth` - Required key auth
+- `optionalApiKeyAuth` - Optional key auth
+- Extracts key from `Authorization: Bearer` or `X-API-Key` header
+- Enforces both daily limits and per-minute rate limits by tier
+
+### API Routes (`src/routes/apiKeys.js`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/keys` | Create new API key |
+| GET | `/api/keys` | List all keys |
+| GET | `/api/keys/:keyId` | Get key details |
+| GET | `/api/keys/:keyId/usage` | Get usage stats |
+| PATCH | `/api/keys/:keyId` | Update key tier |
+| DELETE | `/api/keys/:keyId` | Revoke key |
+
+### Tier Limits
+| Tier | Daily Limit | Per-Minute |
+|------|-------------|------------|
+| Free | 100 | 10 |
+| Pro | 10,000 | 100 |
+| Enterprise | Unlimited | Unlimited |
+
+### Tests
+- 30 new unit tests for pure functions and validation logic
+- All 490 tests pass
 
 ---
 

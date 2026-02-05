@@ -11,6 +11,7 @@ const db = require('./db');
 const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
 const exportRoutes = require('./routes/export');
+const apiKeysRoutes = require('./routes/apiKeys');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
 const { rateLimiter } = require('./utils/rateLimiter');
@@ -49,6 +50,7 @@ app.get('/api/openapi.json', (req, res) => {
 // Routes
 app.use('/api', apiRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/keys', apiKeysRoutes);
 app.use('/health', healthRoutes);
 
 // Root endpoint
@@ -64,6 +66,14 @@ app.get('/', (req, res) => {
       correlations: '/api/correlations',
       patterns: '/api/patterns',
       health: '/health',
+    },
+    developerPortal: {
+      createKey: 'POST /api/keys',
+      listKeys: 'GET /api/keys',
+      getKey: 'GET /api/keys/:keyId',
+      getUsage: 'GET /api/keys/:keyId/usage',
+      updateKey: 'PATCH /api/keys/:keyId',
+      revokeKey: 'DELETE /api/keys/:keyId',
     },
   });
 });
