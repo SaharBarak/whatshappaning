@@ -1,11 +1,38 @@
 node_modules/
-.env
 .DS_Store
 *.log
 .claude/
 
-# Development environment files (contain credentials)
+# ===========================================
+# Environment & Secrets (CRITICAL)
+# ===========================================
+# Environment files with credentials
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# Keep .env.example as reference (contains no real values)
+!.env.example
+!backend/.env.example
+
+# API keys and credentials files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+secrets.json
+service-account*.json
+
+# ===========================================
+# Development environment files
+# ===========================================
 docker-compose.yml
+docker-compose.*.yml
 docker-entrypoint.sh
 Dockerfile
 .dockerignore
@@ -17,3 +44,20 @@ PROMPT_plan.md
 # Metrics files
 ralph_metrics.csv
 ralph_metrics.jsonl
+
+# ===========================================
+# IDE & Editor
+# ===========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ===========================================
+# Build & Coverage
+# ===========================================
+dist/
+build/
+coverage/
+.nyc_output/
