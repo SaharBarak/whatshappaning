@@ -14,6 +14,7 @@ const analyticsRoutes = require('./routes/analytics');
 const exportRoutes = require('./routes/export');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
+const analyticsRoutes = require('./routes/analytics');
 const { rateLimiter } = require('./utils/rateLimiter');
 const { responseTime, compression, metricsCollector, performanceMetrics } = require('./middleware/performance');
 const { startScheduler, runInitialCollection } = require('./scheduler');

@@ -1,18 +1,15 @@
 /**
- * Analytics Routes
- *
- * Exposes prediction accuracy and analytics data.
+ * Analytics Routes - Prediction Accuracy Dashboard API
  *
  * Endpoints:
  * - GET /api/analytics - Full analytics report
- * - GET /api/analytics/accuracy - Overall prediction accuracy
+ * - GET /api/analytics/accuracy - Overall accuracy metrics
  * - GET /api/analytics/accuracy/:outcome - Accuracy for specific outcome
- * - GET /api/analytics/by-confidence - Accuracy grouped by confidence level
+ * - GET /api/analytics/by-confidence - Accuracy by confidence level
  * - GET /api/analytics/over-time - Accuracy trends over time
  * - GET /api/analytics/calibration - Calibration data for reliability diagrams
- * - GET /api/analytics/history - Prediction archive
+ * - GET /api/analytics/history - Historical prediction archive
  * - GET /api/analytics/features - Top contributing features
- * - POST /api/analytics/record - Record actual outcome (admin)
  */
 
 const express = require('express');
@@ -20,41 +17,60 @@ const router = express.Router();
 const analytics = require('../analytics');
 const cache = require('../utils/cache');
 
+// Valid outcomes for validation
+const VALID_OUTCOMES = [
+  'spx_direction', 'spx_volatile', 'btc_direction', 'btc_volatile',
+  'vix_spike', 'gold_direction', 'major_quake', 'quake_above_avg',
+  'geomag_storm', 'sentiment_drop', 'fear_spike'
+];
+
 /**
  * GET /api/analytics
- * Returns full analytics report
+ * Returns complete analytics report with all metrics
  */
 router.get('/', async (req, res) => {
   try {
-    // Try cache first (cache for 15 minutes)
-    const cached = cache.get('analytics:full');
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
+
+    // Try cache first (cache for 1 hour)
+    const cacheKey = `analytics:report:${days}`;
+    const cached = cache.get(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const report = await analytics.getFullReport();
+    const report = await analytics.generateAnalyticsReport(days);
 
-    // Cache for 15 minutes
-    cache.set('analytics:full', report, 15 * 60 * 1000);
+    // Cache for 1 hour
+    cache.set(cacheKey, report, 60 * 60 * 1000);
 
     res.json(report);
   } catch (err) {
     console.error('Error in /api/analytics:', err);
-    res.status(500).json({ error: 'Failed to fetch analytics', message: err.message });
+    res.status(500).json({
+      error: 'Failed to generate analytics report',
+      message: err.message
+    });
   }
 });
 
 /**
  * GET /api/analytics/accuracy
- * Returns overall prediction accuracy
+ * Returns overall accuracy summary
  */
 router.get('/accuracy', async (req, res) => {
   try {
-    const accuracy = await analytics.getOverallAccuracy();
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
+
+    const accuracy = await analytics.getOverallAccuracy(days);
+
     res.json(accuracy);
   } catch (err) {
     console.error('Error in /api/analytics/accuracy:', err);
-    res.status(500).json({ error: 'Failed to fetch accuracy', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get accuracy metrics',
+      message: err.message
+    });
   }
 });
 
@@ -65,16 +81,24 @@ router.get('/accuracy', async (req, res) => {
 router.get('/accuracy/:outcome', async (req, res) => {
   try {
     const { outcome } = req.params;
-    const accuracy = await analytics.getOutcomeAccuracy(outcome);
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
 
-    if (accuracy.error === 'Invalid outcome') {
-      return res.status(400).json(accuracy);
+    if (!VALID_OUTCOMES.includes(outcome)) {
+      return res.status(400).json({
+        error: 'Invalid outcome',
+        validOutcomes: VALID_OUTCOMES
+      });
     }
+
+    const accuracy = await analytics.getOutcomeAccuracy(outcome, days);
 
     res.json(accuracy);
   } catch (err) {
     console.error('Error in /api/analytics/accuracy/:outcome:', err);
-    res.status(500).json({ error: 'Failed to fetch accuracy', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get outcome accuracy',
+      message: err.message
+    });
   }
 });
 
@@ -84,19 +108,20 @@ router.get('/accuracy/:outcome', async (req, res) => {
  */
 router.get('/by-confidence', async (req, res) => {
   try {
-    const cached = cache.get('analytics:by-confidence');
-    if (cached) {
-      return res.json(cached);
-    }
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
 
-    const data = await analytics.getAccuracyByConfidence();
+    const byConfidence = await analytics.getAccuracyByConfidence(days);
 
-    cache.set('analytics:by-confidence', data, 15 * 60 * 1000);
-
-    res.json(data);
+    res.json({
+      days,
+      byConfidence
+    });
   } catch (err) {
     console.error('Error in /api/analytics/by-confidence:', err);
-    res.status(500).json({ error: 'Failed to fetch data', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get confidence accuracy',
+      message: err.message
+    });
   }
 });
 
@@ -106,25 +131,24 @@ router.get('/by-confidence', async (req, res) => {
  */
 router.get('/over-time', async (req, res) => {
   try {
-    const days = Math.min(parseInt(req.query.days, 10) || 30, 365);
-    const granularity = ['day', 'week', 'month'].includes(req.query.granularity)
-      ? req.query.granularity
-      : 'day';
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
+    const interval = ['day', 'week', 'month'].includes(req.query.interval)
+      ? req.query.interval
+      : 'week';
 
-    const cacheKey = `analytics:over-time:${days}:${granularity}`;
-    const cached = cache.get(cacheKey);
-    if (cached) {
-      return res.json(cached);
-    }
+    const overTime = await analytics.getAccuracyOverTime(days, interval);
 
-    const data = await analytics.getAccuracyOverTime(days, granularity);
-
-    cache.set(cacheKey, data, 15 * 60 * 1000);
-
-    res.json(data);
+    res.json({
+      days,
+      interval,
+      data: overTime
+    });
   } catch (err) {
     console.error('Error in /api/analytics/over-time:', err);
-    res.status(500).json({ error: 'Failed to fetch data', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get accuracy over time',
+      message: err.message
+    });
   }
 });
 
@@ -134,47 +158,43 @@ router.get('/over-time', async (req, res) => {
  */
 router.get('/calibration', async (req, res) => {
   try {
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
     const bins = Math.min(Math.max(parseInt(req.query.bins, 10) || 10, 5), 20);
 
-    const cacheKey = `analytics:calibration:${bins}`;
-    const cached = cache.get(cacheKey);
-    if (cached) {
-      return res.json(cached);
-    }
+    const calibration = await analytics.getCalibrationData(days, bins);
 
-    const data = await analytics.getCalibrationData(bins);
-
-    cache.set(cacheKey, data, 15 * 60 * 1000);
-
-    res.json(data);
+    res.json({
+      days,
+      bins,
+      data: calibration
+    });
   } catch (err) {
     console.error('Error in /api/analytics/calibration:', err);
-    res.status(500).json({ error: 'Failed to fetch data', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get calibration data',
+      message: err.message
+    });
   }
 });
 
 /**
  * GET /api/analytics/history
- * Returns prediction archive/history
+ * Returns historical prediction archive
  */
 router.get('/history', async (req, res) => {
   try {
-    const days = Math.min(parseInt(req.query.days, 10) || 30, 90);
     const limit = Math.min(parseInt(req.query.limit, 10) || 100, 500);
     const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
-    const outcome = req.query.outcome;
 
-    const data = await analytics.getPredictionHistory({
-      outcome,
-      days,
-      limit,
-      offset,
-    });
+    const history = await analytics.getPredictionHistory(limit, offset);
 
-    res.json(data);
+    res.json(history);
   } catch (err) {
     console.error('Error in /api/analytics/history:', err);
-    res.status(500).json({ error: 'Failed to fetch history', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get prediction history',
+      message: err.message
+    });
   }
 });
 
@@ -184,62 +204,20 @@ router.get('/history', async (req, res) => {
  */
 router.get('/features', async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
-    const outcome = req.query.outcome;
+    const days = Math.min(parseInt(req.query.days, 10) || 90, 365);
 
-    const cacheKey = `analytics:features:${outcome || 'all'}:${limit}`;
-    const cached = cache.get(cacheKey);
-    if (cached) {
-      return res.json(cached);
-    }
+    const features = await analytics.getFeatureContributions(days);
 
-    const data = await analytics.getTopFeatures({ outcome, limit });
-
-    cache.set(cacheKey, data, 15 * 60 * 1000);
-
-    res.json(data);
+    res.json({
+      days,
+      features
+    });
   } catch (err) {
     console.error('Error in /api/analytics/features:', err);
-    res.status(500).json({ error: 'Failed to fetch features', message: err.message });
-  }
-});
-
-/**
- * POST /api/analytics/record
- * Record actual outcome for a prediction (admin endpoint)
- */
-router.post('/record', async (req, res) => {
-  try {
-    const { date, outcome, actualValue } = req.body;
-
-    if (!date || !outcome || actualValue === undefined) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['date', 'outcome', 'actualValue'],
-      });
-    }
-
-    if (!analytics.OUTCOMES.includes(outcome)) {
-      return res.status(400).json({
-        error: 'Invalid outcome',
-        validOutcomes: analytics.OUTCOMES,
-      });
-    }
-
-    const success = await analytics.recordOutcome(date, outcome, actualValue);
-
-    if (success) {
-      // Invalidate related caches
-      cache.delete('analytics:full');
-      cache.delete('analytics:by-confidence');
-
-      res.json({ success: true, message: 'Outcome recorded' });
-    } else {
-      res.status(500).json({ success: false, error: 'Failed to record outcome' });
-    }
-  } catch (err) {
-    console.error('Error in POST /api/analytics/record:', err);
-    res.status(500).json({ error: 'Failed to record outcome', message: err.message });
+    res.status(500).json({
+      error: 'Failed to get feature contributions',
+      message: err.message
+    });
   }
 });
 
