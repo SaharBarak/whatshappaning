@@ -38,8 +38,8 @@ describe('API Keys Routes', () => {
         success: true,
         message: 'API key created successfully.',
         key: {
-          keyId: 'wh_pk_test',
-          secretKey: 'wh_sk_secret',
+          keyId: 'wh_pk_testkey123',
+          secretKey: 'wh_sk_testsecret', // Not a real secret - test placeholder
           name: 'Test',
           tier: 'free',
           dailyLimit: 100,
@@ -66,12 +66,13 @@ describe('API Keys Routes', () => {
 
 describe('API Key Format', () => {
   it('should have correct public key prefix', () => {
-    const publicKey = 'wh_pk_abc123';
+    const publicKey = 'wh_pk_testpublic';
     assert.ok(publicKey.startsWith('wh_pk_'));
   });
 
   it('should have correct secret key prefix', () => {
-    const secretKey = 'wh_sk_abc123def456';
+    // Test placeholder - not a real secret
+    const secretKey = 'wh_sk_testsecretkey';
     assert.ok(secretKey.startsWith('wh_sk_'));
   });
 });
