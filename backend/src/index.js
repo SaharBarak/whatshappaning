@@ -14,8 +14,10 @@ const analyticsRoutes = require('./routes/analytics');
 const exportRoutes = require('./routes/export');
 const apiKeysRoutes = require('./routes/apiKeys');
 const emailRoutes = require('./routes/email');
+const communityRoutes = require('./routes/community');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
+const cookieParser = require('cookie-parser');
 const { rateLimiter } = require('./utils/rateLimiter');
 const { responseTime, compression, metricsCollector, performanceMetrics } = require('./middleware/performance');
 const { startScheduler, runInitialCollection } = require('./scheduler');
@@ -27,8 +29,9 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Middleware
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(responseTime);
 app.use(compression());
 app.use(metricsCollector);
@@ -59,6 +62,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/keys', apiKeysRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/community', communityRoutes);
 app.use('/health', healthRoutes);
 
 // Metrics endpoint for monitoring
