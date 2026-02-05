@@ -1,0 +1,255 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Prevent duplicate runs - cancel in-progress runs on same branch
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege permissions
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # Backend tests - runs on all PRs and pushes
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci --ignore-optional
+
+      - name: Run tests
+        working-directory: backend
+        run: npm test
+
+  # Frontend validation - validate static files and structure
+  frontend-validate:
+    name: Frontend Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Validate frontend structure
+        run: |
+          echo "Validating frontend structure..."
+          
+          # Check required files exist
+          required_files=(
+            "frontend/index.html"
+            "frontend/styles.css"
+            "frontend/script.js"
+          )
+          
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Error: Required file $file not found"
+              exit 1
+            fi
+            echo "✓ $file exists"
+          done
+          
+          # Validate HTML syntax (basic check)
+          if ! grep -q '<!DOCTYPE html>' frontend/index.html; then
+            echo "❌ Warning: Missing DOCTYPE declaration"
+          fi
+          
+          if ! grep -q '</html>' frontend/index.html; then
+            echo "❌ Error: Malformed HTML - missing closing html tag"
+            exit 1
+          fi
+          
+          # Check for broken local references in HTML
+          echo "Checking for broken asset references..."
+          for ref in $(grep -oE '(src|href)="[^"]*"' frontend/index.html | grep -v 'http' | sed 's/.*="\([^"]*\)"/\1/'); do
+            if [ "$ref" != "#" ] && [ ! -f "frontend/$ref" ]; then
+              echo "⚠ Warning: Referenced file frontend/$ref not found"
+            fi
+          done
+          
+          echo "✓ Frontend validation complete"
+
+  # Deploy backend to Render (only on main push)
+  deploy-backend:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    needs: [backend-test]
+    timeout-minutes: 10
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    # Outputs nothing sensitive
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Check deployment configuration
+        id: check-config
+        env:
+          RENDER_HOOK_CONFIGURED: ${{ secrets.RENDER_DEPLOY_HOOK_URL != '' }}
+        run: |
+          if [ "$RENDER_HOOK_CONFIGURED" = "true" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "⚠ RENDER_DEPLOY_HOOK_URL not set - skipping deploy"
+            echo "Set up a Deploy Hook in Render dashboard and add it as a repository secret"
+          fi
+
+      - name: Trigger Render Deploy
+        if: steps.check-config.outputs.configured == 'true'
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          # Don't log the URL - it contains a secret token
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$RENDER_DEPLOY_HOOK_URL")
+          if [ "$response" = "200" ] || [ "$response" = "201" ]; then
+            echo "✓ Render deploy triggered successfully"
+          else
+            echo "❌ Render deploy failed with HTTP $response"
+            exit 1
+          fi
+
+      - name: Smoke test backend
+        if: steps.check-config.outputs.configured == 'true'
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "⚠ BACKEND_URL not set - skipping smoke test"
+            echo "Set BACKEND_URL in repository variables for post-deploy verification"
+            exit 0
+          fi
+          
+          echo "Waiting for deployment to propagate..."
+          sleep 30
+          
+          # Retry up to 5 times with backoff
+          for i in 1 2 3 4 5; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BACKEND_URL/health" 2>/dev/null || echo "000")
+            if [ "$response" = "200" ]; then
+              echo "✓ Backend smoke test passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $response, retrying in $((i * 10))s..."
+            sleep $((i * 10))
+          done
+          
+          echo "❌ Backend smoke test failed after 5 attempts"
+          exit 1
+
+  # Deploy frontend to Vercel (only on main push)
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    needs: [frontend-validate]
+    timeout-minutes: 10
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Check Vercel configuration
+        id: check-vercel
+        env:
+          VERCEL_TOKEN_SET: ${{ secrets.VERCEL_TOKEN != '' }}
+          VERCEL_ORG_SET: ${{ secrets.VERCEL_ORG_ID != '' }}
+          VERCEL_PROJECT_SET: ${{ secrets.VERCEL_PROJECT_ID != '' }}
+        run: |
+          if [ "$VERCEL_TOKEN_SET" = "true" ] && [ "$VERCEL_ORG_SET" = "true" ] && [ "$VERCEL_PROJECT_SET" = "true" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "⚠ Vercel secrets not configured - skipping deploy"
+            echo "Required secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+          fi
+
+      - name: Checkout code
+        if: steps.check-vercel.outputs.configured == 'true'
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Install Vercel CLI
+        if: steps.check-vercel.outputs.configured == 'true'
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel
+        if: steps.check-vercel.outputs.configured == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+        run: |
+          # Pull Vercel environment info
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          
+          # Build and deploy
+          vercel deploy --prod --token="$VERCEL_TOKEN" > deploy-output.txt 2>&1
+          
+          # Check deployment succeeded without logging URL
+          if [ $? -eq 0 ]; then
+            echo "✓ Vercel deployment completed successfully"
+          else
+            echo "❌ Vercel deployment failed"
+            cat deploy-output.txt
+            exit 1
+          fi
+
+      - name: Smoke test frontend
+        if: steps.check-vercel.outputs.configured == 'true'
+        env:
+          FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+        run: |
+          if [ -z "$FRONTEND_URL" ]; then
+            echo "⚠ FRONTEND_URL not set - skipping smoke test"
+            echo "Set FRONTEND_URL in repository variables for post-deploy verification"
+            exit 0
+          fi
+          
+          echo "Waiting for deployment to propagate..."
+          sleep 15
+          
+          # Retry up to 3 times with backoff
+          for i in 1 2 3; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$FRONTEND_URL" 2>/dev/null || echo "000")
+            if [ "$response" = "200" ]; then
+              echo "✓ Frontend smoke test passed (attempt $i)"
+              
+              # Verify HTML content
+              content=$(curl -s --max-time 10 "$FRONTEND_URL" 2>/dev/null)
+              if echo "$content" | grep -q '</html>'; then
+                echo "✓ Frontend HTML structure verified"
+                exit 0
+              else
+                echo "⚠ Frontend returned 200 but HTML may be incomplete"
+                exit 0
+              fi
+            fi
+            echo "Attempt $i: HTTP $response, retrying in $((i * 5))s..."
+            sleep $((i * 5))
+          done
+          
+          echo "❌ Frontend smoke test failed after 3 attempts"
+          exit 1
