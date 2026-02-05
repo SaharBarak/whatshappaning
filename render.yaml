@@ -22,6 +22,29 @@ services:
       - key: NPM_CONFIG_OPTIONAL
         value: "true"
 
+  - type: web
+    name: whatshappening-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: echo "Static site - no build required"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=300
+      - path: /css/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
 databases:
   - name: whatshappening-db
     databaseName: whatshappening

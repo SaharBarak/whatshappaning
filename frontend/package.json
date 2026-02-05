@@ -1,0 +1,21 @@
+{
+  "name": "whatshappening-frontend",
+  "version": "1.0.0",
+  "description": "WhatsHappening frontend - static PWA",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve -s . -l 3000",
+    "preview": "npx serve -s . -l 3000",
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "keywords": [
+    "pwa",
+    "dashboard",
+    "predictions"
+  ],
+  "author": "WhatsHappening Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

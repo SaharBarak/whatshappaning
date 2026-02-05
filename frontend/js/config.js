@@ -17,6 +17,21 @@ function getApiUrl() {
     return 'https://whatshappening-api-89qq.onrender.com';
   }
 
+  // Render.com static site deployment
+  if (hostname.includes('onrender.com')) {
+    return 'https://whatshappening-api-89qq.onrender.com';
+  }
+
+  // Vercel deployment
+  if (hostname.includes('vercel.app')) {
+    return 'https://whatshappening-api-89qq.onrender.com';
+  }
+
+  // Netlify deployment
+  if (hostname.includes('netlify.app')) {
+    return 'https://whatshappening-api-89qq.onrender.com';
+  }
+
   // Production - adjust domain as needed
   if (window.location.protocol === 'https:') {
     return window.API_URL || `${window.location.protocol}//${hostname.replace('www.', 'api.')}`;
