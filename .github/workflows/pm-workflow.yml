@@ -1,0 +1,56 @@
+# PM Workflow: Route PR comments to local OpenClaw PM Arc
+# For self-hosted runner connected to your local OpenClaw instance
+# Copy this to .github/workflows/pm-workflow.yml in your repos
+
+name: PM Workflow
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  route-to-pm-arc:
+    # Only run on PR comments (not issue comments)
+    if: github.event.issue.pull_request != null
+    runs-on: self-hosted  # Your local runner
+
+    steps:
+      - name: Check for PM commands
+        id: check
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          COMMENT_LOWER=$(echo "$COMMENT_BODY" | tr '[:upper:]' '[:lower:]' | xargs)
+
+          if echo "$COMMENT_LOWER" | grep -qE '^(approved|lgtm)$'; then
+            echo "action=approved" >> $GITHUB_OUTPUT
+          elif echo "$COMMENT_LOWER" | grep -qE '^feedback:'; then
+            echo "action=feedback" >> $GITHUB_OUTPUT
+            FEEDBACK_TEXT=$(echo "$COMMENT_BODY" | sed 's/^[Ff]eedback:\s*//')
+            echo "feedback_text=${FEEDBACK_TEXT}" >> $GITHUB_OUTPUT
+          else
+            echo "action=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Route to PM Arc (Approved)
+        if: steps.check.outputs.action == 'approved'
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+        run: |
+          openclaw agent --agent pm-arc --local --message "PR #${PR_NUMBER} in ${REPO} approved by @${COMMENTER}. Start workflow: Code Review → Architecture → QA → Merge"
+
+      - name: Route to PM Arc (Feedback)
+        if: steps.check.outputs.action == 'feedback'
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          FEEDBACK: ${{ steps.check.outputs.feedback_text }}
+        run: |
+          openclaw agent --agent pm-arc --local --message "PR #${PR_NUMBER} in ${REPO} feedback from @${COMMENTER}: ${FEEDBACK}. Acknowledge and await updates."
+
+      - name: Skip non-PM comment
+        if: steps.check.outputs.action == 'none'
+        run: echo "Not a PM command"
