@@ -10,6 +10,7 @@ const config = require('./config');
 const db = require('./db');
 const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
+const analyticsRoutes = require('./routes/analytics');
 const exportRoutes = require('./routes/export');
 const apiKeysRoutes = require('./routes/apiKeys');
 const swaggerSpec = require('./swagger');
