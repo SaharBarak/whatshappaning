@@ -24,6 +24,62 @@ whatshappaning/
 └── specs/             # Specifications
 ```
 
+## 🔐 Secrets Management
+
+### Environment Variables
+
+The backend uses environment variables for all sensitive configuration. **Never commit `.env` files with real credentials!**
+
+#### Required Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgres://user:pass@host:5432/db` |
+| `GEMINI_API_KEY` | Google Gemini API key for news analysis | `AIza...` |
+
+#### Optional Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port |
+| `NODE_ENV` | `development` | Environment (`development` or `production`) |
+
+### Setup Instructions
+
+1. **Copy the example file:**
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+
+2. **Fill in your credentials:**
+   ```bash
+   # Edit .env with your actual values
+   nano .env
+   ```
+
+3. **Verify `.env` is in `.gitignore`** (it already is by default)
+
+### Production Deployment
+
+For production deployments, use your platform's secrets management:
+
+- **Render**: Add environment variables in the dashboard under "Environment"
+- **Railway**: Use the Variables tab in your service settings
+- **Vercel**: Add environment variables in Project Settings > Environment Variables
+- **AWS**: Use AWS Secrets Manager or Parameter Store
+- **Docker**: Use `docker-compose` secrets or environment files
+
+### Security Best Practices
+
+- ✅ Use `.env.example` as a template (no real values)
+- ✅ Keep `.env` in `.gitignore`
+- ✅ Rotate credentials regularly
+- ✅ Use different credentials for development and production
+- ✅ Use least-privilege database accounts
+- ❌ Never commit secrets to version control
+- ❌ Never log sensitive values
+
 ## 🛠️ Development
 
 ### Backend
@@ -31,6 +87,7 @@ whatshappaning/
 ```bash
 cd backend
 npm install --ignore-optional  # swisseph requires Python
+cp .env.example .env           # Create local config (edit with your values)
 npm run dev                     # Development mode
 npm start                       # Production mode
 ```
