@@ -17,6 +17,7 @@ import consentBanner from './components/consent-banner.js';
 import { init as initPerformance, getMetrics } from './performance.js';
 import { initShare } from './share.js';
 import { initThemeToggle } from './components/themeToggle.js';
+import { initEmailSignup } from './email-signup.js';
 
 // Application state
 const state = {
@@ -50,6 +51,9 @@ async function init() {
 
   // Initialize share functionality
   initShare();
+
+  // Initialize email signup form
+  initEmailSignup();
 
   // Set up event listeners
   setupEventListeners();
