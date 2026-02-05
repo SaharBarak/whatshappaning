@@ -10,6 +10,7 @@ const config = require('./config');
 const db = require('./db');
 const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
+const exportRoutes = require('./routes/export');
 const { rateLimiter } = require('./utils/rateLimiter');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 const { migrate } = require('../scripts/migrate');
@@ -36,6 +37,7 @@ app.use('/api', rateLimiter);
 
 // Routes
 app.use('/api', apiRoutes);
+app.use('/api/export', exportRoutes);
 app.use('/health', healthRoutes);
 
 // Root endpoint

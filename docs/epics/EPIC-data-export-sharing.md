@@ -1,71 +1,59 @@
 # Data Export & Social Sharing
 
 ## Status
-🟢 Frontend Implementation Complete
+🟢 Backend Complete
 
 ## Acceptance Criteria
-- [x] Share button in header
-- [x] Share modal with social platforms (Twitter, Facebook, WhatsApp, LinkedIn)
-- [x] Copy link to clipboard functionality
-- [x] Export image in multiple formats (square, story, wide)
-- [x] Export data as PDF, JSON, CSV
-- [x] Native Web Share API on mobile
-- [x] Toast notifications for feedback
-- [x] Accessible modal with focus trap and escape to close
-- [x] Light/dark theme compatible
+- [x] Shareable image generation (square, story, wide, compact)
+- [x] PDF report generation
+- [x] JSON data export
+- [x] CSV data export
+- [x] Open Graph metadata for link previews
+- [x] Share text generation for social platforms
 
 ## Technical Approach
 
-### Files Modified
-- `frontend/index.html` - Added share button and modal
-- `frontend/css/styles.css` - Share modal and button styles
-- `frontend/js/app.js` - Integrated share initialization
+### Backend (Complete)
 
-### Files Added (Now Tracked)
-- `frontend/js/share.js` - Share and export module
+**Export Service** (`src/export/index.js`)
+- Canvas-based image generation with prediction cards
+- PDFKit-based report generation
+- Multiple image formats for different platforms
+- Dark theme matching the app design
 
-### Implementation Details
+**API Endpoints**
 
-1. **Share Button**
-   - Located in header next to live indicator
-   - 📤 emoji icon, 44px touch target
-   - On mobile: triggers native Web Share API
-   - On desktop: opens share modal
-
-2. **Share Modal**
-   - Social sharing buttons (Twitter, Facebook, WhatsApp, LinkedIn)
-   - Copy link button with clipboard API
-   - Export image buttons (3 aspect ratios)
-   - Export data buttons (PDF, JSON, CSV)
-   - Focus trap for accessibility
-   - Escape key to close
-
-3. **Social Sharing**
-   - Twitter: Opens tweet intent with pre-filled text
-   - Facebook: Opens sharer dialog
-   - WhatsApp: Opens wa.me with message
-   - LinkedIn: Opens share-offsite dialog
-
-4. **Export Functions**
-   - Image exports call `/api/export/image?format=`
-   - PDF exports call `/api/export/pdf`
-   - JSON exports call `/api/export/json`
-   - CSV exports call `/api/export/csv`
-   - All use blob download pattern
-
-5. **Native Share API**
-   - Detects `navigator.share` support
-   - Falls back to modal if unavailable
-   - Better UX on mobile devices
-
-## API Endpoints (Backend)
-- `GET /api/export/image?format=<format>` - Generate share image
+Export:
+- `GET /api/export/image?format=` - Generate shareable image (square, story, wide, compact)
 - `GET /api/export/pdf` - Generate PDF report
-- `GET /api/export/json` - Export raw JSON data
-- `GET /api/export/csv` - Export CSV data
+- `GET /api/export/json` - Export data as JSON
+- `GET /api/export/csv` - Export data as CSV
+- `GET /api/export/og` - Open Graph metadata for link previews
+- `GET /api/export/share-text` - Share text for social platforms
+
+### Frontend (Pending)
+- Share button/modal UI
+- Image preview before sharing
+- Copy-to-clipboard functionality
+- Direct social sharing links
+
+## Configuration
+
+Image formats:
+- `square`: 1080x1080 (Instagram, Facebook)
+- `story`: 1080x1920 (Instagram Stories)
+- `wide`: 1200x630 (Twitter, LinkedIn)
+- `compact`: 600x315 (Small previews)
+
+## Dependencies
+
+Optional (for image/PDF):
+- `canvas` - Image generation
+- `pdfkit` - PDF generation
+
+Falls back gracefully if not installed.
 
 ## Out of Scope
-- Server-side image generation (backend team)
-- PDF template design (backend team)
-- Share analytics tracking
-- Scheduled export emails
+- Video generation
+- Animated GIFs
+- Print-optimized layouts
