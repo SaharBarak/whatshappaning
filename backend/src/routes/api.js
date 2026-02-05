@@ -153,6 +153,122 @@ router.get('/history/:module', async (req, res) => {
 });
 
 /**
+ * GET /api/historical/range
+ * Returns the date range with available historical data
+ */
+router.get('/historical/range', async (req, res) => {
+  try {
+    // Get date range from snapshots
+    const snapshotRange = await db.query(`
+      SELECT
+        MIN(DATE(collected_at)) as min_date,
+        MAX(DATE(collected_at)) as max_date,
+        COUNT(DISTINCT DATE(collected_at)) as total_days
+      FROM snapshots
+    `);
+
+    // Get significant dates (pattern matches, notable events)
+    const significantDates = await db.query(`
+      SELECT DISTINCT DATE(computed_at) as date
+      FROM correlation_results
+      WHERE is_significant = true AND lift > 1.5
+      ORDER BY date DESC
+      LIMIT 30
+    `);
+
+    res.json({
+      range: {
+        minDate: snapshotRange.rows[0]?.min_date,
+        maxDate: snapshotRange.rows[0]?.max_date,
+        totalDays: parseInt(snapshotRange.rows[0]?.total_days) || 0,
+      },
+      significantDates: significantDates.rows.map(r => r.date),
+    });
+  } catch (err) {
+    console.error('Error in /api/historical/range:', err);
+    res.status(500).json({ error: 'Failed to fetch date range', message: err.message });
+  }
+});
+
+/**
+ * GET /api/historical/:date
+ * Returns all module data for a specific historical date
+ */
+router.get('/historical/:date', async (req, res) => {
+  try {
+    const { date } = req.params;
+
+    // Validate date format
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({
+        error: 'Invalid date format',
+        expected: 'YYYY-MM-DD',
+      });
+    }
+
+    const targetDate = new Date(date);
+    if (isNaN(targetDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date' });
+    }
+
+    // Get daily data for that date
+    const dailyData = await db.getDailyData(targetDate);
+
+    // Get snapshots closest to that date for each module
+    const modules = {};
+    for (const moduleName of VALID_MODULES) {
+      const result = await db.query(`
+        SELECT data, collected_at
+        FROM snapshots
+        WHERE module = $1
+          AND DATE(collected_at) = $2
+        ORDER BY collected_at DESC
+        LIMIT 1
+      `, [moduleName, date]);
+
+      if (result.rows[0]) {
+        modules[moduleName] = {
+          data: result.rows[0].data,
+          collectedAt: result.rows[0].collected_at,
+        };
+      }
+    }
+
+    // Get predictions for that date (if archived)
+    let predictions = null;
+    try {
+      const predResult = await db.query(`
+        SELECT outcome_id, predicted_probability, confidence_level, actual_result
+        FROM prediction_archive
+        WHERE date = $1
+      `, [date]);
+
+      if (predResult.rows.length > 0) {
+        predictions = predResult.rows.map(row => ({
+          outcomeId: row.outcome_id,
+          probability: parseFloat(row.predicted_probability),
+          confidence: row.confidence_level,
+          actual: row.actual_result,
+        }));
+      }
+    } catch (e) {
+      // Prediction archive may not exist yet
+    }
+
+    res.json({
+      date,
+      dailyData,
+      modules,
+      predictions,
+      hasData: Object.keys(modules).length > 0 || dailyData !== null,
+    });
+  } catch (err) {
+    console.error('Error in /api/historical/:date:', err);
+    res.status(500).json({ error: 'Failed to fetch historical data', message: err.message });
+  }
+});
+
+/**
  * GET /api/predictions
  * Returns today's full prediction payload using the prediction module
  * with proper log-odds combination and comprehensive factor analysis

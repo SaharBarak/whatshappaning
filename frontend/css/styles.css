@@ -31,6 +31,48 @@
   --negative: #f87171;
   --neutral: #94a3b8;
 
+  /* Theme toggle */
+  --toggle-bg: #1e293b;
+  --toggle-border: #334155;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-prediction: #f1f5f9;
+  --bg-hover: #e2e8f0;
+
+  /* Text */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+
+  /* Confidence colors - slightly darker for better contrast on light */
+  --confidence-very-high: #16a34a;
+  --confidence-high: #22c55e;
+  --confidence-medium: #d97706;
+  --confidence-low: #dc2626;
+  --confidence-insufficient: #6b7280;
+
+  /* Probability bar */
+  --bar-fill: #3b82f6;
+  --bar-bg: #e2e8f0;
+
+  /* Alert */
+  --alert-bg: #fffbeb;
+  --alert-border: #f59e0b;
+
+  /* Positive/Negative */
+  --positive: #16a34a;
+  --negative: #dc2626;
+  --neutral: #64748b;
+
+  /* Theme toggle */
+  --toggle-bg: #e2e8f0;
+  --toggle-border: #cbd5e1;
+
   /* Spacing - Mobile first (smaller base) */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -58,6 +100,14 @@
     --spacing-lg: 24px;
     --spacing-xl: 32px;
   }
+}
+
+/* Theme Transition */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 /* Reset and Base Styles */
@@ -184,7 +234,7 @@ body {
   50% { opacity: 0.5; }
 }
 
-/* Header Actions */
+/* Header Actions (Theme Toggle, Share, Live Indicator) */
 .header-actions {
   display: flex;
   align-items: center;
@@ -277,6 +327,48 @@ body {
   .header-share-btn .share-btn-text {
     display: inline;
   }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  padding: 0;
+  border: 1px solid var(--toggle-border);
+  border-radius: var(--radius-md);
+  background: var(--toggle-bg);
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.theme-toggle:focus {
+  outline: 2px solid var(--bar-fill);
+  outline-offset: 2px;
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Theme toggle icon animation */
+.theme-toggle-icon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  transform: rotate(15deg);
 }
 
 /* Indices Bar - Mobile first */
@@ -521,6 +613,32 @@ body {
 .confidence-insufficient {
   background: #374151;
   color: var(--confidence-insufficient);
+}
+
+/* Light theme confidence badges */
+[data-theme="light"] .confidence-very-high {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+[data-theme="light"] .confidence-high {
+  background: #d1fae5;
+  color: #166534;
+}
+
+[data-theme="light"] .confidence-medium {
+  background: #fef3c7;
+  color: #713f12;
+}
+
+[data-theme="light"] .confidence-low {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+[data-theme="light"] .confidence-insufficient {
+  background: #e5e7eb;
+  color: #374151;
 }
 
 /* Probability Bar - Mobile first */
@@ -1222,7 +1340,7 @@ body {
   background: linear-gradient(
     90deg,
     var(--bg-card) 0%,
-    #1a1a25 50%,
+    var(--bg-hover) 50%,
     var(--bg-card) 100%
   );
   background-size: 200% 100%;
@@ -1265,6 +1383,22 @@ body {
   color: var(--confidence-low);
 }
 
+/* Light theme freshness badges */
+[data-theme="light"] .freshness-live {
+  background: #dcfce7;
+  color: #166534;
+}
+
+[data-theme="light"] .freshness-recent {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+[data-theme="light"] .freshness-stale {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 /* Utility Classes */
 .hidden {
   display: none !important;
@@ -1286,7 +1420,7 @@ body {
   }
 }
 
-/* Dark Mode Scrollbar */
+/* Custom Scrollbar (respects theme) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -1297,12 +1431,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-card);
+  background: var(--toggle-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--bg-hover);
+  background: var(--text-muted);
 }
 
 /* Focus Styles for Accessibility */
