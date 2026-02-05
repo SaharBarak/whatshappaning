@@ -1,0 +1,39 @@
+# Keep Render backend alive by pinging health endpoint
+# Prevents free tier spin-down after 15 minutes of inactivity
+
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Health Endpoint
+        run: |
+          echo "Pinging backend health endpoint..."
+          response=$(curl -s -w "\n%{http_code}" https://whatshappaning.onrender.com/health)
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+          
+          echo "Response: $body"
+          echo "HTTP Status: $http_code"
+          
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Backend is healthy"
+          elif [ "$http_code" -eq 503 ]; then
+            echo "❌ Backend is suspended or unavailable"
+            exit 1
+          else
+            echo "⚠️ Unexpected status code: $http_code"
+            exit 1
+          fi
+      
+      - name: Verify API Response
+        run: |
+          echo "Checking API root..."
+          curl -sf https://whatshappaning.onrender.com/ | head -c 200
