@@ -1,0 +1,18 @@
+# GitGuardian configuration
+# Ignore false positives from test files
+
+paths-ignore:
+  - "**/*.test.js"
+  - "**/*.spec.js"
+  - "**/test/**"
+  - "**/tests/**"
+  - "**/__tests__/**"
+
+# Ignore test API key patterns (these are fake/placeholder values)
+matches-ignore:
+  - name: "Test API keys"
+    match: "wh_sk_test"
+  - name: "Test API keys (abc pattern)"
+    match: "wh_sk_abc"
+  - name: "Placeholder secret keys"
+    match: "wh_sk_secret"

@@ -1,0 +1,148 @@
+{
+  "$schema": "https://lighthouse.github.io/budget.json/budget-schema.json",
+  "description": "Performance budget for What's Happening dashboard",
+  "version": "1.0.0",
+  "lastUpdated": "2026-02-04",
+  "budgets": [
+    {
+      "path": "/*",
+      "name": "Main Dashboard",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 1500,
+          "unit": "millisecond"
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2500,
+          "unit": "millisecond"
+        },
+        {
+          "metric": "interactive",
+          "budget": 3000,
+          "unit": "millisecond"
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 200,
+          "unit": "millisecond"
+        },
+        {
+          "metric": "cumulative-layout-shift",
+          "budget": 0.1,
+          "unit": "unitless"
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "document",
+          "budget": 50,
+          "unit": "kilobyte"
+        },
+        {
+          "resourceType": "script",
+          "budget": 100,
+          "unit": "kilobyte"
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 30,
+          "unit": "kilobyte"
+        },
+        {
+          "resourceType": "image",
+          "budget": 100,
+          "unit": "kilobyte"
+        },
+        {
+          "resourceType": "font",
+          "budget": 100,
+          "unit": "kilobyte"
+        },
+        {
+          "resourceType": "total",
+          "budget": 500,
+          "unit": "kilobyte"
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "script",
+          "budget": 15
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 5
+        },
+        {
+          "resourceType": "image",
+          "budget": 25
+        },
+        {
+          "resourceType": "font",
+          "budget": 10
+        },
+        {
+          "resourceType": "third-party",
+          "budget": 10
+        }
+      ]
+    }
+  ],
+  "targets": {
+    "lighthouse": {
+      "performance": 90,
+      "accessibility": 95,
+      "bestPractices": 95,
+      "seo": 90
+    },
+    "coreWebVitals": {
+      "LCP": {
+        "good": 2500,
+        "needsImprovement": 4000,
+        "unit": "millisecond"
+      },
+      "FID": {
+        "good": 100,
+        "needsImprovement": 300,
+        "unit": "millisecond"
+      },
+      "CLS": {
+        "good": 0.1,
+        "needsImprovement": 0.25,
+        "unit": "unitless"
+      },
+      "INP": {
+        "good": 200,
+        "needsImprovement": 500,
+        "unit": "millisecond"
+      }
+    },
+    "api": {
+      "p50Latency": 100,
+      "p95Latency": 500,
+      "p99Latency": 1000,
+      "unit": "millisecond"
+    },
+    "bundle": {
+      "maxGzipped": 200,
+      "maxUncompressed": 600,
+      "unit": "kilobyte"
+    }
+  },
+  "alerts": {
+    "performanceRegression": {
+      "threshold": 10,
+      "description": "Alert if performance score drops by more than 10 points"
+    },
+    "bundleSizeIncrease": {
+      "threshold": 20,
+      "description": "Alert if bundle size increases by more than 20%"
+    },
+    "latencyRegression": {
+      "threshold": 50,
+      "description": "Alert if p95 latency increases by more than 50%"
+    }
+  }
+}

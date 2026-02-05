@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Prediction accuracy analytics for What's Happening - see our track record">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Analytics | What's Happening</title>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2EECHBPF6C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2EECHBPF6C');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/analytics.css">
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <a href="index.html" class="header-back" aria-label="Back to dashboard">
+        <span class="back-arrow">←</span>
+        <h1 class="header-title">ANALYTICS</h1>
+      </a>
+      <div class="time-range-selector">
+        <button class="time-btn active" data-range="30">30D</button>
+        <button class="time-btn" data-range="90">90D</button>
+        <button class="time-btn" data-range="365">1Y</button>
+        <button class="time-btn" data-range="all">ALL</button>
+      </div>
+    </header>
+
+    <!-- Overall Accuracy Summary -->
+    <section class="accuracy-summary" id="accuracy-summary">
+      <div class="summary-card overall">
+        <div class="summary-label">Overall Accuracy</div>
+        <div class="summary-value skeleton" id="overall-accuracy">--</div>
+        <div class="summary-subtext" id="total-predictions">-- predictions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Very High Confidence</div>
+        <div class="summary-value confidence-very-high skeleton" id="vh-accuracy">--</div>
+        <div class="summary-subtext" id="vh-count">-- predictions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">High Confidence</div>
+        <div class="summary-value confidence-high skeleton" id="h-accuracy">--</div>
+        <div class="summary-subtext" id="h-count">-- predictions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Medium Confidence</div>
+        <div class="summary-value confidence-medium skeleton" id="m-accuracy">--</div>
+        <div class="summary-subtext" id="m-count">-- predictions</div>
+      </div>
+    </section>
+
+    <!-- Accuracy by Outcome Type -->
+    <section class="analytics-section">
+      <div class="section-header">
+        <span class="section-icon" aria-hidden="true">🎯</span>
+        <span class="section-title">ACCURACY BY OUTCOME</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="outcome-chart" aria-label="Accuracy by outcome type chart"></canvas>
+      </div>
+      <div class="outcome-grid" id="outcome-grid">
+        <!-- Outcome cards will be rendered here -->
+        <div class="outcome-card skeleton"></div>
+        <div class="outcome-card skeleton"></div>
+        <div class="outcome-card skeleton"></div>
+        <div class="outcome-card skeleton"></div>
+      </div>
+    </section>
+
+    <!-- Accuracy Over Time -->
+    <section class="analytics-section">
+      <div class="section-header">
+        <span class="section-icon" aria-hidden="true">📈</span>
+        <span class="section-title">ACCURACY TREND</span>
+      </div>
+      <div class="chart-container large">
+        <canvas id="trend-chart" aria-label="Accuracy over time chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Calibration Chart -->
+    <section class="analytics-section">
+      <div class="section-header">
+        <span class="section-icon" aria-hidden="true">⚖️</span>
+        <span class="section-title">CALIBRATION</span>
+        <span class="section-tooltip" title="Shows if our confidence levels match actual outcomes. A well-calibrated model's line follows the diagonal.">ⓘ</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="calibration-chart" aria-label="Calibration chart"></canvas>
+      </div>
+      <div class="calibration-legend">
+        <div class="legend-item">
+          <span class="legend-color perfect"></span>
+          <span>Perfect calibration</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color actual"></span>
+          <span>Our predictions</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature Importance -->
+    <section class="analytics-section">
+      <div class="section-header">
+        <span class="section-icon" aria-hidden="true">🔬</span>
+        <span class="section-title">MODULE PERFORMANCE</span>
+      </div>
+      <div class="feature-list" id="feature-list">
+        <!-- Feature importance items will be rendered here -->
+        <div class="feature-item skeleton"></div>
+        <div class="feature-item skeleton"></div>
+        <div class="feature-item skeleton"></div>
+        <div class="feature-item skeleton"></div>
+        <div class="feature-item skeleton"></div>
+      </div>
+    </section>
+
+    <!-- Recent Predictions Archive -->
+    <section class="analytics-section">
+      <div class="section-header">
+        <span class="section-icon" aria-hidden="true">📜</span>
+        <span class="section-title">PREDICTION ARCHIVE</span>
+      </div>
+      <div class="archive-filters">
+        <select id="archive-outcome-filter" class="archive-filter">
+          <option value="all">All Outcomes</option>
+          <option value="spx_up">S&P 500</option>
+          <option value="btc_up">Bitcoin</option>
+          <option value="volatility_high">Volatility</option>
+          <option value="earthquake">Earthquakes</option>
+        </select>
+        <select id="archive-result-filter" class="archive-filter">
+          <option value="all">All Results</option>
+          <option value="correct">Correct</option>
+          <option value="incorrect">Incorrect</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="archive-table-container">
+        <table class="archive-table" id="archive-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Prediction</th>
+              <th>Confidence</th>
+              <th>Probability</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody id="archive-body">
+            <!-- Archive rows will be rendered here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="archive-pagination" id="archive-pagination">
+        <button class="pagination-btn" id="prev-page" disabled>← Previous</button>
+        <span class="pagination-info" id="pagination-info">Page 1 of 1</span>
+        <button class="pagination-btn" id="next-page">Next →</button>
+      </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <footer class="analytics-footer">
+      <div class="disclaimer">
+        Past prediction accuracy does not guarantee future results. All predictions are based on historical correlations and should not be used as financial, medical, or professional advice.
+      </div>
+      <div class="last-updated" id="last-updated">
+        Last updated: --
+      </div>
+    </footer>
+  </div>
+
+  <!-- JavaScript -->
+  <script type="module" src="js/analytics.js"></script>
+</body>
+</html>

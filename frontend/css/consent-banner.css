@@ -1,0 +1,251 @@
+/**
+ * Consent Banner Styles
+ * GDPR/CCPA compliant privacy consent UI
+ */
+
+/* Consent Banner */
+.consent-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--bg-card) 0%, #1a1a25 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-md);
+  z-index: 9999;
+  transform: translateY(100%);
+  transition: transform var(--transition-normal);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.consent-banner.visible {
+  transform: translateY(0);
+}
+
+.consent-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .consent-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.consent-text {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
+.consent-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.consent-text p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.consent-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* Consent Buttons */
+.consent-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  min-height: var(--touch-target);
+  white-space: nowrap;
+}
+
+.consent-btn-accept {
+  background: var(--confidence-very-high);
+  color: #000;
+  border-color: var(--confidence-very-high);
+}
+
+.consent-btn-accept:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.consent-btn-accept:focus {
+  outline: 2px solid var(--confidence-very-high);
+  outline-offset: 2px;
+}
+
+.consent-btn-decline {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.consent-btn-decline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.consent-btn-decline:focus {
+  outline: 2px solid var(--text-secondary);
+  outline-offset: 2px;
+}
+
+.consent-btn-settings {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  text-decoration: underline;
+  padding: var(--spacing-sm);
+}
+
+.consent-btn-settings:hover {
+  color: var(--text-secondary);
+}
+
+.consent-btn-settings:focus {
+  outline: 2px solid var(--text-muted);
+  outline-offset: 2px;
+}
+
+/* Privacy Settings Modal */
+.privacy-settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  padding: var(--spacing-md);
+}
+
+.privacy-settings-modal.visible {
+  opacity: 1;
+}
+
+.privacy-settings-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 480px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.privacy-settings-content h2 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.privacy-option {
+  margin-bottom: var(--spacing-lg);
+}
+
+.privacy-option label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.privacy-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--confidence-very-high);
+  cursor: pointer;
+}
+
+.privacy-option-desc {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  margin: var(--spacing-xs) 0 0 26px;
+  line-height: 1.4;
+}
+
+.privacy-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  margin-top: var(--spacing-xl);
+}
+
+.privacy-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  min-height: var(--touch-target);
+}
+
+.privacy-btn-save {
+  background: var(--bar-fill);
+  color: #fff;
+  border-color: var(--bar-fill);
+}
+
+.privacy-btn-save:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.privacy-btn-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.privacy-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .consent-banner,
+  .privacy-settings-modal,
+  .consent-btn {
+    transition: none;
+  }
+  
+  .consent-btn:hover {
+    transform: none;
+  }
+}
+
+/* Safe area support for mobile */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .consent-banner {
+    padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+  }
+}
