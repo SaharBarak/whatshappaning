@@ -1101,6 +1101,212 @@ body {
   line-height: 1.6;
 }
 
+/* Email Signup Section */
+.email-signup-section {
+  background: linear-gradient(135deg, var(--bar-fill) 0%, #6366f1 100%);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+  .email-signup-section {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+  }
+}
+
+.email-signup-content {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.email-signup-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.email-signup-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.email-signup-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: var(--spacing-xs);
+}
+
+@media (min-width: 640px) {
+  .email-signup-title {
+    font-size: 1.5rem;
+  }
+}
+
+.email-signup-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.email-signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.email-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+@media (min-width: 480px) {
+  .email-input-group {
+    flex-direction: row;
+  }
+}
+
+.email-input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 1rem;
+  font-family: inherit;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  min-height: var(--touch-target);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.email-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.email-submit-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 2px solid #fff;
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--bar-fill);
+  cursor: pointer;
+  min-height: var(--touch-target);
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.email-submit-btn:hover {
+  background: transparent;
+  color: #fff;
+}
+
+.email-submit-btn:active {
+  transform: scale(0.98);
+}
+
+.email-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.email-preferences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-lg);
+}
+
+.email-pref-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+}
+
+.email-pref-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #fff;
+  cursor: pointer;
+}
+
+.email-signup-message {
+  font-size: 0.9rem;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.email-signup-message.success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.email-signup-message.error {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fca5a5;
+}
+
+/* Subscription Toast */
+.subscription-toast {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--toggle-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  z-index: 1001;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.subscription-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.subscription-toast.success .toast-icon {
+  color: var(--positive);
+}
+
+.subscription-toast.error .toast-icon {
+  color: var(--negative);
+}
+
+.toast-icon {
+  font-size: 1.1rem;
+}
+
+/* Light theme email signup adjustments */
+[data-theme="light"] .email-signup-section {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+}
+
+[data-theme="light"] .subscription-toast {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
 /* Error Banner */
 .error-banner {
   position: fixed;
