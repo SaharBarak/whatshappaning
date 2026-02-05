@@ -34,9 +34,6 @@
     "web-push": "^3.6.7",
     "yahoo-finance2": "^2.11.0"
   },
-  "optionalDependencies": {
-    "swisseph": "^0.5.17"
-  },
   "engines": {
     "node": ">=18.0.0"
   }
