@@ -184,6 +184,51 @@ body {
   50% { opacity: 0.5; }
 }
 
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+@media (min-width: 640px) {
+  .header-actions {
+    gap: var(--spacing-md);
+  }
+}
+
+/* Header Button (Share, etc.) */
+.header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  padding: 0;
+  border: 1px solid var(--bg-hover);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.header-btn:focus {
+  outline: 2px solid var(--bar-fill);
+  outline-offset: 2px;
+}
+
+.header-btn:active {
+  transform: scale(0.95);
+}
+
 /* Indices Bar - Mobile first */
 .indices-bar {
   display: flex;
@@ -880,6 +925,229 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Share Modal */
+.share-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  animation: fadeIn 0.2s ease;
+}
+
+.share-modal.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.share-modal-content {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--bg-hover);
+}
+
+.share-modal-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.share-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  margin: calc(var(--spacing-sm) * -1);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.share-modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.share-modal-body {
+  padding: var(--spacing-lg);
+}
+
+.share-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.share-section:last-child {
+  margin-bottom: 0;
+}
+
+.share-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Social Share Buttons */
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--bg-hover);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  min-height: var(--touch-target);
+}
+
+.share-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.share-btn:focus {
+  outline: 2px solid var(--bar-fill);
+  outline-offset: 2px;
+}
+
+.share-icon {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.share-btn-twitter:hover { border-color: #1DA1F2; }
+.share-btn-facebook:hover { border-color: #4267B2; }
+.share-btn-whatsapp:hover { border-color: #25D366; }
+.share-btn-linkedin:hover { border-color: #0077B5; }
+.share-btn-link:hover { border-color: var(--bar-fill); }
+
+/* Export Buttons */
+.export-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.export-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  border: 1px solid var(--bg-hover);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  min-height: 70px;
+}
+
+.export-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+}
+
+.export-btn:focus {
+  outline: 2px solid var(--bar-fill);
+  outline-offset: 2px;
+}
+
+.export-btn:active {
+  transform: translateY(0);
+}
+
+.export-icon {
+  font-size: 1.5rem;
+}
+
+/* Share Toast */
+.share-toast {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--bg-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  z-index: 1200;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.share-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.share-toast-success {
+  border-color: var(--positive);
+}
+
+.share-toast-error {
+  border-color: var(--negative);
+}
+
+/* Light theme share modal adjustments */
+[data-theme="light"] .share-modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .share-modal-content,
+[data-theme="light"] .share-toast {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
 /* Loading Skeleton */
