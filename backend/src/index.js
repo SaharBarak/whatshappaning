@@ -10,6 +10,7 @@ const config = require('./config');
 const db = require('./db');
 const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
+const exportRoutes = require('./routes/export');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
 const analyticsRoutes = require('./routes/analytics');
@@ -53,6 +54,7 @@ app.get('/api/openapi.json', (req, res) => {
 // Routes
 app.use('/api', apiRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/export', exportRoutes);
 app.use('/health', healthRoutes);
 
 // Metrics endpoint for monitoring
