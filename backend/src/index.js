@@ -13,7 +13,9 @@ const healthRoutes = require('./routes/health');
 const exportRoutes = require('./routes/export');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
+const analyticsRoutes = require('./routes/analytics');
 const { rateLimiter } = require('./utils/rateLimiter');
+const { responseTime, compression, metricsCollector, performanceMetrics } = require('./middleware/performance');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 const { migrate } = require('../scripts/migrate');
 
@@ -25,6 +27,9 @@ app.set('trust proxy', 1);
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(responseTime);
+app.use(compression());
+app.use(metricsCollector);
 
 // Request logging in development
 if (config.nodeEnv === 'development') {
@@ -48,8 +53,19 @@ app.get('/api/openapi.json', (req, res) => {
 
 // Routes
 app.use('/api', apiRoutes);
+app.use('/api/analytics', analyticsRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/health', healthRoutes);
+
+// Metrics endpoint for monitoring
+app.get('/metrics', (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    endpoints: performanceMetrics.getAllStats(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
+});
 
 // Root endpoint
 app.get('/', (req, res) => {
