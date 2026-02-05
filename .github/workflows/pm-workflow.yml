@@ -28,6 +28,8 @@ jobs:
             echo "action=feedback" >> $GITHUB_OUTPUT
             FEEDBACK_TEXT=$(echo "$COMMENT_BODY" | sed 's/^[Ff]eedback:\s*//')
             echo "feedback_text=${FEEDBACK_TEXT}" >> $GITHUB_OUTPUT
+          elif echo "$COMMENT_LOWER" | grep -qE '^ready for review$'; then
+            echo "action=ready" >> $GITHUB_OUTPUT
           else
             echo "action=none" >> $GITHUB_OUTPUT
           fi
@@ -50,6 +52,15 @@ jobs:
           FEEDBACK: ${{ steps.check.outputs.feedback_text }}
         run: |
           openclaw agent --agent pm-arc --local --message "PR #${PR_NUMBER} in ${REPO} feedback from @${COMMENTER}: ${FEEDBACK}. Acknowledge and await updates."
+
+      - name: Route to PM Arc (Ready for Review)
+        if: steps.check.outputs.action == 'ready'
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+        run: |
+          openclaw agent --agent pm-arc --local --message "PR #${PR_NUMBER} in ${REPO} marked ready for review by @${COMMENTER}. Run review gates: Code Review → Architecture → QA → Merge"
 
       - name: Skip non-PM comment
         if: steps.check.outputs.action == 'none'
