@@ -11,6 +11,7 @@ import { renderPatternAlert } from './components/alerts.js';
 import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
+import { initFilters, renderFilterBar, filterPredictions, getFilterState } from './components/filters.js';
 
 // Application state
 const state = {
@@ -27,6 +28,10 @@ const state = {
  * Initialize the application
  */
 async function init() {
+  // Render and initialize filter bar
+  renderFilterBar();
+  initFilters(handleFilterChange);
+
   // Set up event listeners
   setupEventListeners();
 
@@ -35,6 +40,14 @@ async function init() {
 
   // Set up auto-refresh
   setInterval(refreshData, config.autoRefreshInterval);
+}
+
+/**
+ * Handle filter state changes
+ */
+function handleFilterChange(filterState) {
+  // Re-render predictions with new filters
+  render();
 }
 
 /**
@@ -89,7 +102,14 @@ async function refreshData() {
 function render() {
   updateLiveIndicator();
   renderIndices(state.data?.indices);
-  renderPredictions(state.predictions, state.expandedPredictions, togglePrediction);
+  
+  // Apply filters to predictions
+  const filteredPredictions = state.predictions?.predictions 
+    ? { ...state.predictions, predictions: filterPredictions(state.predictions.predictions) }
+    : state.predictions;
+  
+  renderPredictions(filteredPredictions, state.expandedPredictions, togglePrediction);
+  updatePredictionsCount(state.predictions?.predictions, filteredPredictions?.predictions);
   renderPatternAlert(state.predictions?.patternAlerts);
 
   // Merge modules from snapshots with dailyData for local calculation modules
@@ -107,6 +127,25 @@ function render() {
   }
   renderModules(mergedModules, state.expandedModules, toggleModule);
   renderSuggestions(state.predictions?.actionSuggestions);
+}
+
+/**
+ * Update predictions count display
+ */
+function updatePredictionsCount(total, filtered) {
+  const countEl = document.getElementById('predictions-count');
+  if (!countEl) return;
+  
+  const totalCount = total?.length || 0;
+  const filteredCount = filtered?.length || 0;
+  
+  if (totalCount === 0) {
+    countEl.textContent = '';
+  } else if (filteredCount === totalCount) {
+    countEl.textContent = `(${totalCount})`;
+  } else {
+    countEl.textContent = `(${filteredCount} of ${totalCount})`;
+  }
 }
 
 /**
