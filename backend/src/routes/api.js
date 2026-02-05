@@ -272,29 +272,96 @@ router.get('/historical/:date', async (req, res) => {
  * GET /api/predictions
  * Returns today's full prediction payload using the prediction module
  * with proper log-odds combination and comprehensive factor analysis
+ *
+ * Query params (all optional):
+ * - category: Filter by category (market, geophysical, sentiment)
+ * - confidence: Filter by confidence level (high, medium, low, insufficient)
+ * - minProbability: Minimum probability threshold (0-1)
+ * - maxProbability: Maximum probability threshold (0-1)
+ * - search: Search term for outcome names
  */
 router.get('/predictions', async (req, res) => {
   try {
-    // Try cache first
-    const cached = cache.get('api:predictions');
-    if (cached) {
-      return res.json(cached);
-    }
+    // Try cache first (full unfiltered response)
+    let response = cache.get('api:predictions');
 
-    // Gather current module data
-    const moduleDataMap = {};
-    for (const moduleName of VALID_MODULES) {
-      const snapshot = await db.getLatestSnapshot(moduleName);
-      if (snapshot && snapshot.data) {
-        moduleDataMap[moduleName] = snapshot.data;
+    if (!response) {
+      // Gather current module data
+      const moduleDataMap = {};
+      for (const moduleName of VALID_MODULES) {
+        const snapshot = await db.getLatestSnapshot(moduleName);
+        if (snapshot && snapshot.data) {
+          moduleDataMap[moduleName] = snapshot.data;
+        }
       }
+
+      // Use the prediction module for proper statistical calculation
+      response = await prediction.generatePredictions(moduleDataMap);
+
+      // Cache for 3 hours
+      cache.set('api:predictions', response, 3 * 60 * 60 * 1000);
     }
 
-    // Use the prediction module for proper statistical calculation
-    const response = await prediction.generatePredictions(moduleDataMap);
+    // Apply filters if any query params provided
+    const { category, confidence, minProbability, maxProbability, search } = req.query;
+    const hasFilters = category || confidence || minProbability || maxProbability || search;
 
-    // Cache for 3 hours
-    cache.set('api:predictions', response, 3 * 60 * 60 * 1000);
+    if (hasFilters && response.predictions) {
+      let filtered = [...response.predictions];
+
+      // Category filter (market outcomes, geophysical, sentiment)
+      if (category) {
+        const categoryMap = {
+          market: ['spx_direction', 'spx_volatile', 'btc_direction', 'btc_volatile', 'vix_spike', 'gold_direction'],
+          geophysical: ['major_quake', 'quake_above_avg', 'geomag_storm'],
+          sentiment: ['sentiment_drop', 'fear_spike']
+        };
+        const validOutcomes = categoryMap[category.toLowerCase()];
+        if (validOutcomes) {
+          filtered = filtered.filter(p => validOutcomes.includes(p.outcomeId));
+        }
+      }
+
+      // Confidence filter
+      if (confidence) {
+        const confidenceLevel = confidence.toLowerCase();
+        filtered = filtered.filter(p =>
+          p.confidence?.toLowerCase() === confidenceLevel
+        );
+      }
+
+      // Probability range filters
+      if (minProbability) {
+        const min = parseFloat(minProbability);
+        if (!isNaN(min)) {
+          filtered = filtered.filter(p => p.probability >= min);
+        }
+      }
+      if (maxProbability) {
+        const max = parseFloat(maxProbability);
+        if (!isNaN(max)) {
+          filtered = filtered.filter(p => p.probability <= max);
+        }
+      }
+
+      // Search filter (case-insensitive name match)
+      if (search) {
+        const searchLower = search.toLowerCase();
+        filtered = filtered.filter(p =>
+          p.name?.toLowerCase().includes(searchLower) ||
+          p.outcomeId?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Return filtered response
+      return res.json({
+        ...response,
+        predictions: filtered,
+        filtered: true,
+        totalCount: response.predictions.length,
+        filteredCount: filtered.length
+      });
+    }
 
     res.json(response);
   } catch (err) {
