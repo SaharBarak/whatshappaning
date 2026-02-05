@@ -10,6 +10,9 @@ const config = require('./config');
 const db = require('./db');
 const apiRoutes = require('./routes/api');
 const healthRoutes = require('./routes/health');
+const exportRoutes = require('./routes/export');
+const swaggerSpec = require('./swagger');
+const swaggerUi = require('swagger-ui-express');
 const { rateLimiter } = require('./utils/rateLimiter');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 const { migrate } = require('../scripts/migrate');
@@ -34,8 +37,18 @@ if (config.nodeEnv === 'development') {
 // Rate limiting for API routes (100 req/min/IP)
 app.use('/api', rateLimiter);
 
+// API Documentation
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "What's Happening API Docs"
+}));
+app.get('/api/openapi.json', (req, res) => {
+  res.json(swaggerSpec);
+});
+
 // Routes
 app.use('/api', apiRoutes);
+app.use('/api/export', exportRoutes);
 app.use('/health', healthRoutes);
 
 // Root endpoint

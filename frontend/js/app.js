@@ -11,6 +11,8 @@ import { renderPatternAlert } from './components/alerts.js';
 import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
+import { initShare } from './share.js';
+import { initThemeToggle } from './components/themeToggle.js';
 
 // Application state
 const state = {
@@ -27,6 +29,12 @@ const state = {
  * Initialize the application
  */
 async function init() {
+  // Initialize theme toggle (early to prevent flash of wrong theme)
+  initThemeToggle();
+
+  // Initialize share functionality
+  initShare();
+
   // Set up event listeners
   setupEventListeners();
 
