@@ -238,6 +238,36 @@ function startScheduler() {
     timezone: 'UTC'
   });
 
+  // Schedule daily email digest (8:00 AM UTC)
+  cron.schedule('0 8 * * *', async () => {
+    logger.info('Running daily email digest');
+    try {
+      const { sendDailyDigest } = require('./email/digest');
+      const result = await sendDailyDigest();
+      logger.info(`Daily digest complete: ${result.sent} sent, ${result.failed} failed`);
+    } catch (err) {
+      logger.error('Failed to send daily digest:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
+  // Schedule weekly email digest (Monday 8:00 AM UTC)
+  cron.schedule('0 8 * * 1', async () => {
+    logger.info('Running weekly email digest');
+    try {
+      const { sendWeeklyDigest } = require('./email/digest');
+      const result = await sendWeeklyDigest();
+      logger.info(`Weekly digest complete: ${result.sent} sent, ${result.failed} failed`);
+    } catch (err) {
+      logger.error('Failed to send weekly digest:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
   logger.info('Scheduler started');
 }
 
