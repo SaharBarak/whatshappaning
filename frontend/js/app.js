@@ -11,6 +11,7 @@ import { renderPatternAlert } from './components/alerts.js';
 import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
+import { init as initPerformance, getMetrics } from './performance.js';
 
 // Application state
 const state = {
@@ -27,6 +28,9 @@ const state = {
  * Initialize the application
  */
 async function init() {
+  // Initialize performance monitoring (Core Web Vitals)
+  initPerformance();
+
   // Set up event listeners
   setupEventListeners();
 
@@ -216,6 +220,11 @@ function setupEventListeners() {
 window.dismissError = () => {
   hideError();
 };
+
+/**
+ * Expose performance metrics for debugging
+ */
+window.getPerformanceMetrics = getMetrics;
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
