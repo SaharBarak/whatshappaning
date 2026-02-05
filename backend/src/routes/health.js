@@ -14,14 +14,17 @@ const cache = require('../utils/cache');
 /**
  * GET /health
  * Basic health check - returns 200 if server is running
+ * Note: Always returns 200 for Render health checks to prevent service suspension.
+ * The response body indicates actual health status (healthy/degraded).
  */
 router.get('/', async (req, res) => {
   const dbConnected = await db.testConnection();
 
   const status = dbConnected ? 'healthy' : 'degraded';
-  const httpStatus = dbConnected ? 200 : 503;
 
-  res.status(httpStatus).json({
+  // Always return 200 so Render doesn't suspend the service
+  // The body contains the actual health status for monitoring
+  res.status(200).json({
     status,
     timestamp: new Date().toISOString(),
     database: dbConnected ? 'connected' : 'disconnected',
