@@ -7,112 +7,137 @@
   <meta name="theme-color" content="#0a0a0f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>What's Happening</title>
+  <meta name="apple-mobile-web-app-title" content="What's Happening">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="What's Happening">
+  <meta name="msapplication-TileColor" content="#0a0a0f">
+  <meta name="msapplication-TileImage" content="/icons/icon-144.png">
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png">
+  <link rel="icon" type="image/png" sizes="72x72" href="/icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128.png">
+  
+  <title>What's Happening - Prediction Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <!-- Skip to main content link for keyboard/screen reader users -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <div id="app">
     <!-- Header -->
-    <header class="header">
+    <header class="header" role="banner">
       <h1 class="header-title">WHAT'S HAPPENING</h1>
-      <div class="live-indicator">
-        <span class="live-dot"></span>
+      <div class="live-indicator" role="status" aria-live="polite" aria-label="Data connection status">
+        <span class="live-dot" aria-hidden="true"></span>
         <span class="live-text">Loading...</span>
       </div>
     </header>
 
-    <!-- Indices Bar -->
-    <section class="indices-bar" id="indices-bar" aria-label="Composite indices">
-      <div class="index-item skeleton" title="Solar-Geo Index">
-        <span class="index-value">--</span>
-      </div>
-      <div class="index-item skeleton" title="Astro Events Index">
-        <span class="index-value">--</span>
-      </div>
-      <div class="index-item skeleton" title="Calendar Sync Index">
-        <span class="index-value">--</span>
-      </div>
-    </section>
+    <!-- Main Content -->
+    <main id="main-content">
+      <!-- Indices Bar -->
+      <section class="indices-bar" id="indices-bar" aria-labelledby="indices-heading">
+        <h2 id="indices-heading" class="sr-only">Composite Indices</h2>
+        <div class="index-item skeleton" role="group" aria-label="Solar-Geo Index: loading">
+          <span class="index-value">--</span>
+        </div>
+        <div class="index-item skeleton" role="group" aria-label="Astro Events Index: loading">
+          <span class="index-value">--</span>
+        </div>
+        <div class="index-item skeleton" role="group" aria-label="Calendar Sync Index: loading">
+          <span class="index-value">--</span>
+        </div>
+      </section>
 
-    <!-- Predictions Panel -->
-    <section class="predictions-panel" id="predictions-panel">
-      <div class="section-header">
-        <span class="section-icon" aria-hidden="true">📊</span>
-        <span class="section-title">PREDICTIONS</span>
-      </div>
-      <div class="predictions-list" id="predictions-list" aria-live="polite" aria-atomic="false">
-        <!-- Predictions will be rendered here -->
-        <div class="prediction-skeleton skeleton"></div>
-        <div class="prediction-skeleton skeleton"></div>
-        <div class="prediction-skeleton skeleton"></div>
-      </div>
-    </section>
+      <!-- Predictions Panel -->
+      <section class="predictions-panel" id="predictions-panel" aria-labelledby="predictions-heading">
+        <div class="section-header">
+          <span class="section-icon" aria-hidden="true">📊</span>
+          <h2 id="predictions-heading" class="section-title">PREDICTIONS</h2>
+        </div>
+        <div class="predictions-list" id="predictions-list" role="list" aria-live="polite" aria-atomic="false" aria-relevant="additions text">
+          <!-- Predictions will be rendered here -->
+          <div class="prediction-skeleton skeleton" role="listitem" aria-hidden="true"></div>
+          <div class="prediction-skeleton skeleton" role="listitem" aria-hidden="true"></div>
+          <div class="prediction-skeleton skeleton" role="listitem" aria-hidden="true"></div>
+        </div>
+      </section>
 
-    <!-- Pattern Alert (Conditional) -->
-    <section class="pattern-alert hidden" id="pattern-alert">
-      <div class="alert-header">
-        <span class="alert-icon">⚠️</span>
-        <span class="alert-title">PATTERN ALERT</span>
-        <span class="match-score">Match: --</span>
-      </div>
-      <div class="alert-content" id="alert-content">
-        <!-- Alert content will be rendered here -->
-      </div>
-    </section>
+      <!-- Pattern Alert (Conditional) -->
+      <section class="pattern-alert hidden" id="pattern-alert" role="alert" aria-labelledby="alert-heading">
+        <div class="alert-header">
+          <span class="alert-icon" aria-hidden="true">⚠️</span>
+          <h2 id="alert-heading" class="alert-title">PATTERN ALERT</h2>
+          <span class="match-score">Match: --</span>
+        </div>
+        <div class="alert-content" id="alert-content">
+          <!-- Alert content will be rendered here -->
+        </div>
+      </section>
 
-    <!-- Data Modules Section -->
-    <section class="modules-section">
-      <div class="section-header">
-        <span class="section-title">DATA MODULES</span>
-      </div>
-      <div class="data-grid" id="data-grid">
-        <!-- 16 module cards will be rendered here -->
-        <div class="module-card skeleton" data-module="moon"></div>
-        <div class="module-card skeleton" data-module="tzolkin"></div>
-        <div class="module-card skeleton" data-module="dreamspell"></div>
-        <div class="module-card skeleton" data-module="parasha"></div>
-        <div class="module-card skeleton" data-module="gematria"></div>
-        <div class="module-card skeleton" data-module="numerology"></div>
-        <div class="module-card skeleton" data-module="iching"></div>
-        <div class="module-card skeleton" data-module="tarot"></div>
-        <div class="module-card skeleton" data-module="solar"></div>
-        <div class="module-card skeleton" data-module="schumann"></div>
-        <div class="module-card skeleton" data-module="cosmic"></div>
-        <div class="module-card skeleton" data-module="astrology"></div>
-        <div class="module-card skeleton" data-module="markets"></div>
-        <div class="module-card skeleton" data-module="geophysical"></div>
-        <div class="module-card skeleton" data-module="sentiment"></div>
-        <div class="module-card skeleton" data-module="news"></div>
-      </div>
-    </section>
+      <!-- Data Modules Section -->
+      <section class="modules-section" aria-labelledby="modules-heading">
+        <div class="section-header">
+          <h2 id="modules-heading" class="section-title">DATA MODULES</h2>
+        </div>
+        <div class="data-grid" id="data-grid" role="list" aria-label="Data module cards">
+          <!-- 16 module cards will be rendered here -->
+          <div class="module-card skeleton" data-module="moon" role="listitem" aria-label="Moon data: loading"></div>
+          <div class="module-card skeleton" data-module="tzolkin" role="listitem" aria-label="Tzolkin data: loading"></div>
+          <div class="module-card skeleton" data-module="dreamspell" role="listitem" aria-label="Dreamspell data: loading"></div>
+          <div class="module-card skeleton" data-module="parasha" role="listitem" aria-label="Parasha data: loading"></div>
+          <div class="module-card skeleton" data-module="gematria" role="listitem" aria-label="Gematria data: loading"></div>
+          <div class="module-card skeleton" data-module="numerology" role="listitem" aria-label="Numerology data: loading"></div>
+          <div class="module-card skeleton" data-module="iching" role="listitem" aria-label="I Ching data: loading"></div>
+          <div class="module-card skeleton" data-module="tarot" role="listitem" aria-label="Tarot data: loading"></div>
+          <div class="module-card skeleton" data-module="solar" role="listitem" aria-label="Solar data: loading"></div>
+          <div class="module-card skeleton" data-module="schumann" role="listitem" aria-label="Schumann Resonance data: loading"></div>
+          <div class="module-card skeleton" data-module="cosmic" role="listitem" aria-label="Cosmic rays data: loading"></div>
+          <div class="module-card skeleton" data-module="astrology" role="listitem" aria-label="Astrology data: loading"></div>
+          <div class="module-card skeleton" data-module="markets" role="listitem" aria-label="Markets data: loading"></div>
+          <div class="module-card skeleton" data-module="geophysical" role="listitem" aria-label="Geophysical data: loading"></div>
+          <div class="module-card skeleton" data-module="sentiment" role="listitem" aria-label="Sentiment data: loading"></div>
+          <div class="module-card skeleton" data-module="news" role="listitem" aria-label="News data: loading"></div>
+        </div>
+      </section>
+    </main>
 
     <!-- Suggestions Footer -->
-    <footer class="suggestions-footer" id="suggestions-footer">
-      <div class="suggestions-section" id="suggestions-section">
+    <footer class="suggestions-footer" id="suggestions-footer" role="contentinfo">
+      <section class="suggestions-section" id="suggestions-section" aria-labelledby="suggestions-heading">
         <div class="section-header">
-          <span class="section-icon">💡</span>
-          <span class="section-title">SUGGESTIONS</span>
+          <span class="section-icon" aria-hidden="true">💡</span>
+          <h2 id="suggestions-heading" class="section-title">SUGGESTIONS</h2>
         </div>
-        <div class="suggestions-content" id="suggestions-content">
+        <div class="suggestions-content" id="suggestions-content" aria-live="polite">
           <!-- Suggestions will be rendered here -->
         </div>
-      </div>
-      <div class="disclaimer">
-        Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.
+      </section>
+      <div class="disclaimer" role="note">
+        <strong>Disclaimer:</strong> Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.
       </div>
     </footer>
 
     <!-- Error Banner (Hidden by default) -->
     <div class="error-banner hidden" id="error-banner" role="alert" aria-live="assertive">
       <span class="error-text">Connection error. Showing cached data.</span>
-      <button class="error-dismiss" onclick="dismissError()" aria-label="Dismiss error">×</button>
+      <button class="error-dismiss" onclick="dismissError()" aria-label="Dismiss error message" type="button">×</button>
     </div>
+
+    <!-- Screen reader announcements for live updates -->
+    <div id="sr-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   </div>
 
   <!-- JavaScript Modules -->
   <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/pwa.js"></script>
 </body>
 </html>

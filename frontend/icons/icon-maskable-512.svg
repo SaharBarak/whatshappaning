@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0a0a0f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)" rx="76.8"/>
+  
+  <!-- Cosmic ring -->
+  <circle cx="256" cy="256" r="143.35999999999999" 
+          fill="none" stroke="url(#accent)" stroke-width="10.24" opacity="0.5"/>
+  
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="102.4" 
+          fill="none" stroke="url(#accent)" stroke-width="7.68" opacity="0.7"/>
+  
+  <!-- Center dot -->
+  <circle cx="256" cy="256" r="32.768" fill="url(#accent)"/>
+  
+  <!-- Orbital dots -->
+  <circle cx="256" cy="112.64000000000001" r="12.288" fill="#00d4ff"/>
+  <circle cx="378.88" cy="325.632" r="10.240000000000002" fill="#7c3aed"/>
+  <circle cx="133.12" cy="325.632" r="10.240000000000002" fill="#00d4ff" opacity="0.7"/>
+  
+  <!-- Data lines -->
+  <line x1="194.56" y1="399.36" 
+        x2="235.51999999999998" y2="399.36" 
+        stroke="#00d4ff" stroke-width="5.12" opacity="0.6"/>
+  <line x1="256" y1="399.36" 
+        x2="317.44" y2="399.36" 
+        stroke="#7c3aed" stroke-width="5.12" opacity="0.6"/>
+</svg>
