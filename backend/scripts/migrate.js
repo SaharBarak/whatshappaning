@@ -10,11 +10,20 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 async function migrate() {
+  const dbUrl = process.env.DATABASE_URL;
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  // Enable SSL for external databases (Render, CockroachDB, any production non-localhost)
+  const needsSsl = dbUrl && (
+    dbUrl.includes('cockroachlabs.cloud') ||
+    dbUrl.includes('render.com') ||
+    dbUrl.includes('onrender.com') ||
+    (isProduction && !dbUrl.includes('localhost'))
+  );
+
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL?.includes('cockroachlabs.cloud')
-      ? { rejectUnauthorized: false }
-      : undefined,
+    connectionString: dbUrl,
+    ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
   });
 
   try {

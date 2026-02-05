@@ -12,15 +12,21 @@ const { Pool } = require('pg');
 const config = require('./config');
 
 // Create connection pool
-// CockroachDB requires SSL - rejectUnauthorized: false allows self-signed certs
+// Render and CockroachDB require SSL - rejectUnauthorized: false allows self-signed certs
+// SSL is enabled for any external database URL (contains host other than localhost)
+const needsSsl = config.databaseUrl && (
+  config.databaseUrl.includes('cockroachlabs.cloud') ||
+  config.databaseUrl.includes('render.com') ||
+  config.databaseUrl.includes('onrender.com') ||
+  (config.nodeEnv === 'production' && !config.databaseUrl.includes('localhost'))
+);
+
 const pool = new Pool({
   connectionString: config.databaseUrl,
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
-  ssl: config.databaseUrl?.includes('cockroachlabs.cloud')
-    ? { rejectUnauthorized: false }
-    : undefined,
+  ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
 });
 
 // Log connection errors
