@@ -146,6 +146,44 @@ body {
   }
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.header-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  min-height: var(--touch-target);
+}
+
+.header-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.header-link-icon {
+  font-size: 1rem;
+}
+
+.header-link-text {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .header-link-text {
+    display: inline;
+  }
+}
+
 .live-indicator {
   display: flex;
   align-items: center;
