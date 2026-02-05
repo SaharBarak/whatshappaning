@@ -20,6 +20,7 @@ const swaggerUi = require('swagger-ui-express');
 const cookieParser = require('cookie-parser');
 const { rateLimiter } = require('./utils/rateLimiter');
 const { responseTime, compression, metricsCollector, performanceMetrics } = require('./middleware/performance');
+const { optionalApiKeyAuth } = require('./middleware/apiKeyAuth');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 const { migrate } = require('../scripts/migrate');
 
@@ -44,8 +45,11 @@ if (config.nodeEnv === 'development') {
   });
 }
 
-// Rate limiting for API routes (100 req/min/IP)
+// Rate limiting for API routes (100 req/min/IP for unauthenticated, tier-based for authenticated)
 app.use('/api', rateLimiter);
+
+// API key authentication (optional - enhances rate limits if provided)
+app.use('/api', optionalApiKeyAuth);
 
 // API Documentation
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
