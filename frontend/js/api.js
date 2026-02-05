@@ -131,6 +131,20 @@ export async function runBacktest(query) {
 }
 
 /**
+ * Get available historical date range
+ */
+export async function getHistoricalRange() {
+  return request('/api/historical/range');
+}
+
+/**
+ * Get all module data for a specific historical date
+ */
+export async function getHistoricalData(date) {
+  return request(`/api/historical/${date}`);
+}
+
+/**
  * Check API health
  */
 export async function checkHealth() {
@@ -184,6 +198,8 @@ export function formatTimeAgo(timestamp) {
 export default {
   getCurrentData,
   getHistory,
+  getHistoricalRange,
+  getHistoricalData,
   getPredictions,
   getPrediction,
   getCorrelations,
