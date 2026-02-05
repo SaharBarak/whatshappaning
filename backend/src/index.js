@@ -13,8 +13,9 @@ const healthRoutes = require('./routes/health');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
 const analyticsRoutes = require('./routes/analytics');
+const metricsRoutes = require('./routes/metrics');
 const { rateLimiter } = require('./utils/rateLimiter');
-const { responseTime, compression, metricsCollector, performanceMetrics } = require('./middleware/performance');
+const { responseTime, compression, metricsCollector } = require('./middleware/performance');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 const { migrate } = require('../scripts/migrate');
 
@@ -54,16 +55,7 @@ app.get('/api/openapi.json', (req, res) => {
 app.use('/api', apiRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/health', healthRoutes);
-
-// Metrics endpoint for monitoring
-app.get('/metrics', (req, res) => {
-  res.json({
-    timestamp: new Date().toISOString(),
-    endpoints: performanceMetrics.getAllStats(),
-    uptime: process.uptime(),
-    memory: process.memoryUsage()
-  });
-});
+app.use('/metrics', metricsRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -77,7 +69,9 @@ app.get('/', (req, res) => {
       predictions: '/api/predictions',
       correlations: '/api/correlations',
       patterns: '/api/patterns',
+      analytics: '/api/analytics',
       health: '/health',
+      metrics: '/metrics',
     },
   });
 });
