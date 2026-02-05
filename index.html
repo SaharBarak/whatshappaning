@@ -131,6 +131,56 @@
       </div>
     </section>
 
+    <!-- Email Signup Section -->
+    <section class="email-signup-section" id="email-signup-section">
+      <div class="email-signup-content">
+        <div class="email-signup-header">
+          <span class="email-signup-icon" aria-hidden="true">📬</span>
+          <div>
+            <h2 class="email-signup-title">Get Daily Predictions</h2>
+            <p class="email-signup-subtitle">Delivered to your inbox every morning</p>
+          </div>
+        </div>
+        <form id="email-signup-form" class="email-signup-form">
+          <div class="email-input-group">
+            <input
+              type="email"
+              id="email-input"
+              class="email-input"
+              placeholder="your@email.com"
+              required
+              autocomplete="email"
+              aria-label="Email address"
+            />
+            <button type="submit" id="email-submit-btn" class="email-submit-btn">
+              Subscribe
+            </button>
+          </div>
+          <div class="email-preferences">
+            <label class="email-pref-label">
+              <input type="checkbox" id="pref-daily" checked />
+              <span>Daily digest</span>
+            </label>
+            <label class="email-pref-label">
+              <input type="checkbox" id="pref-weekly" />
+              <span>Weekly summary</span>
+            </label>
+            <label class="email-pref-label">
+              <input type="checkbox" id="pref-alerts" checked />
+              <span>Pattern alerts</span>
+            </label>
+          </div>
+          <p id="email-signup-message" class="email-signup-message hidden"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div id="subscription-toast" class="subscription-toast" role="status" aria-live="polite">
+      <span id="toast-icon" class="toast-icon">✓</span>
+      <span id="toast-message" class="toast-message"></span>
+    </div>
+
     <!-- Suggestions Footer -->
     <footer class="suggestions-footer" id="suggestions-footer">
       <div class="suggestions-section" id="suggestions-section">
