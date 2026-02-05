@@ -29,8 +29,37 @@ const app = express();
 // Trust proxy for accurate IP detection behind load balancers
 app.set('trust proxy', 1);
 
+// CORS configuration
+const corsOptions = {
+  credentials: true,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    // In development, allow localhost
+    if (config.nodeEnv === 'development') {
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+    }
+
+    // Check against whitelist
+    if (config.allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Origin not allowed
+    console.warn(`CORS blocked request from origin: ${origin}`);
+    callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+  },
+  optionsSuccessStatus: 200, // For legacy browser support
+  maxAge: 86400, // Preflight cache for 24 hours
+};
+
 // Middleware
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(responseTime);

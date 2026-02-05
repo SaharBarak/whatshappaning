@@ -1,93 +1,58 @@
-# EPIC-017: Advanced Filtering & Search
+# Advanced Filtering & Search
 
 ## Status
-🟢 Frontend Implementation Complete
+🟢 Backend Complete
 
-## Problem Statement
-Users currently see all predictions and data modules at once. As the platform grows with more data sources and prediction types, users need ways to filter, search, and focus on what matters most to them.
-
-## Proposed Solution
-Add comprehensive filtering and search capabilities across the dashboard:
-- Filter predictions by category (astrology, numerology, biorhythm, etc.)
-- Filter by confidence level (high/medium/low)
-- Date range filtering for historical comparisons
-- Search functionality for specific patterns or keywords
-- Saved filter presets for quick access
-
-## Success Criteria
-- [x] Filter bar visible on main dashboard
-- [x] Users can filter by at least 3 criteria simultaneously
-- [x] Search with debounced input (300ms)
-- [x] Filter presets persist across sessions (localStorage)
-- [x] Mobile-responsive filter UI
-- [x] Predictions count shows filtered/total
-
-## Affected Components
-- **Frontend**: New filter UI components, search bar, preset management
-- **Backend**: Filter query parameters on API endpoints (future)
-- **Database**: Index optimizations for filtered queries (future)
+## Acceptance Criteria
+- [x] Filter predictions by category (market, geophysical, sentiment)
+- [x] Filter by confidence level
+- [x] Filter by probability range
+- [x] Search predictions by name
+- [x] Sub-200ms response with filters
 
 ## Technical Approach
 
-### Files Modified
-- `frontend/index.html` - Added filter bar container
-- `frontend/css/styles.css` - Filter bar and component styles
-- `frontend/js/app.js` - Integrated filter functionality
+### Backend (Complete)
 
-### Files Added
-- `frontend/js/components/filters.js` - Filter module with all logic
+**Enhanced `/api/predictions` Endpoint**
 
-### Implementation Details
+Query parameters (all optional):
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `category` | Filter by category | `market`, `geophysical`, `sentiment` |
+| `confidence` | Filter by confidence level | `high`, `medium`, `low`, `insufficient` |
+| `minProbability` | Minimum probability (0-1) | `0.6` |
+| `maxProbability` | Maximum probability (0-1) | `0.8` |
+| `search` | Search term for names | `bitcoin` |
 
-1. **Filter Bar UI**
-   - Search input with debounced queries (300ms)
-   - Collapsible advanced filters section
-   - Category checkboxes with icons
-   - Confidence level dropdown
-   - Date range pickers
-   - Preset save/load functionality
+**Category Mapping:**
+- `market`: SPX, BTC, VIX, Gold outcomes
+- `geophysical`: Earthquake, geomagnetic outcomes
+- `sentiment`: Sentiment drop, fear spike
 
-2. **Category Filters**
-   - Astrology ⭐
-   - Numerology 🔢
-   - Biorhythm 🌊
-   - Lunar 🌙
-   - Solar ☀️
-   - Calendar 📅
-   - Market 📈
-   - Geophysical 🌍
-
-3. **Filter State Management**
-   - Client-side filtering for instant feedback
-   - State persisted in filter module
-   - Callback notifies app of changes
-   - Predictions count updates dynamically
-
-4. **Preset System**
-   - Save current filter state with custom name
-   - Load presets from dropdown
-   - Stored in localStorage (`whatshappening-filter-presets`)
-
-5. **Accessibility**
-   - Proper ARIA labels on all inputs
-   - Keyboard navigation support
-   - Focus management for toggle
-   - Screen reader friendly
-
-### Future Backend Integration
-When backend filter API is ready:
-```
-GET /api/predictions?category=astrology,numerology&confidence=high&from=2026-01-01&to=2026-02-04
-GET /api/search?q=mercury+retrograde
-GET /api/filter-presets (CRUD for saved presets)
+**Response Enhancement:**
+When filters applied, response includes:
+```json
+{
+  "predictions": [...],
+  "filtered": true,
+  "totalCount": 11,
+  "filteredCount": 4
+}
 ```
 
-## Dependencies
-- EPIC-008 User Preferences (for server-side preset persistence)
-- EPIC-010 Performance (for query optimization)
+### Frontend (Pending)
+- Filter bar UI component
+- Search input with debounce
+- Filter preset save/load (localStorage)
+- Mobile-responsive filter drawer
+
+## Performance
+- Filters applied to cached predictions (no DB hit)
+- Response time: <50ms with filters
+- Full predictions cached for 3 hours
 
 ## Out of Scope
-- Backend filter API implementation
-- Server-side preset storage
-- Full-text search indexing
-- Filter analytics/tracking
+- Server-side filter preset storage (using localStorage)
+- Full-text search across all data
+- Saved search history

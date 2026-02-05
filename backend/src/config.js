@@ -51,6 +51,18 @@ const config = {
     max: 100, // 100 requests per minute per IP
   },
 
+  // CORS - allowed origins
+  // In production, only whitelisted origins can access the API
+  // Set ALLOWED_ORIGINS env var as comma-separated list to override defaults
+  allowedOrigins: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [
+        'https://whatshappaning.vercel.app',
+        'https://www.whatshappaning.com',
+        'https://whatshappaning.com',
+        'https://saharbarak.github.io',
+      ],
+
   // Statistical thresholds
   stats: {
     minSampleSize: 30,
