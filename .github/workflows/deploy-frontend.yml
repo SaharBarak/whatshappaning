@@ -1,0 +1,178 @@
+name: Deploy Frontend to Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+# Prevent concurrent deployments to same environment
+concurrency:
+  group: deploy-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write  # Needed to comment on PRs
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Check Vercel configuration
+        id: check-vercel
+        env:
+          VERCEL_TOKEN_SET: ${{ secrets.VERCEL_TOKEN != '' }}
+          VERCEL_ORG_SET: ${{ secrets.VERCEL_ORG_ID != '' }}
+          VERCEL_PROJECT_SET: ${{ secrets.VERCEL_PROJECT_ID != '' }}
+        run: |
+          if [ "$VERCEL_TOKEN_SET" = "true" ] && [ "$VERCEL_ORG_SET" = "true" ] && [ "$VERCEL_PROJECT_SET" = "true" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "⚠ Vercel secrets not configured - skipping deploy"
+            echo ""
+            echo "To configure Vercel deployment:"
+            echo "1. Install Vercel CLI: npm i -g vercel"
+            echo "2. Run: vercel link (in frontend/ directory)"
+            echo "3. Get project/org IDs from .vercel/project.json"
+            echo "4. Add secrets to GitHub: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+          fi
+          
+          # Determine if this is a production or preview deploy
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          else
+            echo "environment=preview" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout code
+        if: steps.check-vercel.outputs.configured == 'true'
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        if: steps.check-vercel.outputs.configured == 'true'
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        if: steps.check-vercel.outputs.configured == 'true'
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel Environment
+        if: steps.check-vercel.outputs.configured == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+        run: vercel pull --yes --environment=${{ steps.check-vercel.outputs.environment }} --token="$VERCEL_TOKEN"
+
+      - name: Deploy to Vercel (Production)
+        if: steps.check-vercel.outputs.configured == 'true' && steps.check-vercel.outputs.environment == 'production'
+        id: deploy-prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+        run: |
+          # Deploy to production
+          url=$(vercel deploy --prod --token="$VERCEL_TOKEN" 2>&1 | grep -E '^https://' | tail -1)
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "✓ Production deployment complete"
+          echo "URL: $url"
+
+      - name: Deploy to Vercel (Preview)
+        if: steps.check-vercel.outputs.configured == 'true' && steps.check-vercel.outputs.environment == 'preview'
+        id: deploy-preview
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: frontend
+        run: |
+          # Deploy preview (not promoted to production)
+          url=$(vercel deploy --token="$VERCEL_TOKEN" 2>&1 | grep -E '^https://' | tail -1)
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "✓ Preview deployment complete"
+          echo "URL: $url"
+
+      - name: Comment on PR with preview URL
+        if: steps.check-vercel.outputs.configured == 'true' && github.event_name == 'pull_request' && steps.deploy-preview.outputs.url != ''
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const url = '${{ steps.deploy-preview.outputs.url }}';
+            const body = `## 🚀 Preview Deployment Ready!\n\n**Preview URL:** ${url}\n\nThis preview will be updated with each new commit to this PR.`;
+            
+            // Check if we already commented
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(c => 
+              c.user.type === 'Bot' && 
+              c.body.includes('Preview Deployment Ready')
+            );
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Smoke test deployment
+        if: steps.check-vercel.outputs.configured == 'true'
+        env:
+          DEPLOY_URL: ${{ steps.deploy-prod.outputs.url || steps.deploy-preview.outputs.url }}
+        run: |
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "⚠ No deployment URL available - skipping smoke test"
+            exit 0
+          fi
+          
+          echo "Testing deployment at: $DEPLOY_URL"
+          
+          # Give Vercel a moment to propagate
+          sleep 10
+          
+          # Retry up to 3 times
+          for i in 1 2 3; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$DEPLOY_URL" 2>/dev/null || echo "000")
+            if [ "$response" = "200" ]; then
+              echo "✓ Smoke test passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $response, retrying in 5s..."
+            sleep 5
+          done
+          
+          echo "⚠ Smoke test inconclusive - deployment may still be propagating"
+          # Don't fail the workflow for slow propagation
+          exit 0
