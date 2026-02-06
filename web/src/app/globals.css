@@ -35,9 +35,9 @@
   --color-accent: oklch(0.75 0.15 200);
   --color-accent-foreground: oklch(0.205 0 0);
   
-  /* Muted */
+  /* Muted - WCAG AA compliant (4.5:1 contrast ratio) */
   --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
+  --color-muted-foreground: oklch(0.44 0 0);
   
   /* Border */
   --color-border: oklch(0.922 0 0);
@@ -82,8 +82,9 @@
   --color-accent: oklch(0.70 0.18 200);
   --color-accent-foreground: oklch(0.08 0 0);
   
+  /* Muted - WCAG AA compliant (4.5:1 contrast ratio) */
   --color-muted: oklch(0.18 0.01 265);
-  --color-muted-foreground: oklch(0.65 0 0);
+  --color-muted-foreground: oklch(0.75 0 0);
   
   --color-border: oklch(0.25 0.01 265);
   --color-input: oklch(0.25 0.01 265);
@@ -132,9 +133,50 @@ code, pre, .mono {
   color: var(--color-primary-foreground);
 }
 
+/* Focus styles - WCAG AA compliant visible focus indicators */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
+  box-shadow: 0 0 0 6px oklch(0.55 0.22 260 / 0.25);
+}
+
+.dark :focus-visible {
+  box-shadow: 0 0 0 6px oklch(0.65 0.20 250 / 0.3);
+}
+
+/* Skip to content link for keyboard navigation */
+.skip-to-content {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: top 0.2s ease-in-out;
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+  outline: 3px solid var(--color-foreground);
+  outline-offset: 2px;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Scrollbar */

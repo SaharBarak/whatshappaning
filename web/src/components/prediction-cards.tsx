@@ -153,6 +153,13 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
   const [expanded, setExpanded] = React.useState(false);
   const Icon = prediction.icon;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setExpanded(!expanded);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -167,6 +174,11 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
           expanded && "ring-2 ring-primary/20"
         )}
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-expanded={expanded}
+        aria-label={`${prediction.title} prediction card. ${prediction.probability}% probability, ${prediction.confidence} confidence. Press Enter to ${expanded ? 'collapse' : 'expand'} details.`}
       >
         {/* Gradient Background */}
         <div
@@ -174,12 +186,13 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
             "absolute inset-0 bg-gradient-to-br opacity-50",
             categoryColors[prediction.category] || categoryColors.energy
           )}
+          aria-hidden="true"
         />
 
         <CardHeader className="relative pb-2">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-background/80">
+              <div className="p-2 rounded-lg bg-background/80" aria-hidden="true">
                 <Icon className="w-5 h-5" />
               </div>
               <div>
@@ -204,6 +217,7 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
               <motion.div
                 animate={{ rotate: expanded ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
+                aria-hidden="true"
               >
                 <ChevronDown className="w-5 h-5 text-muted-foreground" />
               </motion.div>
@@ -219,14 +233,15 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
           {/* Probability Meter */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Probability</span>
+              <span className="text-sm font-medium" id={`probability-label-${prediction.id}`}>Probability</span>
               <div className="flex items-center gap-2">
                 {prediction.trend === "up" ? (
-                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  <TrendingUp className="w-4 h-4 text-green-500" aria-hidden="true" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-500" />
+                  <TrendingDown className="w-4 h-4 text-red-500" aria-hidden="true" />
                 )}
-                <span className="font-bold text-2xl">
+                <span className="sr-only">Trend: {prediction.trend === "up" ? "increasing" : "decreasing"}</span>
+                <span className="font-bold text-2xl" aria-live="polite">
                   {prediction.probability}%
                 </span>
               </div>
@@ -235,6 +250,10 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
               <Progress
                 value={prediction.probability}
                 className="h-3 bg-muted/50"
+                aria-labelledby={`probability-label-${prediction.id}`}
+                aria-valuenow={prediction.probability}
+                aria-valuemin={0}
+                aria-valuemax={100}
               />
             </div>
           </div>
@@ -250,12 +269,12 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
                 className="mt-6 pt-4 border-t border-border/50"
               >
                 <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <Brain className="w-4 h-4" />
+                  <Brain className="w-4 h-4" aria-hidden="true" />
                   Contributing Factors
                 </h4>
-                <div className="space-y-3">
+                <div className="space-y-3" role="list" aria-label="Contributing factors">
                   {prediction.factors.map((factor, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                    <div key={i} className="flex items-center gap-3" role="listitem">
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm">{factor.name}</span>
@@ -266,11 +285,19 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
                                 ? "text-green-500"
                                 : "text-red-500"
                             )}
+                            aria-label={`Contribution: ${factor.contribution}`}
                           >
                             {factor.contribution}
                           </span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                        <div 
+                          className="h-1.5 rounded-full bg-muted/50 overflow-hidden"
+                          role="progressbar"
+                          aria-valuenow={factor.strength}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`${factor.name} strength: ${factor.strength}%`}
+                        >
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${factor.strength}%` }}
@@ -282,9 +309,13 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
                     </div>
                   ))}
                 </div>
-                <Button variant="ghost" className="w-full mt-4 gap-2">
+                <Button 
+                  variant="ghost" 
+                  className="w-full mt-4 gap-2"
+                  aria-label={`View full analysis for ${prediction.title}`}
+                >
                   View Full Analysis
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Button>
               </motion.div>
             )}
@@ -297,14 +328,14 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
 
 export function PredictionCards() {
   return (
-    <section className="py-20">
+    <section className="py-20" aria-labelledby="predictions-heading">
       <div className="container px-4">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4">
             <Zap className="w-4 h-4 mr-2" aria-hidden="true" />
             Today&apos;s Predictions
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+          <h2 id="predictions-heading" className="text-3xl sm:text-4xl font-bold mb-4">
             Data-Driven Insights
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -313,7 +344,7 @@ export function PredictionCards() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Prediction cards">
           {predictions.map((prediction, index) => (
             <PredictionCard
               key={prediction.id}
