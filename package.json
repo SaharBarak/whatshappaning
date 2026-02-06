@@ -6,7 +6,11 @@
   "scripts": {
     "start": "npx serve -s . -l 3000",
     "preview": "npx serve -s . -l 3000",
-    "test": "echo \"No tests configured\" && exit 0"
+    "test": "echo \"No tests configured\" && exit 0",
+    "a11y:axe": "node scripts/run-axe-audit.js",
+    "a11y:lighthouse": "node scripts/run-lighthouse-audit.js",
+    "a11y:audit": "npm run a11y:axe && npm run a11y:lighthouse",
+    "a11y:report": "node scripts/generate-a11y-report.js"
   },
   "keywords": [
     "pwa",
@@ -17,5 +21,13 @@
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.8.0",
+    "axe-core": "^4.8.0",
+    "chrome-launcher": "^1.1.0",
+    "lighthouse": "^11.0.0",
+    "playwright": "^1.40.0",
+    "serve": "^14.2.0"
   }
 }
