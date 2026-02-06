@@ -40,6 +40,9 @@
   </script>
 </head>
 <body>
+  <!-- Skip link for keyboard users -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
   <div id="app">
     <!-- Header -->
     <header class="header">
@@ -85,6 +88,7 @@
     </div>
 
     <!-- Predictions Panel -->
+    <main id="main-content">
     <section class="predictions-panel" id="predictions-panel">
       <div class="section-header">
         <span class="section-icon" aria-hidden="true">📊</span>
@@ -112,7 +116,7 @@
     </section>
 
     <!-- Data Modules Section -->
-    <section class="modules-section">
+    <section class="modules-section" aria-label="Data Modules">
       <div class="section-header">
         <span class="section-title">DATA MODULES</span>
       </div>
@@ -137,13 +141,15 @@
       </div>
     </section>
 
+    </main>
+
     <!-- Email Signup Section -->
-    <section class="email-signup-section" id="email-signup-section">
+    <section class="email-signup-section" id="email-signup-section" aria-labelledby="email-signup-title">
       <div class="email-signup-content">
         <div class="email-signup-header">
           <span class="email-signup-icon" aria-hidden="true">📬</span>
           <div>
-            <h2 class="email-signup-title">Get Daily Predictions</h2>
+            <h2 id="email-signup-title" class="email-signup-title">Get Daily Predictions</h2>
             <p class="email-signup-subtitle">Delivered to your inbox every morning</p>
           </div>
         </div>

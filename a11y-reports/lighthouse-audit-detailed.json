@@ -1,0 +1,402 @@
+[
+  {
+    "page": "Home",
+    "url": "/",
+    "timestamp": "2026-02-06T09:11:28.025Z",
+    "score": 91,
+    "failedAudits": [
+      {
+        "id": "aria-dialog-name",
+        "title": "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names.",
+        "description": "ARIA dialog elements without accessible names may prevent screen readers users from discerning the purpose of these elements. [Learn how to make ARIA dialog elements more accessible](https://dequeuniversity.com/rules/axe/4.9/aria-dialog-name).",
+        "score": 0,
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "node",
+              "valueType": "node",
+              "subItemsHeading": {
+                "key": "relatedNode",
+                "valueType": "node"
+              },
+              "label": "Failing Elements"
+            }
+          ],
+          "items": [
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-0-DIV",
+                "path": "1,HTML,1,BODY,5,DIV",
+                "selector": "body > div.consent-banner",
+                "boundingRect": {
+                  "top": 643,
+                  "bottom": 720,
+                  "left": 0,
+                  "right": 1272,
+                  "width": 1272,
+                  "height": 77
+                },
+                "snippet": "<div class=\"consent-banner visible\" role=\"dialog\" aria-labelledby=\"consent-title\" aria-describedby=\"consent-description\">",
+                "nodeLabel": "🍪\n\nWe use analytics to improve your experience. Your data stays anonymous and i…",
+                "explanation": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "impact": "serious",
+            "tags": [
+              "cat.aria",
+              "best-practice"
+            ]
+          }
+        }
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "description": "Low-contrast text is difficult or impossible for many users to read. [Learn how to provide sufficient color contrast](https://dequeuniversity.com/rules/axe/4.9/color-contrast).",
+        "score": 0,
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "node",
+              "valueType": "node",
+              "subItemsHeading": {
+                "key": "relatedNode",
+                "valueType": "node"
+              },
+              "label": "Failing Elements"
+            }
+          ],
+          "items": [
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-1-SPAN",
+                "path": "1,HTML,1,BODY,0,DIV,7,SECTION,0,DIV,1,SPAN",
+                "selector": "div#app > section#predictions-panel > div.section-header > span.section-title",
+                "boundingRect": {
+                  "top": 328,
+                  "bottom": 347,
+                  "left": 76,
+                  "right": 175,
+                  "width": 99,
+                  "height": 19
+                },
+                "snippet": "<span class=\"section-title\">",
+                "nodeLabel": "PREDICTIONS",
+                "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #64748b, background color: #f1f5f9, font size: 9.4pt (12.6px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "relatedNode": {
+                      "type": "node",
+                      "lhId": "1-2-SECTION",
+                      "path": "1,HTML,1,BODY,0,DIV,7,SECTION",
+                      "selector": "body > div#app > section#predictions-panel",
+                      "boundingRect": {
+                        "top": 301,
+                        "bottom": 722,
+                        "left": 24,
+                        "right": 1248,
+                        "width": 1224,
+                        "height": 421
+                      },
+                      "snippet": "<section class=\"predictions-panel\" id=\"predictions-panel\">",
+                      "nodeLabel": "📊\nPREDICTIONS"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-3-BUTTON",
+                "path": "1,HTML,1,BODY,0,DIV,13,SECTION,0,DIV,1,FORM,0,DIV,1,BUTTON",
+                "selector": "div.email-signup-content > form#email-signup-form > div.email-input-group > button#email-submit-btn",
+                "boundingRect": {
+                  "top": 1331,
+                  "bottom": 1375,
+                  "left": 765,
+                  "right": 886,
+                  "width": 121,
+                  "height": 44
+                },
+                "snippet": "<button type=\"submit\" id=\"email-submit-btn\" class=\"email-submit-btn\">",
+                "nodeLabel": "Subscribe",
+                "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 3.67 (foreground color: #3b82f6, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            },
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-4-DIV",
+                "path": "1,HTML,1,BODY,0,DIV,17,FOOTER,1,DIV",
+                "selector": "body > div#app > footer#suggestions-footer > div.disclaimer",
+                "boundingRect": {
+                  "top": 1547,
+                  "bottom": 1580,
+                  "left": 48,
+                  "right": 1224,
+                  "width": 1176,
+                  "height": 34
+                },
+                "snippet": "<div class=\"disclaimer\">",
+                "nodeLabel": "Predictions based on historical correlations. Not financial, medical, or profes…",
+                "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.9pt (10.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "relatedNode": {
+                      "type": "node",
+                      "lhId": "1-5-FOOTER",
+                      "path": "1,HTML,1,BODY,0,DIV,17,FOOTER",
+                      "selector": "body > div#app > footer#suggestions-footer",
+                      "boundingRect": {
+                        "top": 1457,
+                        "bottom": 1604,
+                        "left": 24,
+                        "right": 1248,
+                        "width": 1224,
+                        "height": 147
+                      },
+                      "snippet": "<footer class=\"suggestions-footer\" id=\"suggestions-footer\">",
+                      "nodeLabel": "💡\nSUGGESTIONS\nPredictions based on historical correlations. Not financial, medi…"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "impact": "serious",
+            "tags": [
+              "cat.color",
+              "wcag2aa",
+              "wcag143",
+              "TTv5",
+              "TT13.c",
+              "EN-301-549",
+              "EN-9.1.4.3",
+              "ACT",
+              "RGAAv4",
+              "RGAA-3.2.1"
+            ]
+          }
+        }
+      }
+    ],
+    "passedCount": 19,
+    "manualCount": 10
+  },
+  {
+    "page": "Analytics",
+    "url": "/analytics.html",
+    "timestamp": "2026-02-06T09:11:35.217Z",
+    "score": 91,
+    "failedAudits": [
+      {
+        "id": "aria-dialog-name",
+        "title": "Elements with `role=\"dialog\"` or `role=\"alertdialog\"` do not have accessible names.",
+        "description": "ARIA dialog elements without accessible names may prevent screen readers users from discerning the purpose of these elements. [Learn how to make ARIA dialog elements more accessible](https://dequeuniversity.com/rules/axe/4.9/aria-dialog-name).",
+        "score": 0,
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "node",
+              "valueType": "node",
+              "subItemsHeading": {
+                "key": "relatedNode",
+                "valueType": "node"
+              },
+              "label": "Failing Elements"
+            }
+          ],
+          "items": [
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-0-DIV",
+                "path": "1,HTML,1,BODY,5,DIV",
+                "selector": "body > div.consent-banner",
+                "boundingRect": {
+                  "top": 643,
+                  "bottom": 720,
+                  "left": 0,
+                  "right": 1272,
+                  "width": 1272,
+                  "height": 77
+                },
+                "snippet": "<div class=\"consent-banner visible\" role=\"dialog\" aria-labelledby=\"consent-title\" aria-describedby=\"consent-description\">",
+                "nodeLabel": "🍪\n\nWe use analytics to improve your experience. Your data stays anonymous and i…",
+                "explanation": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "impact": "serious",
+            "tags": [
+              "cat.aria",
+              "best-practice"
+            ]
+          }
+        }
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "description": "Low-contrast text is difficult or impossible for many users to read. [Learn how to provide sufficient color contrast](https://dequeuniversity.com/rules/axe/4.9/color-contrast).",
+        "score": 0,
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "node",
+              "valueType": "node",
+              "subItemsHeading": {
+                "key": "relatedNode",
+                "valueType": "node"
+              },
+              "label": "Failing Elements"
+            }
+          ],
+          "items": [
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-1-SPAN",
+                "path": "1,HTML,1,BODY,0,DIV,7,SECTION,0,DIV,1,SPAN",
+                "selector": "div#app > section#predictions-panel > div.section-header > span.section-title",
+                "boundingRect": {
+                  "top": 328,
+                  "bottom": 347,
+                  "left": 76,
+                  "right": 175,
+                  "width": 99,
+                  "height": 19
+                },
+                "snippet": "<span class=\"section-title\">",
+                "nodeLabel": "PREDICTIONS",
+                "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #64748b, background color: #f1f5f9, font size: 9.4pt (12.6px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "relatedNode": {
+                      "type": "node",
+                      "lhId": "1-2-SECTION",
+                      "path": "1,HTML,1,BODY,0,DIV,7,SECTION",
+                      "selector": "body > div#app > section#predictions-panel",
+                      "boundingRect": {
+                        "top": 301,
+                        "bottom": 722,
+                        "left": 24,
+                        "right": 1248,
+                        "width": 1224,
+                        "height": 421
+                      },
+                      "snippet": "<section class=\"predictions-panel\" id=\"predictions-panel\">",
+                      "nodeLabel": "📊\nPREDICTIONS"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-3-BUTTON",
+                "path": "1,HTML,1,BODY,0,DIV,13,SECTION,0,DIV,1,FORM,0,DIV,1,BUTTON",
+                "selector": "div.email-signup-content > form#email-signup-form > div.email-input-group > button#email-submit-btn",
+                "boundingRect": {
+                  "top": 1331,
+                  "bottom": 1375,
+                  "left": 765,
+                  "right": 886,
+                  "width": 121,
+                  "height": 44
+                },
+                "snippet": "<button type=\"submit\" id=\"email-submit-btn\" class=\"email-submit-btn\">",
+                "nodeLabel": "Subscribe",
+                "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 3.67 (foreground color: #3b82f6, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            },
+            {
+              "node": {
+                "type": "node",
+                "lhId": "1-4-DIV",
+                "path": "1,HTML,1,BODY,0,DIV,17,FOOTER,1,DIV",
+                "selector": "body > div#app > footer#suggestions-footer > div.disclaimer",
+                "boundingRect": {
+                  "top": 1547,
+                  "bottom": 1580,
+                  "left": 48,
+                  "right": 1224,
+                  "width": 1176,
+                  "height": 34
+                },
+                "snippet": "<div class=\"disclaimer\">",
+                "nodeLabel": "Predictions based on historical correlations. Not financial, medical, or profes…",
+                "explanation": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.9pt (10.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "relatedNode": {
+                      "type": "node",
+                      "lhId": "1-5-FOOTER",
+                      "path": "1,HTML,1,BODY,0,DIV,17,FOOTER",
+                      "selector": "body > div#app > footer#suggestions-footer",
+                      "boundingRect": {
+                        "top": 1457,
+                        "bottom": 1604,
+                        "left": 24,
+                        "right": 1248,
+                        "width": 1224,
+                        "height": 147
+                      },
+                      "snippet": "<footer class=\"suggestions-footer\" id=\"suggestions-footer\">",
+                      "nodeLabel": "💡\nSUGGESTIONS\nPredictions based on historical correlations. Not financial, medi…"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "impact": "serious",
+            "tags": [
+              "cat.color",
+              "wcag2aa",
+              "wcag143",
+              "TTv5",
+              "TT13.c",
+              "EN-301-549",
+              "EN-9.1.4.3",
+              "ACT",
+              "RGAAv4",
+              "RGAA-3.2.1"
+            ]
+          }
+        }
+      }
+    ],
+    "passedCount": 19,
+    "manualCount": 10
+  }
+]
