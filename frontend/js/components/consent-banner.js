@@ -4,11 +4,14 @@
  */
 
 import ga4 from '../ga4.js';
+import { FocusTrap, setupEscapeHandler, announceToScreenReader } from '../a11y.js';
 
 class ConsentBanner {
   constructor() {
     this.banner = null;
     this.initialized = false;
+    this.focusTrap = null;
+    this.escapeCleanup = null;
   }
 
   init() {
@@ -53,22 +56,20 @@ class ConsentBanner {
     document.getElementById('consent-decline').addEventListener('click', () => this.decline());
     document.getElementById('consent-settings').addEventListener('click', () => this.showSettings());
     
-    // Handle keyboard navigation
-    this.banner.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        this.decline();
-      }
-    });
+    // Setup focus trap for keyboard navigation
+    this.focusTrap = new FocusTrap(this.banner);
+    
+    // Setup escape key handler
+    this.escapeCleanup = setupEscapeHandler(this.banner, () => this.decline());
     
     // Show with animation
     requestAnimationFrame(() => {
       this.banner.classList.add('visible');
+      
+      // Activate focus trap and announce to screen readers
+      this.focusTrap.activate();
+      announceToScreenReader('Cookie consent dialog opened. Accept or decline analytics cookies.');
     });
-    
-    // Focus the accept button for accessibility
-    setTimeout(() => {
-      document.getElementById('consent-accept')?.focus();
-    }, 100);
   }
 
   accept() {
@@ -89,7 +90,23 @@ class ConsentBanner {
   hide() {
     if (!this.banner) return;
     
+    // Deactivate focus trap
+    if (this.focusTrap) {
+      this.focusTrap.deactivate();
+      this.focusTrap = null;
+    }
+    
+    // Clean up escape handler
+    if (this.escapeCleanup) {
+      this.escapeCleanup();
+      this.escapeCleanup = null;
+    }
+    
     this.banner.classList.remove('visible');
+    
+    // Announce to screen readers
+    announceToScreenReader('Cookie consent dialog closed');
+    
     setTimeout(() => {
       this.banner.remove();
       this.banner = null;
@@ -109,9 +126,12 @@ class ConsentBanner {
   showSimpleSettings() {
     const modal = document.createElement('div');
     modal.className = 'privacy-settings-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'privacy-settings-title');
     modal.innerHTML = `
       <div class="privacy-settings-content">
-        <h2>Privacy Settings</h2>
+        <h2 id="privacy-settings-title">Privacy Settings</h2>
         <div class="privacy-option">
           <label>
             <input type="checkbox" id="analytics-toggle" checked>
@@ -128,26 +148,41 @@ class ConsentBanner {
     
     document.body.appendChild(modal);
     
+    // Create focus trap for the modal
+    const settingsFocusTrap = new FocusTrap(modal);
+    
+    // Close modal function
+    const closeModal = () => {
+      settingsFocusTrap.deactivate();
+      modal.remove();
+      announceToScreenReader('Privacy settings closed');
+    };
+    
     // Bind events
     document.getElementById('privacy-save').addEventListener('click', () => {
       const analyticsEnabled = document.getElementById('analytics-toggle').checked;
       ga4.updateConsent(analyticsEnabled);
-      modal.remove();
+      closeModal();
       this.hide();
+      announceToScreenReader(analyticsEnabled ? 'Analytics cookies enabled' : 'Analytics cookies disabled');
     });
     
-    document.getElementById('privacy-cancel').addEventListener('click', () => {
-      modal.remove();
-    });
+    document.getElementById('privacy-cancel').addEventListener('click', closeModal);
     
+    // Close on backdrop click
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
-        modal.remove();
+        closeModal();
       }
     });
     
+    // Close on Escape key
+    const escapeHandler = setupEscapeHandler(modal, closeModal);
+    
     requestAnimationFrame(() => {
       modal.classList.add('visible');
+      settingsFocusTrap.activate();
+      announceToScreenReader('Privacy settings dialog opened');
     });
   }
 }

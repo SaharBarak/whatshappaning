@@ -5,11 +5,13 @@
  */
 
 import { config } from './config.js';
+import { AccessibleModal, announceToScreenReader } from './a11y.js';
 
 /**
  * Share modal state
  */
 let modalOpen = false;
+let shareModal = null;
 
 /**
  * Get API base URL
@@ -210,8 +212,13 @@ function showToast(message, type = 'success') {
 
   const toast = document.createElement('div');
   toast.className = `share-toast share-toast-${type}`;
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
   toast.textContent = message;
   document.body.appendChild(toast);
+
+  // Announce to screen readers
+  announceToScreenReader(message, type === 'error' ? 'assertive' : 'polite');
 
   // Animate in
   requestAnimationFrame(() => {
@@ -231,23 +238,20 @@ function showToast(message, type = 'success') {
 export function openShareModal() {
   if (modalOpen) return;
 
-  const modal = document.getElementById('share-modal');
-  if (modal) {
-    modal.classList.remove('hidden');
+  const modalElement = document.getElementById('share-modal');
+  if (modalElement) {
+    // Initialize accessible modal if not already done
+    if (!shareModal) {
+      shareModal = new AccessibleModal(modalElement, {
+        closeOnEscape: true,
+        closeOnBackdropClick: true,
+        returnFocus: true
+      });
+      shareModal.setupBackdropClick();
+    }
+    
+    shareModal.open();
     modalOpen = true;
-
-    // Focus trap
-    const firstButton = modal.querySelector('button');
-    if (firstButton) firstButton.focus();
-
-    // Close on escape
-    const escHandler = (e) => {
-      if (e.key === 'Escape') {
-        closeShareModal();
-        document.removeEventListener('keydown', escHandler);
-      }
-    };
-    document.addEventListener('keydown', escHandler);
   }
 }
 
@@ -255,9 +259,8 @@ export function openShareModal() {
  * Close share modal
  */
 export function closeShareModal() {
-  const modal = document.getElementById('share-modal');
-  if (modal) {
-    modal.classList.add('hidden');
+  if (shareModal) {
+    shareModal.close();
     modalOpen = false;
   }
 }
