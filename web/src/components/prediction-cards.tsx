@@ -301,7 +301,7 @@ export function PredictionCards() {
       <div className="container px-4">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4">
-            <Zap className="w-4 h-4 mr-2" />
+            <Zap className="w-4 h-4 mr-2" aria-hidden="true" />
             Today&apos;s Predictions
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">

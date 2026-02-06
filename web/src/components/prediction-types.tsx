@@ -281,7 +281,7 @@ export function PredictionTypes() {
       <div className="container px-4">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4">
-            <Sparkles className="w-4 h-4 mr-2" />
+            <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
             Correlation Engine
           </Badge>
           <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4">
