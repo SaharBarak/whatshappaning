@@ -128,6 +128,64 @@ See `render.yaml` or `docker-compose.yml` for backend deployment options.
 - API key authentication with tiered rate limits
 - Developer portal for API key management
 
+## 🔮 Prediction Types
+
+WhatsHappaning correlates diverse data sources with measurable outcomes. Our prediction engine analyzes patterns across seven categories:
+
+### 🌌 Cosmic & Space
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Solar Wind Energy | NOAA DSCOVR | Collective activity levels |
+| Sunspot Volatility | SWPC sunspot data | Market volatility |
+| Cosmic Ray Creativity | Neutron monitors | Creative breakthrough patterns |
+| Asteroid Proximity | NASA NEO | Collective anxiety patterns |
+
+### 🌍 Earth & Environmental
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Geomagnetic Sleep | Kp/Ap indices | Sleep quality |
+| Barometric Mood | Pressure gradients | Mood swings |
+| Schumann Meditation | Schumann resonance | Meditation effectiveness |
+| Tectonic Unease | USGS micro-seismic | Collective restlessness |
+
+### 🧬 Biological & Cyclical
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Circadian Optimization | Solar + user data | Peak work hours |
+| Biorhythm Intersections | Birth date cycles | Peak performance days |
+| Seasonal Energy | Daylight + weather | Energy forecasts |
+
+### 📊 Social & Collective
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Sentiment Waves | Social media APIs | Trend reversals |
+| Search Emergence | Google Trends | Emerging interests |
+| Mercury Rx Effects | Ephemeris | Communication failures |
+
+### 💰 Financial Markets
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Fear/Greed Extremes | CNN/Crypto F&G | Reversal signals |
+| Lunar Trading | Moon phases | Phase performance |
+| Eclipse Windows | Astronomical data | Market inflections |
+
+### 🔮 Esoteric Systems
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Tzolkin Energy | Mayan calendar | Daily themes |
+| I Ching Guidance | Daily hexagram | Situation patterns |
+| Tarot Manifestation | Daily card | Archetypal themes |
+| Void of Course Moon | Lunar VOC | Initiative success |
+
+### 🏥 Health & Wellness
+| Prediction | Data Source | Outcome |
+|------------|-------------|---------|
+| Migraine Weather | Multi-factor model | Migraine risk |
+| Joint Pain Forecast | Pressure + humidity | Pain levels |
+| Allergy Alert | Pollen + weather | Allergy severity |
+
+> 📚 See [docs/PREDICTION-TYPES.md](docs/PREDICTION-TYPES.md) for the complete catalog with implementation details.
+
 ## 🔐 API Authentication
 
 The API supports optional authentication via API keys. Authenticated requests receive higher rate limits based on their tier.
