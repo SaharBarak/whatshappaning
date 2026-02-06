@@ -3,6 +3,8 @@
  * Provides filtering and search functionality for predictions
  */
 
+import { announceToScreenReader } from '../a11y.js';
+
 // Filter state
 const filterState = {
   categories: new Set(),
@@ -217,6 +219,7 @@ export function clearFilters() {
   }
   
   notifyChange();
+  announceToScreenReader('All filters cleared');
 }
 
 /**
