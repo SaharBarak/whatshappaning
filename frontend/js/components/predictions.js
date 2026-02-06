@@ -5,6 +5,7 @@
  */
 
 import { config } from '../config.js';
+import { announceToScreenReader } from '../a11y.js';
 
 // Track previous prediction values to detect changes
 let previousPredictions = new Map();
@@ -45,6 +46,23 @@ export function renderPredictions(predictionsData, expanded, onToggle) {
   container.innerHTML = sortedPredictions.map(prediction =>
     renderPrediction(prediction, expanded.has(prediction.outcomeId), onToggle, changedIds.has(prediction.outcomeId))
   ).join('');
+
+  // Announce changes to screen readers
+  if (changedIds.size > 0) {
+    const changedPredictions = sortedPredictions.filter(p => changedIds.has(p.outcomeId));
+    const changeMessages = changedPredictions.slice(0, 3).map(p => {
+      const name = config.outcomeNames[p.outcomeId] || p.outcome || p.outcomeId;
+      return `${name}: ${Math.round(p.probability * 100)}%`;
+    });
+    
+    if (changedIds.size === 1) {
+      announceToScreenReader(`Prediction updated: ${changeMessages[0]}`);
+    } else if (changedIds.size <= 3) {
+      announceToScreenReader(`${changedIds.size} predictions updated: ${changeMessages.join(', ')}`);
+    } else {
+      announceToScreenReader(`${changedIds.size} predictions updated`);
+    }
+  }
 
   // Update previous predictions for next render
   sortedPredictions.forEach(prediction => {
