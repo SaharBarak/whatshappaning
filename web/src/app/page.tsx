@@ -10,14 +10,16 @@ import { Footer } from "@/components/footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <>
       <Navbar />
-      <Hero />
-      <PredictionCards />
-      <DataDashboard />
-      <PredictionTypes />
-      <Newsletter />
-      <Footer />
-    </main>
+      <main id="main-content" className="min-h-screen" role="main" tabIndex={-1}>
+        <Hero />
+        <PredictionCards />
+        <DataDashboard />
+        <PredictionTypes />
+        <Newsletter />
+        <Footer />
+      </main>
+    </>
   );
 }

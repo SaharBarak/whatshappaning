@@ -64,6 +64,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Skip to main content link for keyboard navigation */}
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
           {children}
         </ThemeProvider>
       </body>

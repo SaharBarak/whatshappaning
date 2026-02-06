@@ -122,14 +122,14 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 
 function SchumannChart() {
   return (
-    <Card className="col-span-full lg:col-span-2">
+    <Card className="col-span-full lg:col-span-2" role="region" aria-label="Schumann Resonance chart">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
-          <Waves className="w-5 h-5 text-primary" />
+          <Waves className="w-5 h-5 text-primary" aria-hidden="true" />
           <CardTitle className="font-display">Schumann Resonance</CardTitle>
         </div>
-        <Badge variant="outline" className="bg-success/10 text-success border-success/30">
-          <span className="relative flex h-2 w-2 mr-2">
+        <Badge variant="outline" className="bg-success/10 text-success border-success/30" role="status" aria-label="Live data feed">
+          <span className="relative flex h-2 w-2 mr-2" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
           </span>
@@ -193,9 +193,9 @@ function SchumannChart() {
 
 function AccuracyChart() {
   return (
-    <Card>
+    <Card role="region" aria-label="Prediction accuracy chart">
       <CardHeader className="flex flex-row items-center gap-2 pb-2">
-        <BarChart3 className="w-5 h-5 text-primary" />
+        <BarChart3 className="w-5 h-5 text-primary" aria-hidden="true" />
         <CardTitle className="font-display">Prediction Accuracy</CardTitle>
       </CardHeader>
       <CardContent>
@@ -236,9 +236,9 @@ function AccuracyChart() {
 
 function CorrelationGauge() {
   return (
-    <Card>
+    <Card role="region" aria-label="Correlation strength chart">
       <CardHeader className="flex flex-row items-center gap-2 pb-2">
-        <TrendingUp className="w-5 h-5 text-primary" />
+        <TrendingUp className="w-5 h-5 text-primary" aria-hidden="true" />
         <CardTitle className="font-display">Correlation Strength</CardTitle>
       </CardHeader>
       <CardContent>
@@ -276,9 +276,9 @@ function CorrelationGauge() {
 
 function TimelineChart() {
   return (
-    <Card className="col-span-full">
+    <Card className="col-span-full" role="region" aria-label="Event correlation timeline chart">
       <CardHeader className="flex flex-row items-center gap-2 pb-2">
-        <Activity className="w-5 h-5 text-primary" />
+        <Activity className="w-5 h-5 text-primary" aria-hidden="true" />
         <CardTitle className="font-display">Event Correlation Timeline</CardTitle>
       </CardHeader>
       <CardContent>
@@ -327,15 +327,17 @@ function TimelineChart() {
 
 function DataModulesGrid() {
   return (
-    <Card className="col-span-full">
+    <Card className="col-span-full" role="region" aria-label="Data modules status">
       <CardHeader className="flex flex-row items-center gap-2 pb-2">
-        <Radio className="w-5 h-5 text-primary" />
+        <Radio className="w-5 h-5 text-primary" aria-hidden="true" />
         <CardTitle className="font-display">Data Modules</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4" role="list" aria-label="Active data modules">
           {dataModules.map((module, index) => {
             const Icon = module.icon;
+            const statusLabel = module.status === "live" ? "Live data" : 
+                               module.status === "recent" ? "Recently updated" : "Data may be stale";
             return (
               <motion.div
                 key={module.name}
@@ -343,14 +345,17 @@ function DataModulesGrid() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
                 className={cn(
-                  "p-4 rounded-xl border bg-card/50 hover:bg-muted/50 transition-colors cursor-pointer",
+                  "p-4 rounded-xl border bg-card/50 hover:bg-muted/50 focus-within:bg-muted/50 transition-colors cursor-pointer",
                   module.status === "live" && "border-success/30",
                   module.status === "recent" && "border-amber-500/30",
                   module.status === "stale" && "border-red-500/30"
                 )}
+                role="listitem"
+                tabIndex={0}
+                aria-label={`${module.name}: ${module.value}, status: ${statusLabel}`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <Icon className="w-5 h-5 text-muted-foreground" />
+                  <Icon className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                   <Badge
                     variant="outline"
                     className={cn(
@@ -359,6 +364,7 @@ function DataModulesGrid() {
                       module.status === "recent" && "bg-amber-500/10 text-amber-500 border-amber-500/30",
                       module.status === "stale" && "bg-red-500/10 text-red-500 border-red-500/30"
                     )}
+                    aria-hidden="true"
                   >
                     {module.status}
                   </Badge>
@@ -376,14 +382,14 @@ function DataModulesGrid() {
 
 export function DataDashboard() {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20 bg-muted/30" aria-labelledby="dashboard-heading">
       <div className="container px-4">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4">
-            <Activity className="w-4 h-4 mr-2" />
+            <Activity className="w-4 h-4 mr-2" aria-hidden="true" />
             Real-Time Analytics
           </Badge>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4">
+          <h2 id="dashboard-heading" className="font-display text-3xl sm:text-4xl font-bold mb-4">
             Data Dashboard
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">

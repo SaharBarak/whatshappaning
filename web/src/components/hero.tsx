@@ -41,14 +41,14 @@ const itemVariants = {
 
 export function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20" aria-labelledby="hero-heading">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" aria-hidden="true" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" aria-hidden="true" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} aria-hidden="true" />
       
       {/* Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" aria-hidden="true" />
 
       <div className="container relative z-10 px-4">
         <motion.div
@@ -63,13 +63,14 @@ export function Hero() {
               variant="outline"
               className="mb-6 px-4 py-1.5 text-sm font-medium border-primary/30 bg-primary/10"
             >
-              <Sparkles className="w-4 h-4 mr-2" />
+              <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
               Powered by cosmic data correlation
             </Badge>
           </motion.div>
 
           {/* Main Heading */}
           <motion.h1
+            id="hero-heading"
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
           >
@@ -94,28 +95,38 @@ export function Hero() {
           <motion.div
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
+            role="group"
+            aria-label="Primary actions"
           >
             <Button size="lg" className="gap-2 text-base px-8">
-              <Brain className="w-5 h-5" />
+              <Brain className="w-5 h-5" aria-hidden="true" />
               View Today&apos;s Predictions
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Button>
             <Button variant="outline" size="lg" className="gap-2 text-base px-8">
-              <TrendingUp className="w-5 h-5" />
+              <TrendingUp className="w-5 h-5" aria-hidden="true" />
               Explore Analytics
             </Button>
           </motion.div>
 
           {/* Live Data Preview */}
           <motion.div variants={itemVariants}>
-            <div className="inline-flex items-center gap-2 mb-4 text-sm text-muted-foreground">
-              <span className="relative flex h-2 w-2">
+            <div 
+              className="inline-flex items-center gap-2 mb-4 text-sm text-muted-foreground"
+              role="status"
+              aria-label="Live data feed active"
+            >
+              <span className="relative flex h-2 w-2" aria-hidden="true">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
               Live Data Feed
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            <div 
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
+              role="region"
+              aria-label="Current cosmic data readings"
+            >
               {liveDataPoints.map((data, index) => (
                 <motion.div
                   key={data.label}
@@ -123,12 +134,16 @@ export function Hero() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
-                  className="group relative p-4 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all cursor-pointer"
+                  whileFocus={{ scale: 1.05 }}
+                  className="group relative p-4 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 focus-within:border-primary/50 transition-all cursor-pointer"
+                  tabIndex={0}
+                  role="article"
+                  aria-label={`${data.label}: ${data.value}, trend: ${data.trend}`}
                 >
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity" aria-hidden="true" />
                   <div className="relative">
                     <div className="flex items-center justify-between mb-2">
-                      <data.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <data.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" aria-hidden="true" />
                       <Badge variant="secondary" className="text-xs">
                         {data.trend}
                       </Badge>
@@ -153,6 +168,7 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        aria-hidden="true"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}

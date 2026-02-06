@@ -43,12 +43,12 @@ export function Newsletter() {
   };
 
   return (
-    <section className="py-20 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden" aria-labelledby="newsletter-heading">
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-cosmic opacity-90" />
+      <div className="absolute inset-0 bg-gradient-cosmic opacity-90" aria-hidden="true" />
       
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <motion.div
           animate={{ 
             x: [0, 100, 0],
@@ -86,11 +86,11 @@ export function Newsletter() {
               variant="outline" 
               className="mb-6 bg-white/10 text-white border-white/20"
             >
-              <Mail className="w-4 h-4 mr-2" />
+              <Mail className="w-4 h-4 mr-2" aria-hidden="true" />
               Stay Informed
             </Badge>
 
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h2 id="newsletter-heading" className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
               Get Daily Predictions
             </h2>
             <p className="text-white/80 mb-8">
@@ -98,27 +98,33 @@ export function Newsletter() {
               delivered straight to your inbox every morning.
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Newsletter subscription form">
               {/* Email Input Group */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" aria-hidden="true" />
                   <Input
                     type="email"
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={status === "loading" || status === "success"}
+                    aria-label="Email address"
+                    aria-describedby="newsletter-description"
                     className={cn(
                       "h-14 pl-12 text-lg bg-white/10 border-white/20 text-white placeholder:text-white/50",
                       "focus:bg-white/20 focus:border-white/40 focus-visible:ring-white/30"
                     )}
                   />
+                  <span id="newsletter-description" className="sr-only">
+                    Enter your email to receive daily predictions
+                  </span>
                 </div>
                 <Button
                   type="submit"
                   size="lg"
                   disabled={!email || status === "loading" || status === "success"}
+                  aria-label={status === "loading" ? "Subscribing to newsletter" : status === "success" ? "Successfully subscribed" : "Subscribe to newsletter"}
                   className={cn(
                     "h-14 px-8 text-base font-semibold transition-all duration-300",
                     status === "success" 
@@ -127,13 +133,13 @@ export function Newsletter() {
                   )}
                 >
                   {status === "loading" && (
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden="true" />
                   )}
                   {status === "success" && (
-                    <Check className="w-5 h-5 mr-2" />
+                    <Check className="w-5 h-5 mr-2" aria-hidden="true" />
                   )}
                   {status === "idle" && (
-                    <Zap className="w-5 h-5 mr-2" />
+                    <Zap className="w-5 h-5 mr-2" aria-hidden="true" />
                   )}
                   {status === "loading" 
                     ? "Subscribing..." 
@@ -145,7 +151,8 @@ export function Newsletter() {
               </div>
 
               {/* Preferences */}
-              <div className="flex flex-wrap justify-center gap-4 text-sm">
+              <fieldset className="flex flex-wrap justify-center gap-4 text-sm border-0 p-0 m-0">
+                <legend className="sr-only">Email preferences</legend>
                 <label className="flex items-center gap-2 text-white/80 cursor-pointer hover:text-white transition-colors">
                   <input
                     type="checkbox"
@@ -173,7 +180,7 @@ export function Newsletter() {
                   />
                   Pattern alerts
                 </label>
-              </div>
+              </fieldset>
             </form>
 
             {/* Success Message */}
@@ -182,16 +189,18 @@ export function Newsletter() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-6 p-4 rounded-xl bg-green-500/20 border border-green-500/30"
+                role="alert"
+                aria-live="polite"
               >
                 <p className="text-green-300 flex items-center justify-center gap-2">
-                  <Sparkles className="w-5 h-5" />
+                  <Sparkles className="w-5 h-5" aria-hidden="true" />
                   Welcome aboard! Check your inbox to confirm.
                 </p>
               </motion.div>
             )}
 
             {/* Features */}
-            <div className="mt-12 grid sm:grid-cols-3 gap-6">
+            <div className="mt-12 grid sm:grid-cols-3 gap-6" role="list" aria-label="Newsletter benefits">
               {[
                 { icon: Zap, title: "Daily Insights", desc: "Personalized predictions" },
                 { icon: Bell, title: "Instant Alerts", desc: "Pattern notifications" },
@@ -204,8 +213,9 @@ export function Newsletter() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                   className="p-4 rounded-xl bg-white/5 border border-white/10"
+                  role="listitem"
                 >
-                  <feature.icon className="w-6 h-6 text-white/80 mx-auto mb-2" />
+                  <feature.icon className="w-6 h-6 text-white/80 mx-auto mb-2" aria-hidden="true" />
                   <h3 className="font-medium text-white">{feature.title}</h3>
                   <p className="text-sm text-white/60">{feature.desc}</p>
                 </motion.div>

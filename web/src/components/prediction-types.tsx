@@ -152,13 +152,21 @@ const predictionTypes = [
 ];
 
 function CorrelationBar({ source, target, strength }: { source: string; target: string; strength: number }) {
+  const barId = `correlation-${source}-${target}`.replace(/\s+/g, '-').toLowerCase();
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">{source} → {target}</span>
+        <span className="text-muted-foreground" id={barId}>{source} → {target}</span>
         <span className="font-mono font-medium">{strength}%</span>
       </div>
-      <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
+      <div 
+        className="h-1.5 rounded-full bg-muted/50 overflow-hidden"
+        role="progressbar"
+        aria-valuenow={strength}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-labelledby={barId}
+      >
         <motion.div
           initial={{ width: 0 }}
           whileInView={{ width: `${strength}%` }}
@@ -178,22 +186,35 @@ function PredictionTypeCard({ type, index }: { type: typeof predictionTypes[0]; 
   const Icon = type.icon;
   const [expanded, setExpanded] = React.useState(false);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setExpanded(!expanded);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
+      role="listitem"
     >
       <Card 
-        className="group relative h-full overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl"
+        className="group relative h-full overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl focus-within:shadow-xl"
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-expanded={expanded}
+        aria-label={`${type.title} prediction category. ${type.accuracy}% accuracy. ${type.status} status. Press Enter to ${expanded ? 'collapse' : 'expand'} details.`}
       >
         {/* Gradient Header */}
         <div className={cn(
           "h-2 bg-gradient-to-r",
           type.gradient
-        )} />
+        )} aria-hidden="true" />
 
         <CardContent className="p-6">
           {/* Header */}
@@ -201,7 +222,7 @@ function PredictionTypeCard({ type, index }: { type: typeof predictionTypes[0]; 
             <div className={cn(
               "p-3 rounded-xl bg-gradient-to-br",
               type.gradient
-            )}>
+            )} aria-hidden="true">
               <Icon className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
@@ -227,13 +248,13 @@ function PredictionTypeCard({ type, index }: { type: typeof predictionTypes[0]; 
 
           {/* Accuracy Badge */}
           <div className="flex items-center justify-between mb-4 p-3 rounded-lg bg-muted/50">
-            <span className="text-sm text-muted-foreground">Historical Accuracy</span>
+            <span className="text-sm text-muted-foreground" id={`accuracy-label-${type.id}`}>Historical Accuracy</span>
             <div className="flex items-center gap-2">
               <div className={cn(
                 "w-2 h-2 rounded-full",
                 type.accuracy >= 70 ? "bg-green-500" : type.accuracy >= 50 ? "bg-amber-500" : "bg-blue-500"
-              )} />
-              <span className="font-display font-bold text-lg">{type.accuracy}%</span>
+              )} aria-hidden="true" />
+              <span className="font-display font-bold text-lg" aria-labelledby={`accuracy-label-${type.id}`}>{type.accuracy}%</span>
             </div>
           </div>
 
@@ -265,9 +286,10 @@ function PredictionTypeCard({ type, index }: { type: typeof predictionTypes[0]; 
           <Button 
             variant="ghost" 
             className="w-full mt-4 gap-2 group-hover:bg-muted"
+            aria-label={`Explore ${type.title} predictions`}
           >
             Explore Predictions
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
           </Button>
         </CardContent>
       </Card>
@@ -277,14 +299,14 @@ function PredictionTypeCard({ type, index }: { type: typeof predictionTypes[0]; 
 
 export function PredictionTypes() {
   return (
-    <section className="py-20">
+    <section className="py-20" aria-labelledby="prediction-types-heading">
       <div className="container px-4">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4">
-            <Sparkles className="w-4 h-4 mr-2" />
+            <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
             Correlation Engine
           </Badge>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4">
+          <h2 id="prediction-types-heading" className="font-display text-3xl sm:text-4xl font-bold mb-4">
             Prediction Categories
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -293,7 +315,7 @@ export function PredictionTypes() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" role="list" aria-label="Prediction category cards">
           {predictionTypes.map((type, index) => (
             <PredictionTypeCard key={type.id} type={type} index={index} />
           ))}
@@ -309,8 +331,8 @@ export function PredictionTypes() {
           <p className="text-muted-foreground mb-4">
             Want to suggest a new correlation to track?
           </p>
-          <Button variant="outline" className="gap-2">
-            <Brain className="w-4 h-4" />
+          <Button variant="outline" className="gap-2" aria-label="Suggest a new correlation to track">
+            <Brain className="w-4 h-4" aria-hidden="true" />
             Suggest Correlation
           </Button>
         </motion.div>
