@@ -1,0 +1,200 @@
+[
+  {
+    "page": "Home",
+    "url": "/",
+    "timestamp": "2026-02-06T09:11:02.325Z",
+    "violations": [
+      {
+        "id": "aria-dialog-name",
+        "impact": "serious",
+        "description": "Ensure every ARIA dialog and alertdialog node has an accessible name",
+        "help": "ARIA dialog and alertdialog nodes should have an accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-dialog-name?application=playwright",
+        "nodes": [
+          {
+            "html": "<div class=\"consent-banner visible\" role=\"dialog\" aria-labelledby=\"consent-title\" aria-describedby=\"consent-description\">",
+            "target": [
+              ".consent-banner"
+            ],
+            "failureSummary": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+          }
+        ]
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "html": "<span class=\"section-title\">PREDICTIONS</span>",
+            "target": [
+              "#predictions-panel > .section-header > .section-title"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #64748b, background color: #f1f5f9, font size: 9.4pt (12.6px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "html": "<button type=\"submit\" id=\"email-submit-btn\" class=\"email-submit-btn\">\n              Subscribe\n            </button>",
+            "target": [
+              "#email-submit-btn"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.67 (foreground color: #3b82f6, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "html": "<div class=\"disclaimer\">\n        Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.\n      </div>",
+            "target": [
+              ".disclaimer"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.9pt (10.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "description": "Ensure all page content is contained by landmarks",
+        "help": "All page content should be contained by landmarks",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/region?application=playwright",
+        "nodes": [
+          {
+            "html": "<span class=\"section-title\">PREDICTIONS</span>",
+            "target": [
+              "#predictions-panel > .section-header > .section-title"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<section class=\"modules-section\">",
+            "target": [
+              ".modules-section"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<div>\n            <h2 class=\"email-signup-title\">Get Daily Predictions</h2>\n            <p class=\"email-signup-subtitle\">Delivered to your inbox every morning</p>\n          </div>",
+            "target": [
+              ".email-signup-header > div"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<input type=\"email\" id=\"email-input\" class=\"email-input\" placeholder=\"your@email.com\" required=\"\" autocomplete=\"email\" aria-label=\"Email address\">",
+            "target": [
+              "#email-input"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<div class=\"email-preferences\">",
+            "target": [
+              ".email-preferences"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          }
+        ]
+      }
+    ],
+    "passes": 38,
+    "incomplete": 2
+  },
+  {
+    "page": "Analytics",
+    "url": "/analytics.html",
+    "timestamp": "2026-02-06T09:11:05.926Z",
+    "violations": [
+      {
+        "id": "aria-dialog-name",
+        "impact": "serious",
+        "description": "Ensure every ARIA dialog and alertdialog node has an accessible name",
+        "help": "ARIA dialog and alertdialog nodes should have an accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-dialog-name?application=playwright",
+        "nodes": [
+          {
+            "html": "<div class=\"consent-banner visible\" role=\"dialog\" aria-labelledby=\"consent-title\" aria-describedby=\"consent-description\">",
+            "target": [
+              ".consent-banner"
+            ],
+            "failureSummary": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+          }
+        ]
+      },
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "html": "<span class=\"section-title\">PREDICTIONS</span>",
+            "target": [
+              "#predictions-panel > .section-header > .section-title"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #64748b, background color: #f1f5f9, font size: 9.4pt (12.6px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "html": "<button type=\"submit\" id=\"email-submit-btn\" class=\"email-submit-btn\">\n              Subscribe\n            </button>",
+            "target": [
+              "#email-submit-btn"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.67 (foreground color: #3b82f6, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "html": "<div class=\"disclaimer\">\n        Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.\n      </div>",
+            "target": [
+              ".disclaimer"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.9pt (10.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      },
+      {
+        "id": "region",
+        "impact": "moderate",
+        "description": "Ensure all page content is contained by landmarks",
+        "help": "All page content should be contained by landmarks",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/region?application=playwright",
+        "nodes": [
+          {
+            "html": "<span class=\"section-title\">PREDICTIONS</span>",
+            "target": [
+              "#predictions-panel > .section-header > .section-title"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<section class=\"modules-section\">",
+            "target": [
+              ".modules-section"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<div>\n            <h2 class=\"email-signup-title\">Get Daily Predictions</h2>\n            <p class=\"email-signup-subtitle\">Delivered to your inbox every morning</p>\n          </div>",
+            "target": [
+              ".email-signup-header > div"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<input type=\"email\" id=\"email-input\" class=\"email-input\" placeholder=\"your@email.com\" required=\"\" autocomplete=\"email\" aria-label=\"Email address\">",
+            "target": [
+              "#email-input"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          },
+          {
+            "html": "<div class=\"email-preferences\">",
+            "target": [
+              ".email-preferences"
+            ],
+            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+          }
+        ]
+      }
+    ],
+    "passes": 38,
+    "incomplete": 2
+  }
+]

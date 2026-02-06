@@ -36,7 +36,10 @@ class ConsentBanner {
       <div class="consent-content">
         <div class="consent-text">
           <span class="consent-icon" aria-hidden="true">🍪</span>
-          <p id="consent-description">We use analytics to improve your experience. Your data stays anonymous and is never sold.</p>
+          <div>
+            <h2 id="consent-title" class="consent-title">Cookie Preferences</h2>
+            <p id="consent-description">We use analytics to improve your experience. Your data stays anonymous and is never sold.</p>
+          </div>
         </div>
         <div class="consent-actions">
           <button class="consent-btn consent-btn-accept" id="consent-accept" aria-label="Accept analytics cookies">Accept</button>
