@@ -61,3 +61,10 @@ dist/
 build/
 coverage/
 .nyc_output/
+
+# ===========================================
+# Accessibility Reports (regenerated)
+# ===========================================
+# Keep JSON summaries, exclude large HTML reports
+frontend/a11y-reports/*.html
+frontend/a11y-reports/*-detailed.json

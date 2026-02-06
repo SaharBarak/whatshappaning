@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-02-06T09:11:19.705Z",
+  "totalPages": 2,
+  "averageScore": 91,
+  "pages": [
+    {
+      "name": "Home",
+      "path": "/",
+      "score": 91,
+      "failed": 2,
+      "passed": 19
+    },
+    {
+      "name": "Analytics",
+      "path": "/analytics.html",
+      "score": 91,
+      "failed": 2,
+      "passed": 19
+    }
+  ]
+}

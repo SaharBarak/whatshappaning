@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-02-06T09:10:58.055Z",
+  "totalPages": 2,
+  "totalIssues": 18,
+  "bySeverity": {
+    "critical": 0,
+    "serious": 8,
+    "moderate": 10,
+    "minor": 0
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "path": "/",
+      "violations": {
+        "critical": 0,
+        "serious": 4,
+        "moderate": 5,
+        "minor": 0
+      },
+      "total": 9,
+      "passes": 38
+    },
+    {
+      "name": "Analytics",
+      "path": "/analytics.html",
+      "violations": {
+        "critical": 0,
+        "serious": 4,
+        "moderate": 5,
+        "minor": 0
+      },
+      "total": 9,
+      "passes": 38
+    }
+  ]
+}

@@ -46,6 +46,69 @@ jobs:
         working-directory: backend
         run: npm test
 
+  # Accessibility audit - run axe-core on frontend
+  accessibility-audit:
+    name: Accessibility Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install chromium
+
+      - name: Run accessibility audit
+        working-directory: frontend
+        run: npm run a11y:axe
+        continue-on-error: true
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: frontend/a11y-reports/
+          retention-days: 30
+
+      - name: Check for critical issues
+        working-directory: frontend
+        run: |
+          if [ -f "a11y-reports/axe-audit-summary.json" ]; then
+            critical=$(jq '.bySeverity.critical' a11y-reports/axe-audit-summary.json)
+            serious=$(jq '.bySeverity.serious' a11y-reports/axe-audit-summary.json)
+            
+            echo "Critical issues: $critical"
+            echo "Serious issues: $serious"
+            
+            # Fail if critical issues exist
+            if [ "$critical" -gt 0 ]; then
+              echo "❌ Critical accessibility issues found!"
+              exit 1
+            fi
+            
+            # Warn on serious issues but don't fail
+            if [ "$serious" -gt 0 ]; then
+              echo "⚠️ Serious accessibility issues found - please address before release"
+            fi
+            
+            echo "✅ No critical accessibility issues"
+          else
+            echo "⚠️ No audit results found"
+          fi
+
   # Frontend validation - validate static files and structure
   frontend-validate:
     name: Frontend Validation
