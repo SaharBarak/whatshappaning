@@ -38,6 +38,10 @@ jobs:
         working-directory: backend
         run: npm ci --ignore-optional
 
+      - name: Security audit
+        working-directory: backend
+        run: npm audit --audit-level=high
+
       - name: Run tests
         working-directory: backend
         run: npm test
@@ -59,8 +63,8 @@ jobs:
           # Check required files exist
           required_files=(
             "frontend/index.html"
-            "frontend/styles.css"
-            "frontend/script.js"
+            "frontend/css/styles.css"
+            "frontend/js/app.js"
           )
           
           for file in "${required_files[@]}"; do
