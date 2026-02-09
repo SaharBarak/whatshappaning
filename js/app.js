@@ -390,3 +390,4 @@ if (document.readyState === 'loading') {
 }
 
 export { state, refreshData };
+
