@@ -1,7 +1,8 @@
 # EPIC-010: Performance Optimization & Monitoring
 
-**Status:** Proposed  
+**Status:** In Progress  
 **Created:** 2026-02-04  
+**Epic PR:** epic/010-performance-monitoring  
 **Author:** Arc (Project Manager)
 
 ---
