@@ -9,6 +9,7 @@
 
 const path = require('path');
 const axios = require('axios');
+const hebrewDateLib = require('hebrew-date');
 const {
   calculateStandard,
   calculateOrdinal,
@@ -61,42 +62,23 @@ async function fetchHebcalAPI(url) {
 }
 
 /**
- * Fallback Hebrew date calculation (simplified approximation)
- * Note: This is a simplified calculation for MVP. For accurate conversion,
- * use the Hebcal API or a proper Hebrew calendar library.
+ * Fallback Hebrew date calculation using hebrew-date library.
+ * Used when the Hebcal REST API is unavailable.
  *
  * @param {Date} date - JavaScript Date
  * @returns {Object} Hebrew date components
  */
 function calculateHebrewDateFallback(date) {
-  // Hebrew calendar epoch: September 7, -3760 (Gregorian proleptic)
-  // This is a VERY simplified approximation for demonstration
-  // Real Hebrew calendar is lunisolar and requires complex calculations
+  const hd = hebrewDateLib(date);
 
-  const HEBREW_EPOCH = new Date('1970-09-27'); // Approximation for epoch adjustment
-  const now = new Date(date);
-
-  // Simplified: Just use current date to return a sample Hebrew date
-  // In production, this should use proper Hebrew calendar conversion
-  const monthIndex = date.getMonth();
-  const monthMapping = [
-    'Tevet', 'Shevat', 'Adar', 'Nisan', 'Iyyar', 'Sivan',
-    'Tammuz', 'Av', 'Elul', 'Tishrei', 'Cheshvan', 'Kislev'
-  ];
-
-  const hebrewMonth = HEBREW_MONTHS.find(m => m.name === monthMapping[monthIndex]);
-  const hebrewYear = 5786; // Sample year - should be calculated
-  const hebrewDay = date.getDate();
-
-  // Format Hebrew date string (simplified)
-  const dayStr = String(hebrewDay);
-  const hebrew = `${dayStr} ${hebrewMonth.name} ${hebrewYear}`;
+  const monthObj = HEBREW_MONTHS.find(m => m.name === hd.month_name);
+  const hebrew = `${hd.date} ${hd.month_name} ${hd.year}`;
 
   return {
-    day: hebrewDay,
-    month: hebrewMonth.name,
-    monthHebrew: hebrewMonth.hebrew,
-    year: hebrewYear,
+    day: hd.date,
+    month: hd.month_name,
+    monthHebrew: monthObj ? monthObj.hebrew : '',
+    year: hd.year,
     hebrew,
   };
 }
