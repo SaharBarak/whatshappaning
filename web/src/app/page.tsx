@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { PredictionCards } from "@/components/prediction-cards";
@@ -14,7 +15,9 @@ export default function Home() {
       <Navbar />
       <main id="main-content" className="min-h-screen" role="main" tabIndex={-1}>
         <Hero />
-        <PredictionCards />
+        <Suspense fallback={null}>
+          <PredictionCards />
+        </Suspense>
         <DataDashboard />
         <PredictionTypes />
         <Newsletter />

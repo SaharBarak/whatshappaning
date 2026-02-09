@@ -19,7 +19,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useSearchFilters, applyFilters } from "@/hooks/use-search-filters";
+import { SearchFilterBar } from "@/components/search-filter-bar";
 import { cn } from "@/lib/utils";
 
 // Sample prediction data (fallback when no live data)
@@ -329,6 +332,7 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
 
 export function PredictionCards() {
   const { predictions: livePredictions, lastUpdate } = useWebSocket();
+  const { filters, setFilters, clearFilters, hasActiveFilters } = useSearchFilters();
 
   // Validate and use live predictions when available, fall back to static sample data
   const activePredictions = React.useMemo(() => {
@@ -344,6 +348,12 @@ export function PredictionCards() {
     const validated = livePredictions.filter(isValidPrediction);
     return validated.length > 0 ? validated : predictions;
   }, [livePredictions]);
+
+  // Apply search & filters
+  const filteredPredictions = React.useMemo(
+    () => applyFilters(activePredictions as Prediction[], filters),
+    [activePredictions, filters]
+  );
 
   return (
     <section className="py-20" aria-labelledby="predictions-heading">
@@ -367,15 +377,40 @@ export function PredictionCards() {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Prediction cards">
-          {activePredictions.map((prediction, index) => (
-            <PredictionCard
-              key={prediction.id}
-              prediction={prediction}
-              index={index}
-            />
-          ))}
+        {/* Search & Filter Bar */}
+        <div className="max-w-4xl mx-auto mb-8">
+          <SearchFilterBar
+            filters={filters}
+            onFiltersChange={setFilters}
+            onClear={clearFilters}
+            hasActiveFilters={hasActiveFilters}
+            resultCount={filteredPredictions.length}
+            totalCount={activePredictions.length}
+          />
         </div>
+
+        {/* Results */}
+        {filteredPredictions.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Prediction cards">
+            {filteredPredictions.map((prediction, index) => (
+              <PredictionCard
+                key={prediction.id}
+                prediction={prediction}
+                index={index}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16" role="status">
+            <p className="text-lg text-muted-foreground mb-2">No predictions match your filters</p>
+            <p className="text-sm text-muted-foreground/60 mb-4">
+              Try adjusting your search or removing some filters
+            </p>
+            <Button variant="outline" onClick={clearFilters} className="gap-2">
+              Clear all filters
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
