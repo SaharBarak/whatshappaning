@@ -174,23 +174,21 @@ async function refreshData() {
   showLoading();
 
   try {
-    // Fetch current data and predictions in parallel
-    const [currentResult, predictionsResult] = await Promise.all([
-      api.getCurrentData(),
-      api.getPredictions()
-    ]);
+    // Fetch current data (from snapshot) and predictions (from API, may fail)
+    const currentResult = await api.getCurrentData();
+
+    let predictionsResult = null;
+    try {
+      predictionsResult = await api.getPredictions();
+    } catch (e) {
+      console.warn('Predictions API unavailable:', e.message);
+    }
 
     state.data = currentResult.data;
-    state.predictions = predictionsResult.data;
+    state.predictions = predictionsResult?.data || null;
     state.lastUpdate = new Date();
     state.error = null;
-
-    // Check if data is stale
-    if (currentResult.stale || predictionsResult.stale) {
-      showError('Showing cached data. Connection issues detected.');
-    } else {
-      hideError();
-    }
+    hideError();
 
     // Render all components
     render();
