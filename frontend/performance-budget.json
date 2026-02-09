@@ -1,0 +1,40 @@
+{
+  "description": "Frontend performance budget for WhatsHappening PWA",
+  "budgets": {
+    "bundle": {
+      "maxGzipped": "200KB",
+      "maxGzippedBytes": 204800,
+      "maxUncompressed": "600KB",
+      "maxUncompressedBytes": 614400
+    },
+    "resources": {
+      "maxJsFiles": 20,
+      "maxCssFiles": 5,
+      "maxFontFiles": 4,
+      "maxTotalRequests": 40
+    },
+    "coreWebVitals": {
+      "LCP": { "good": 2500, "poor": 4000, "unit": "ms" },
+      "FID": { "good": 100, "poor": 300, "unit": "ms" },
+      "CLS": { "good": 0.1, "poor": 0.25, "unit": "score" },
+      "INP": { "good": 200, "poor": 500, "unit": "ms" }
+    },
+    "loadTimes": {
+      "FCP": { "target": 1500, "max": 3000, "unit": "ms" },
+      "TTI": { "target": 3000, "max": 5000, "unit": "ms" },
+      "TTFB": { "target": 800, "max": 1800, "unit": "ms" }
+    },
+    "lighthouse": {
+      "performance": 90,
+      "accessibility": 90,
+      "bestPractices": 90,
+      "seo": 90
+    }
+  },
+  "notes": [
+    "Bundle size measured after gzip compression",
+    "Core Web Vitals thresholds follow Google's recommendations",
+    "Lighthouse scores are minimum acceptable values",
+    "FCP target of 1.5s assumes CDN delivery"
+  ]
+}
