@@ -73,6 +73,10 @@ This API provides access to:
         name: 'Health',
         description: 'Service health and status checks',
       },
+      {
+        name: 'Notifications',
+        description: 'Push notification subscription management',
+      },
     ],
     paths: {
       '/api/current': {
@@ -575,6 +579,145 @@ This API provides access to:
                 'application/json': {
                   schema: {
                     $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/notifications/vapid-public-key': {
+        get: {
+          tags: ['Notifications'],
+          summary: 'Get VAPID public key',
+          description: 'Returns the VAPID public key needed for client-side push subscription.',
+          operationId: 'getVapidPublicKey',
+          responses: {
+            200: {
+              description: 'VAPID public key',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { publicKey: { type: 'string' } },
+                  },
+                },
+              },
+            },
+            503: { description: 'Push notifications not configured' },
+          },
+        },
+      },
+      '/api/notifications/subscribe': {
+        post: {
+          tags: ['Notifications'],
+          summary: 'Subscribe to push notifications',
+          operationId: 'subscribe',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/PushSubscriptionRequest' },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Subscribed successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string' },
+                      id: { type: 'integer' },
+                      preferences: { $ref: '#/components/schemas/NotificationPreferences' },
+                    },
+                  },
+                },
+              },
+            },
+            400: { description: 'Invalid subscription data' },
+            503: { description: 'Push notifications not configured' },
+          },
+        },
+      },
+      '/api/notifications/unsubscribe': {
+        delete: {
+          tags: ['Notifications'],
+          summary: 'Unsubscribe from push notifications',
+          operationId: 'unsubscribe',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['endpoint'],
+                  properties: { endpoint: { type: 'string' } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Unsubscribed successfully' },
+            404: { description: 'Subscription not found' },
+          },
+        },
+      },
+      '/api/notifications/preferences': {
+        patch: {
+          tags: ['Notifications'],
+          summary: 'Update notification preferences',
+          operationId: 'updateNotificationPreferences',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['endpoint', 'preferences'],
+                  properties: {
+                    endpoint: { type: 'string' },
+                    preferences: { $ref: '#/components/schemas/NotificationPreferences' },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Preferences updated' },
+            400: { description: 'Invalid preference keys' },
+            404: { description: 'Subscription not found' },
+          },
+        },
+      },
+      '/api/notifications/status': {
+        get: {
+          tags: ['Notifications'],
+          summary: 'Get subscription status',
+          operationId: 'getNotificationStatus',
+          parameters: [
+            {
+              name: 'endpoint',
+              in: 'query',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Subscription status',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      subscribed: { type: 'boolean' },
+                      preferences: { $ref: '#/components/schemas/NotificationPreferences' },
+                      createdAt: { type: 'string', format: 'date-time' },
+                      lastUsed: { type: 'string', format: 'date-time', nullable: true },
+                    },
                   },
                 },
               },
@@ -1119,6 +1262,36 @@ This API provides access to:
           properties: {
             error: { type: 'string' },
             message: { type: 'string' },
+          },
+        },
+        PushSubscriptionRequest: {
+          type: 'object',
+          required: ['endpoint', 'keys'],
+          properties: {
+            endpoint: { type: 'string', description: 'Push subscription endpoint URL' },
+            keys: {
+              type: 'object',
+              required: ['p256dh', 'auth'],
+              properties: {
+                p256dh: { type: 'string' },
+                auth: { type: 'string' },
+              },
+            },
+          },
+        },
+        NotificationPreferences: {
+          type: 'object',
+          properties: {
+            pattern_alerts: { type: 'boolean', default: true },
+            prediction_shifts: { type: 'boolean', default: true },
+            daily_summary: { type: 'boolean', default: false },
+            quiet_hours: {
+              type: 'object',
+              properties: {
+                start: { type: 'integer', minimum: 0, maximum: 23, default: 23 },
+                end: { type: 'integer', minimum: 0, maximum: 23, default: 7 },
+              },
+            },
           },
         },
         ValidationError: {

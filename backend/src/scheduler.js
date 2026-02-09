@@ -238,6 +238,48 @@ function startScheduler() {
     timezone: 'UTC'
   });
 
+  // Schedule push notification checks after correlation updates (every 3 hours)
+  cron.schedule('30 */3 * * *', async () => {
+    try {
+      const push = require('./notifications/push');
+      if (!push.isConfigured()) return;
+
+      // Check for pattern alerts
+      const patterns = await correlation.getPatternMatches();
+      if (patterns && patterns.matchCount > 0 && patterns.avgSimilarity > 0.80) {
+        const result = await push.sendPatternAlert(patterns);
+        logger.info(`Pattern alert: ${result.sent} sent, ${result.skipped} skipped`);
+      }
+    } catch (err) {
+      logger.error('Push notification check failed:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
+  // Schedule daily push summary (9:00 AM UTC)
+  cron.schedule('0 9 * * *', async () => {
+    try {
+      const push = require('./notifications/push');
+      if (!push.isConfigured()) return;
+
+      // Get prediction summary for daily push
+      const apiRoutes = require('./routes/api');
+      const predictionEngine = require('./prediction');
+      const summary = await predictionEngine.getSummary();
+      if (summary) {
+        const result = await push.sendDailySummary(summary);
+        logger.info(`Daily push summary: ${result.sent} sent, ${result.skipped} skipped`);
+      }
+    } catch (err) {
+      logger.error('Daily push summary failed:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
   // Schedule daily email digest (8:00 AM UTC)
   cron.schedule('0 8 * * *', async () => {
     logger.info('Running daily email digest');
