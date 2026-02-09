@@ -16,6 +16,7 @@ import ga4 from './ga4.js';
 import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
 import consentBanner from './components/consent-banner.js';
 import { init as initPerformance, getMetrics } from './performance.js';
+import ErrorTracker from './error-tracking.js';
 import { initShare } from './share.js';
 import { initThemeToggle } from './components/themeToggle.js';
 import { initEmailSignup } from './email-signup.js';
@@ -44,6 +45,9 @@ async function init() {
 
   // Initialize performance monitoring (Core Web Vitals)
   initPerformance();
+
+  // Initialize error tracking
+  ErrorTracker.init({ backendUrl: config.apiBase ? `${config.apiBase}/api/errors` : null });
   
   // Initialize GA4 analytics
   await ga4.init();
@@ -156,7 +160,7 @@ function render() {
       }
     }
   }
-  renderModules(mergedModules, state.expandedModules, toggleModule);
+  await renderModules(mergedModules, state.expandedModules, toggleModule);
   renderSuggestions(state.predictions?.actionSuggestions);
 }
 
@@ -228,7 +232,7 @@ function togglePrediction(outcomeId) {
 /**
  * Toggle module card expansion
  */
-function toggleModule(moduleName) {
+async function toggleModule(moduleName) {
   const wasExpanded = state.expandedModules.has(moduleName);
   
   if (wasExpanded) {
@@ -238,7 +242,7 @@ function toggleModule(moduleName) {
     state.expandedModules.add(moduleName);
     interactionEvents.moduleExpand(moduleName, moduleName);
   }
-  renderModules(state.data?.modules, state.expandedModules, toggleModule);
+  await renderModules(state.data?.modules, state.expandedModules, toggleModule);
 }
 
 /**
