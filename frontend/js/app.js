@@ -191,7 +191,7 @@ async function refreshData() {
 /**
  * Render all UI components
  */
-function render() {
+async function render() {
   updateLiveIndicator();
   renderIndices(state.data?.indices);
   
