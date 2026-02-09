@@ -156,7 +156,10 @@ async function refreshData() {
 
     let predictionsResult = null;
     try {
-      predictionsResult = await api.getPredictions();
+      predictionsResult = await Promise.race([
+        api.getPredictions(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+      ]);
     } catch (e) {
       console.warn('Predictions API unavailable:', e.message);
     }
