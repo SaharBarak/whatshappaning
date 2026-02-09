@@ -17,7 +17,9 @@ async function getYahooFinance() {
   if (!yahooFinance) {
     try {
       const module = await import('yahoo-finance2');
-      yahooFinance = module.default;
+      const YahooFinance = module.default;
+      // v2.x default export is a class constructor, not a plain object
+      yahooFinance = typeof YahooFinance === 'function' ? new YahooFinance() : YahooFinance;
     } catch (error) {
       console.error('Failed to load yahoo-finance2:', error.message);
       return null;

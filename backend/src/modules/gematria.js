@@ -33,9 +33,13 @@ async function convertToHebrewDate(date) {
   try {
     const response = await fetchHebcalAPI(url);
 
+    // Normalize month names to match our HEBREW_MONTHS list
+    const MONTH_NAME_MAP = { "Sh'vat": 'Shevat', 'Tamuz': 'Tammuz' };
+    const month = MONTH_NAME_MAP[response.hm] || response.hm;
+
     return {
       day: response.hd,
-      month: response.hm,
+      month,
       year: response.hy,
       hebrew: response.hebrew,
     };
@@ -61,41 +65,32 @@ async function fetchHebcalAPI(url) {
 }
 
 /**
- * Fallback Hebrew date calculation (simplified approximation)
- * Note: This is a simplified calculation for MVP. For accurate conversion,
- * use the Hebcal API or a proper Hebrew calendar library.
+ * Fallback Hebrew date calculation using @hebcal/core (offline, no API needed).
+ * Replaces the broken naive mapping that used Gregorian day/month directly.
  *
  * @param {Date} date - JavaScript Date
- * @returns {Object} Hebrew date components
+ * @returns {Promise<Object>} Hebrew date components
  */
-function calculateHebrewDateFallback(date) {
-  // Hebrew calendar epoch: September 7, -3760 (Gregorian proleptic)
-  // This is a VERY simplified approximation for demonstration
-  // Real Hebrew calendar is lunisolar and requires complex calculations
+async function calculateHebrewDateFallback(date) {
+  const { HDate } = await import('@hebcal/core');
+  const hd = new HDate(date);
+  const hebrewDay = hd.getDate();
+  const hebrewMonthName = hd.getMonthName();
+  const hebrewYear = hd.getFullYear();
 
-  const HEBREW_EPOCH = new Date('1970-09-27'); // Approximation for epoch adjustment
-  const now = new Date(date);
+  // @hebcal/core uses slightly different transliterations (Sh'vat, Tamuz)
+  // Normalize to match our HEBREW_MONTHS list (Shevat, Tammuz)
+  const MONTH_NAME_MAP = { "Sh'vat": 'Shevat', 'Tamuz': 'Tammuz' };
+  const normalizedMonth = MONTH_NAME_MAP[hebrewMonthName] || hebrewMonthName;
+  const monthObj = HEBREW_MONTHS.find(m => m.name === normalizedMonth);
+  const monthHebrew = monthObj ? monthObj.hebrew : '';
 
-  // Simplified: Just use current date to return a sample Hebrew date
-  // In production, this should use proper Hebrew calendar conversion
-  const monthIndex = date.getMonth();
-  const monthMapping = [
-    'Tevet', 'Shevat', 'Adar', 'Nisan', 'Iyyar', 'Sivan',
-    'Tammuz', 'Av', 'Elul', 'Tishrei', 'Cheshvan', 'Kislev'
-  ];
-
-  const hebrewMonth = HEBREW_MONTHS.find(m => m.name === monthMapping[monthIndex]);
-  const hebrewYear = 5786; // Sample year - should be calculated
-  const hebrewDay = date.getDate();
-
-  // Format Hebrew date string (simplified)
-  const dayStr = String(hebrewDay);
-  const hebrew = `${dayStr} ${hebrewMonth.name} ${hebrewYear}`;
+  const hebrew = `${hebrewDay} ${normalizedMonth} ${hebrewYear}`;
 
   return {
     day: hebrewDay,
-    month: hebrewMonth.name,
-    monthHebrew: hebrewMonth.hebrew,
+    month: normalizedMonth,
+    monthHebrew,
     year: hebrewYear,
     hebrew,
   };
