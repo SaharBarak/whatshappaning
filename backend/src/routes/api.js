@@ -109,8 +109,8 @@ router.get('/current', async (req, res) => {
       },
     };
 
-    // Cache for 5 minutes
-    cache.set('api:current', response, 5 * 60 * 1000);
+    // Cache for 60 seconds (per EPIC-010 performance requirements)
+    cache.set('api:current', response, 60 * 1000);
 
     res.json(response);
   } catch (err) {
