@@ -253,5 +253,28 @@ export async function clearCaches() {
   console.log('[PWA] Cache clear requested');
 }
 
+/**
+ * Initialize offline detection UI
+ */
+function initOfflineDetection() {
+  const banner = document.getElementById('offline-banner');
+  if (!banner) return;
+
+  function updateStatus() {
+    banner.hidden = navigator.onLine;
+  }
+
+  window.addEventListener('online', updateStatus);
+  window.addEventListener('offline', updateStatus);
+  updateStatus();
+}
+
 // Auto-initialize when module loads
 initPWA();
+
+// Initialize offline detection when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initOfflineDetection);
+} else {
+  initOfflineDetection();
+}

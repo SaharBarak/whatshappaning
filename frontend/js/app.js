@@ -18,6 +18,7 @@ import consentBanner from './components/consent-banner.js';
 import { init as initPerformance, getMetrics } from './performance.js';
 import ErrorTracker from './error-tracking.js';
 import { initShare } from './share.js';
+import './pwa.js';
 import { initThemeToggle } from './components/themeToggle.js';
 
 // Lazy-loaded modules (non-critical path)
