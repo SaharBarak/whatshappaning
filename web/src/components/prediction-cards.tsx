@@ -19,9 +19,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { cn } from "@/lib/utils";
 
-// Sample prediction data
+// Sample prediction data (fallback when no live data)
 const predictions = [
   {
     id: 1,
@@ -327,6 +328,23 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
 }
 
 export function PredictionCards() {
+  const { predictions: livePredictions, lastUpdate } = useWebSocket();
+
+  // Validate and use live predictions when available, fall back to static sample data
+  const activePredictions = React.useMemo(() => {
+    if (!Array.isArray(livePredictions) || livePredictions.length === 0) return predictions;
+    const isValidPrediction = (p: unknown): p is Prediction =>
+      typeof p === "object" &&
+      p !== null &&
+      typeof (p as Prediction).id === "number" &&
+      typeof (p as Prediction).title === "string" &&
+      typeof (p as Prediction).probability === "number" &&
+      typeof (p as Prediction).description === "string" &&
+      Array.isArray((p as Prediction).factors);
+    const validated = livePredictions.filter(isValidPrediction);
+    return validated.length > 0 ? validated : predictions;
+  }, [livePredictions]);
+
   return (
     <section className="py-20" aria-labelledby="predictions-heading">
       <div className="container px-4">
@@ -342,10 +360,15 @@ export function PredictionCards() {
             Predictions based on real-time analysis of cosmic data, environmental
             patterns, and historical correlations.
           </p>
+          {lastUpdate && (
+            <p className="text-xs text-muted-foreground/60 mt-2" aria-live="polite">
+              Last updated: {new Date(lastUpdate).toLocaleTimeString()}
+            </p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Prediction cards">
-          {predictions.map((prediction, index) => (
+          {activePredictions.map((prediction, index) => (
             <PredictionCard
               key={prediction.id}
               prediction={prediction}
