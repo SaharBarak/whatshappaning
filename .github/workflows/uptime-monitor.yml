@@ -1,0 +1,150 @@
+name: Uptime Monitor
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  uptime-check:
+    name: Check Uptime
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Check backend health
+        id: backend
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "⚠ BACKEND_URL not configured"
+            exit 0
+          fi
+
+          start_time=$(date +%s%N)
+          response=$(curl -s -o /tmp/health-response.txt -w "%{http_code}" --max-time 10 "$BACKEND_URL/health" 2>/dev/null || echo "000")
+          end_time=$(date +%s%N)
+          latency=$(( (end_time - start_time) / 1000000 ))
+
+          echo "http_code=$response" >> $GITHUB_OUTPUT
+          echo "latency=${latency}" >> $GITHUB_OUTPUT
+
+          if [ "$response" = "200" ]; then
+            echo "status=up" >> $GITHUB_OUTPUT
+            echo "✓ Backend is up (${latency}ms)"
+          else
+            echo "status=down" >> $GITHUB_OUTPUT
+            echo "❌ Backend is down (HTTP $response)"
+          fi
+
+      - name: Check frontend health
+        id: frontend
+        env:
+          FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+        run: |
+          if [ -z "$FRONTEND_URL" ]; then
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "⚠ FRONTEND_URL not configured"
+            exit 0
+          fi
+
+          start_time=$(date +%s%N)
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$FRONTEND_URL" 2>/dev/null || echo "000")
+          end_time=$(date +%s%N)
+          latency=$(( (end_time - start_time) / 1000000 ))
+
+          echo "http_code=$response" >> $GITHUB_OUTPUT
+          echo "latency=${latency}" >> $GITHUB_OUTPUT
+
+          if [ "$response" = "200" ]; then
+            echo "status=up" >> $GITHUB_OUTPUT
+            echo "✓ Frontend is up (${latency}ms)"
+          else
+            echo "status=down" >> $GITHUB_OUTPUT
+            echo "❌ Frontend is down (HTTP $response)"
+          fi
+
+      - name: Create incident issue on failure
+        if: steps.backend.outputs.status == 'down' || steps.frontend.outputs.status == 'down'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const backendStatus = '${{ steps.backend.outputs.status }}';
+            const frontendStatus = '${{ steps.frontend.outputs.status }}';
+            const backendCode = '${{ steps.backend.outputs.http_code }}';
+            const frontendCode = '${{ steps.frontend.outputs.http_code }}';
+            
+            const services = [];
+            if (backendStatus === 'down') services.push(`Backend (HTTP ${backendCode})`);
+            if (frontendStatus === 'down') services.push(`Frontend (HTTP ${frontendCode})`);
+            
+            const title = `🚨 Downtime Alert: ${services.join(', ')}`;
+            const now = new Date().toISOString();
+            
+            // Check for existing open incident
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'incident',
+              state: 'open'
+            });
+            
+            const existingIncident = issues.find(i => i.title.startsWith('🚨 Downtime Alert'));
+            
+            if (existingIncident) {
+              // Add comment to existing incident
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIncident.number,
+                body: `⏰ **Still down** at ${now}\n- ${services.join('\n- ')}`
+              });
+            } else {
+              // Create new incident issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: `## Incident Report\n\n**Detected:** ${now}\n**Affected services:**\n- ${services.join('\n- ')}\n\n### Details\n- Backend: ${backendStatus} (HTTP ${backendCode})\n- Frontend: ${frontendStatus} (HTTP ${frontendCode})\n\nThis issue was automatically created by the uptime monitor.\nIt will be updated with follow-up checks until services recover.`,
+                labels: ['incident', 'priority:high']
+              });
+            }
+
+      - name: Auto-close resolved incidents
+        if: steps.backend.outputs.status != 'down' && steps.frontend.outputs.status != 'down'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'incident',
+              state: 'open'
+            });
+            
+            for (const issue of issues) {
+              if (issue.title.startsWith('🚨 Downtime Alert')) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `✅ **Resolved** at ${new Date().toISOString()}\n\nAll services are back online.`
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  state: 'closed'
+                });
+              }
+            }

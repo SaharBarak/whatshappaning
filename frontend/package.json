@@ -12,7 +12,7 @@
     "a11y:audit": "npm run a11y:axe && npm run a11y:lighthouse",
     "a11y:report": "node scripts/generate-a11y-report.js",
     "perf:analyze": "node scripts/analyze-bundle.js",
-    "perf:budget": "node scripts/analyze-bundle.js"
+    "perf:budget": "node scripts/check-perf-budget.js"
   },
   "keywords": [
     "pwa",
