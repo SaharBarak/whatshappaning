@@ -268,6 +268,75 @@ function startScheduler() {
     timezone: 'UTC'
   });
 
+  // Schedule pattern alert check every 3 hours (after snapshot modules update)
+  // Checks for >80% pattern matches and sends push notifications
+  cron.schedule('15 */3 * * *', async () => {
+    logger.info('Checking for pattern alerts (push notifications)');
+    try {
+      const push = require('./notifications/push');
+      const prediction = require('./prediction');
+      const { extractFeatures } = require('./correlation/features');
+
+      // Gather current module data
+      const moduleDataMap = {};
+      for (const name of modules.keys()) {
+        const data = await getModuleData(name);
+        if (data) moduleDataMap[name] = data;
+      }
+
+      if (Object.keys(moduleDataMap).length === 0) return;
+
+      const result = await prediction.getPatternMatches(moduleDataMap);
+
+      if (result.alerts && result.alerts.length > 0) {
+        for (const alert of result.alerts) {
+          if (alert.avgSimilarity >= 0.8) {
+            const pushResult = await push.sendPatternAlert({
+              similarity: alert.avgSimilarity,
+              matchDate: alert.matchingDates?.[0] || 'historical pattern',
+            });
+            logger.info(`Pattern alert push: ${pushResult.sent} sent, ${pushResult.failed} failed`);
+          }
+        }
+      }
+    } catch (err) {
+      logger.error('Pattern alert check failed:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
+  // Schedule daily summary push notification (8:15 AM UTC)
+  cron.schedule('15 8 * * *', async () => {
+    logger.info('Sending daily summary push notifications');
+    try {
+      const push = require('./notifications/push');
+      const prediction = require('./prediction');
+
+      const moduleDataMap = {};
+      for (const name of modules.keys()) {
+        const data = await getModuleData(name);
+        if (data) moduleDataMap[name] = data;
+      }
+
+      if (Object.keys(moduleDataMap).length === 0) return;
+
+      const predictions = await prediction.generatePredictions(moduleDataMap);
+      const topRisk = predictions.summary?.topRisks?.[0] || 'No major risks';
+      const tension = predictions.summary?.overallTension || 'unknown';
+
+      await push.sendDailySummary({
+        summary: `Tension: ${tension}. Top risk: ${topRisk}`,
+      });
+    } catch (err) {
+      logger.error('Daily summary push failed:', err.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'UTC'
+  });
+
   logger.info('Scheduler started');
 }
 

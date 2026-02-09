@@ -715,6 +715,862 @@ This API provides access to:
           },
         },
       },
+
+      // ==================== Historical Routes ====================
+
+      '/api/historical/range': {
+        get: {
+          tags: ['Data'],
+          summary: 'Get available historical date range',
+          description: 'Returns the min/max dates with available data and a list of significant dates.',
+          operationId: 'getHistoricalRange',
+          responses: {
+            200: {
+              description: 'Date range information',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/HistoricalRangeResponse' },
+                  example: {
+                    range: { minDate: '2020-01-01', maxDate: '2025-01-31', totalDays: 1857 },
+                    significantDates: ['2024-11-05', '2024-03-15'],
+                  },
+                },
+              },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/historical/{date}': {
+        get: {
+          tags: ['Data'],
+          summary: 'Get all module data for a specific date',
+          description: 'Returns snapshots, daily data, and archived predictions for a given historical date.',
+          operationId: 'getHistoricalDate',
+          parameters: [
+            { name: 'date', in: 'path', required: true, description: 'Date in YYYY-MM-DD format', schema: { type: 'string', format: 'date' }, example: '2024-11-05' },
+          ],
+          responses: {
+            200: {
+              description: 'Historical data for the date',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/HistoricalDateResponse' },
+                  example: {
+                    date: '2024-11-05',
+                    dailyData: { tzolkin: { kin: 100 }, tarot: { card: 'The Tower' } },
+                    modules: { moon: { data: { phase: 'Waxing Crescent' }, collectedAt: '2024-11-05T10:00:00Z' } },
+                    predictions: [{ outcomeId: 'spx_direction', probability: 0.55, confidence: 'High', actual: true }],
+                    hasData: true,
+                  },
+                },
+              },
+            },
+            400: { description: 'Invalid date format', content: { 'application/json': { schema: { $ref: '#/components/schemas/ValidationError' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+
+      // ==================== Analytics Routes ====================
+
+      '/api/analytics': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get full analytics report',
+          description: 'Returns a complete analytics report with all accuracy metrics. Cached for 1 hour.',
+          operationId: 'getAnalyticsReport',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Number of days to analyze (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: { description: 'Full analytics report', content: { 'application/json': { schema: { type: 'object', description: 'Complete analytics report with accuracy, calibration, and feature data' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/accuracy': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get overall accuracy metrics',
+          description: 'Returns overall accuracy summary across all outcomes.',
+          operationId: 'getAccuracy',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: { description: 'Overall accuracy metrics', content: { 'application/json': { schema: { type: 'object' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/accuracy/{outcome}': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get accuracy for a specific outcome',
+          description: 'Returns accuracy metrics for a single outcome.',
+          operationId: 'getOutcomeAccuracy',
+          parameters: [
+            {
+              name: 'outcome', in: 'path', required: true, description: 'Outcome ID',
+              schema: {
+                type: 'string',
+                enum: ['spx_direction', 'spx_volatile', 'btc_direction', 'btc_volatile', 'vix_spike', 'gold_direction', 'major_quake', 'quake_above_avg', 'geomag_storm', 'sentiment_drop', 'fear_spike'],
+              },
+            },
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: { description: 'Outcome accuracy metrics', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid outcome', content: { 'application/json': { schema: { $ref: '#/components/schemas/ValidationError' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/by-confidence': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get accuracy by confidence level',
+          description: 'Returns accuracy grouped by prediction confidence level.',
+          operationId: 'getAccuracyByConfidence',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: {
+              description: 'Accuracy by confidence level',
+              content: {
+                'application/json': {
+                  schema: { type: 'object', properties: { days: { type: 'integer' }, byConfidence: { type: 'object', additionalProperties: { type: 'object' } } } },
+                  example: { days: 90, byConfidence: { High: { total: 50, correct: 35, accuracy: 0.7 } } },
+                },
+              },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/over-time': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get accuracy trends over time',
+          description: 'Returns accuracy data points over time at day/week/month intervals.',
+          operationId: 'getAccuracyOverTime',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+            { name: 'interval', in: 'query', description: 'Aggregation interval', schema: { type: 'string', enum: ['day', 'week', 'month'], default: 'week' } },
+          ],
+          responses: {
+            200: {
+              description: 'Accuracy over time',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, interval: { type: 'string' }, data: { type: 'array', items: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/calibration': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get calibration data',
+          description: 'Returns calibration data for reliability diagrams — predicted vs actual probability by bin.',
+          operationId: 'getCalibration',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+            { name: 'bins', in: 'query', description: 'Number of probability bins (default: 10, min: 5, max: 20)', schema: { type: 'integer', minimum: 5, maximum: 20, default: 10 } },
+          ],
+          responses: {
+            200: {
+              description: 'Calibration data',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, bins: { type: 'integer' }, data: { type: 'array', items: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/history': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get historical prediction archive',
+          description: 'Returns paginated historical predictions with outcomes.',
+          operationId: 'getAnalyticsHistory',
+          parameters: [
+            { name: 'limit', in: 'query', description: 'Max results (default: 100, max: 500)', schema: { type: 'integer', minimum: 1, maximum: 500, default: 100 } },
+            { name: 'offset', in: 'query', description: 'Offset for pagination (default: 0)', schema: { type: 'integer', minimum: 0, default: 0 } },
+          ],
+          responses: {
+            200: { description: 'Historical predictions', content: { 'application/json': { schema: { type: 'object' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/features': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get top contributing features',
+          description: 'Returns the most predictive features ranked by contribution.',
+          operationId: 'getFeatureContributions',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: {
+              description: 'Feature contributions',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, features: { type: 'array', items: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/dashboard': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get comprehensive dashboard data',
+          description: 'Returns all dashboard metrics in one call (v2 accuracy engine). Cached for 30 minutes.',
+          operationId: 'getDashboard',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: { description: 'Dashboard data with all metrics', content: { 'application/json': { schema: { type: 'object', description: 'Comprehensive dashboard payload' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/rolling': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get rolling accuracy windows',
+          description: 'Returns rolling accuracy for 7, 30, and 90 day windows. Optionally filter by outcome.',
+          operationId: 'getRollingAccuracy',
+          parameters: [
+            { name: 'outcome', in: 'query', description: 'Filter by outcome ID (optional)', schema: { type: 'string' } },
+          ],
+          responses: {
+            200: {
+              description: 'Rolling accuracy data',
+              content: {
+                'application/json': {
+                  schema: { type: 'object', properties: { outcome: { type: 'string' }, windows: { type: 'object', additionalProperties: { type: 'object' } } } },
+                  example: { outcome: 'all', windows: { '7': { accuracy: 0.65, total: 77 }, '30': { accuracy: 0.62, total: 330 } } },
+                },
+              },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/streaks': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get prediction streak analysis',
+          description: 'Returns current and longest winning/losing streaks.',
+          operationId: 'getStreaks',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+            { name: 'outcome', in: 'query', description: 'Filter by outcome ID (optional)', schema: { type: 'string' } },
+          ],
+          responses: {
+            200: {
+              description: 'Streak analysis',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, outcome: { type: 'string' }, currentStreak: { type: 'object' }, longestWin: { type: 'object' }, longestLoss: { type: 'object' } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/best-worst': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get best and worst performing periods',
+          description: 'Finds the best and worst accuracy windows within the lookback period.',
+          operationId: 'getBestWorst',
+          parameters: [
+            { name: 'window', in: 'query', description: 'Window size in days (default: 7, min: 3, max: 30)', schema: { type: 'integer', minimum: 3, maximum: 30, default: 7 } },
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: { description: 'Best and worst periods', content: { 'application/json': { schema: { type: 'object' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/by-category': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get accuracy by prediction category',
+          description: 'Returns accuracy grouped by category (market, geophysical, sentiment).',
+          operationId: 'getAccuracyByCategory',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: {
+              description: 'Accuracy by category',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, categories: { type: 'object', additionalProperties: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/by-tag': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get accuracy by tag',
+          description: 'Returns accuracy grouped by prediction tags.',
+          operationId: 'getAccuracyByTag',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+          ],
+          responses: {
+            200: {
+              description: 'Accuracy by tag',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, tags: { type: 'object', additionalProperties: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/trend': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get accuracy trend from snapshots',
+          description: 'Returns accuracy trend data from daily snapshots.',
+          operationId: 'getAccuracyTrend',
+          parameters: [
+            { name: 'outcome', in: 'query', description: 'Outcome ID (optional)', schema: { type: 'string' } },
+            { name: 'period', in: 'query', description: 'Rolling period in days (7, 30, or 90)', schema: { type: 'integer', enum: [7, 30, 90], default: 30 } },
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 180, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 180 } },
+          ],
+          responses: {
+            200: {
+              description: 'Accuracy trend data',
+              content: { 'application/json': { schema: { type: 'object', properties: { outcome: { type: 'string' }, periodDays: { type: 'integer' }, lookbackDays: { type: 'integer' }, data: { type: 'array', items: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/hit-rate': {
+        get: {
+          tags: ['Analytics'],
+          summary: 'Get hit rate by probability buckets',
+          description: 'Returns hit rate grouped by predicted probability buckets for calibration curves.',
+          operationId: 'getHitRate',
+          parameters: [
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 90, max: 365)', schema: { type: 'integer', minimum: 1, maximum: 365, default: 90 } },
+            { name: 'buckets', in: 'query', description: 'Number of probability buckets (default: 10, min: 5, max: 20)', schema: { type: 'integer', minimum: 5, maximum: 20, default: 10 } },
+          ],
+          responses: {
+            200: {
+              description: 'Hit rate data',
+              content: { 'application/json': { schema: { type: 'object', properties: { days: { type: 'integer' }, buckets: { type: 'integer' }, data: { type: 'array', items: { type: 'object' } } } } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/analytics/snapshot': {
+        post: {
+          tags: ['Analytics'],
+          summary: 'Generate daily accuracy snapshot',
+          description: 'Triggers generation of a daily accuracy snapshot. Intended for cron jobs.',
+          operationId: 'createSnapshot',
+          requestBody: {
+            required: false,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { date: { type: 'string', format: 'date-time', description: 'Date for the snapshot (defaults to now)' } } },
+                example: { date: '2025-01-31T00:00:00Z' },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Snapshot generated',
+              content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' } } }, example: { success: true } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+
+      // ==================== API Keys Routes ====================
+
+      '/api/keys': {
+        get: {
+          tags: ['API Keys'],
+          summary: 'List all API keys',
+          description: 'Returns a list of API keys. Supports filtering by active status and tier.',
+          operationId: 'listApiKeys',
+          parameters: [
+            { name: 'activeOnly', in: 'query', description: 'Only return active keys (default: true)', schema: { type: 'string', enum: ['true', 'false'], default: 'true' } },
+            { name: 'tier', in: 'query', description: 'Filter by tier', schema: { type: 'string', enum: ['free', 'pro', 'enterprise'] } },
+            { name: 'limit', in: 'query', description: 'Max results (default: 50)', schema: { type: 'integer', default: 50 } },
+          ],
+          responses: {
+            200: {
+              description: 'List of API keys',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ApiKeyListResponse' },
+                  example: { success: true, count: 1, keys: [{ keyId: 'wh_abc123', name: 'My App', tier: 'free', dailyLimit: 100, isActive: true, createdAt: '2025-01-15T10:00:00Z', lastUsedAt: '2025-01-31T08:00:00Z' }] },
+                },
+              },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        post: {
+          tags: ['API Keys'],
+          summary: 'Create a new API key',
+          description: 'Creates a new API key. The secret key is returned only once.',
+          operationId: 'createApiKey',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateApiKeyRequest' },
+                example: { name: 'My App', tier: 'free', email: 'dev@example.com' },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'API key created',
+              content: { 'application/json': { schema: { $ref: '#/components/schemas/CreateApiKeyResponse' } } },
+            },
+            400: { description: 'Invalid request', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/keys/{keyId}': {
+        get: {
+          tags: ['API Keys'],
+          summary: 'Get API key details',
+          description: 'Returns details for a specific API key.',
+          operationId: 'getApiKey',
+          parameters: [{ name: 'keyId', in: 'path', required: true, description: 'API key ID', schema: { type: 'string' } }],
+          responses: {
+            200: { description: 'API key details', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiKeyDetailResponse' } } } },
+            404: { description: 'Key not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        patch: {
+          tags: ['API Keys'],
+          summary: 'Update an API key',
+          description: 'Update the tier of an API key.',
+          operationId: 'updateApiKey',
+          parameters: [{ name: 'keyId', in: 'path', required: true, description: 'API key ID', schema: { type: 'string' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { tier: { type: 'string', enum: ['free', 'pro', 'enterprise'] } }, required: ['tier'] },
+                example: { tier: 'pro' },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Key updated', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, key: { $ref: '#/components/schemas/ApiKeySummary' } } } } } },
+            400: { description: 'Invalid request', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Key not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        delete: {
+          tags: ['API Keys'],
+          summary: 'Revoke an API key',
+          description: 'Permanently revokes an API key.',
+          operationId: 'revokeApiKey',
+          parameters: [{ name: 'keyId', in: 'path', required: true, description: 'API key ID', schema: { type: 'string' } }],
+          responses: {
+            200: { description: 'Key revoked', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' } } }, example: { success: true, message: 'API key revoked successfully.' } } } },
+            404: { description: 'Key not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/keys/{keyId}/usage': {
+        get: {
+          tags: ['API Keys'],
+          summary: 'Get usage statistics for an API key',
+          description: 'Returns usage stats including request counts over the specified period.',
+          operationId: 'getApiKeyUsage',
+          parameters: [
+            { name: 'keyId', in: 'path', required: true, description: 'API key ID', schema: { type: 'string' } },
+            { name: 'days', in: 'query', description: 'Lookback period in days (default: 30)', schema: { type: 'integer', default: 30 } },
+          ],
+          responses: {
+            200: { description: 'Usage statistics', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, usage: { type: 'object' } } } } } },
+            404: { description: 'Key not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+
+      // ==================== Community Routes ====================
+
+      '/api/community/me': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get current user info',
+          description: 'Returns the anonymous user profile based on cookie identity.',
+          operationId: 'getCommunityMe',
+          responses: {
+            200: {
+              description: 'User info',
+              content: { 'application/json': { schema: { $ref: '#/components/schemas/CommunityUser' }, example: { id: 42, displayName: 'CosmicObserver', avatarSeed: 'a1b2c3d4', createdAt: '2025-01-15T10:00:00Z' } } },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        patch: {
+          tags: ['Community'],
+          summary: 'Update display name',
+          description: "Updates the current user's display name.",
+          operationId: 'updateCommunityMe',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { displayName: { type: 'string' } }, required: ['displayName'] },
+                example: { displayName: 'MoonWatcher' },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Updated user', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid name', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/comments/{outcomeId}': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get comments for a prediction',
+          description: 'Returns paginated comments for a specific outcome prediction.',
+          operationId: 'getComments',
+          parameters: [
+            {
+              name: 'outcomeId', in: 'path', required: true, description: 'Outcome ID',
+              schema: { type: 'string', enum: ['spx_direction', 'spx_volatile', 'btc_direction', 'btc_volatile', 'vix_spike', 'gold_direction', 'major_quake', 'quake_above_avg', 'geomag_storm', 'sentiment_drop', 'fear_spike'] },
+            },
+            { name: 'limit', in: 'query', description: 'Max comments (default: 50, max: 100)', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } },
+            { name: 'offset', in: 'query', description: 'Pagination offset', schema: { type: 'integer', minimum: 0, default: 0 } },
+          ],
+          responses: {
+            200: { description: 'Comments list', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid outcome ID', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        post: {
+          tags: ['Community'],
+          summary: 'Add a comment',
+          description: 'Adds a comment to a prediction outcome.',
+          operationId: 'addComment',
+          parameters: [{ name: 'outcomeId', in: 'path', required: true, description: 'Outcome ID', schema: { type: 'string' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { content: { type: 'string', description: 'Comment text' } }, required: ['content'] },
+                example: { content: 'Mercury retrograde always shakes the markets!' },
+              },
+            },
+          },
+          responses: {
+            201: { description: 'Comment created', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid request', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/comments/{commentId}': {
+        delete: {
+          tags: ['Community'],
+          summary: 'Delete a comment',
+          description: 'Deletes a comment owned by the current user.',
+          operationId: 'deleteComment',
+          parameters: [{ name: 'commentId', in: 'path', required: true, description: 'Comment ID', schema: { type: 'integer' } }],
+          responses: {
+            200: { description: 'Comment deleted', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' } } }, example: { success: true } } } },
+            400: { description: 'Not allowed or not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/reactions/{outcomeId}': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get reactions for a prediction',
+          description: "Returns reaction counts and the current user's reactions for an outcome.",
+          operationId: 'getReactions',
+          parameters: [{ name: 'outcomeId', in: 'path', required: true, description: 'Outcome ID', schema: { type: 'string' } }],
+          responses: {
+            200: { description: 'Reactions data', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid outcome ID', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        post: {
+          tags: ['Community'],
+          summary: 'Toggle a reaction',
+          description: 'Toggles an emoji reaction on an outcome prediction.',
+          operationId: 'toggleReaction',
+          parameters: [{ name: 'outcomeId', in: 'path', required: true, description: 'Outcome ID', schema: { type: 'string' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { emoji: { type: 'string', description: 'Emoji to toggle' } }, required: ['emoji'] },
+                example: { emoji: '🔥' },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Reaction toggled', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid request', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/predictions': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get community predictions',
+          description: 'Returns user-created community predictions, filtered by status.',
+          operationId: 'getCommunityPredictions',
+          parameters: [
+            { name: 'status', in: 'query', description: 'Filter by status (default: open)', schema: { type: 'string', enum: ['open', 'closed', 'resolved'], default: 'open' } },
+            { name: 'limit', in: 'query', description: 'Max results (default: 20, max: 50)', schema: { type: 'integer', minimum: 1, maximum: 50, default: 20 } },
+            { name: 'offset', in: 'query', description: 'Pagination offset', schema: { type: 'integer', minimum: 0, default: 0 } },
+          ],
+          responses: {
+            200: { description: 'Community predictions', content: { 'application/json': { schema: { type: 'object', properties: { predictions: { type: 'array', items: { type: 'object' } } } } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        post: {
+          tags: ['Community'],
+          summary: 'Create a community prediction',
+          description: 'Creates a new user-submitted prediction.',
+          operationId: 'createCommunityPrediction',
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { type: 'object', description: 'Prediction details (title, description, category, deadline, etc.)' } } },
+          },
+          responses: {
+            201: { description: 'Prediction created', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid request', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/predictions/{id}/votes': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get votes for a prediction',
+          description: 'Returns all votes cast on a community prediction.',
+          operationId: 'getVotes',
+          parameters: [{ name: 'id', in: 'path', required: true, description: 'Prediction ID', schema: { type: 'integer' } }],
+          responses: {
+            200: { description: 'Votes list', content: { 'application/json': { schema: { type: 'object', properties: { votes: { type: 'array', items: { type: 'object' } } } } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/predictions/{id}/vote': {
+        post: {
+          tags: ['Community'],
+          summary: 'Vote on a prediction',
+          description: 'Casts a vote on a community prediction with a confidence level.',
+          operationId: 'castVote',
+          parameters: [{ name: 'id', in: 'path', required: true, description: 'Prediction ID', schema: { type: 'integer' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { vote: { type: 'boolean', description: 'true = agree, false = disagree' }, confidence: { type: 'number', minimum: 0, maximum: 1, description: 'Confidence level (0-1)' } }, required: ['vote'] },
+                example: { vote: true, confidence: 0.8 },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Vote recorded', content: { 'application/json': { schema: { type: 'object' } } } },
+            400: { description: 'Invalid vote', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/leaderboard': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get accuracy leaderboard',
+          description: 'Returns the community leaderboard ranked by prediction accuracy.',
+          operationId: 'getLeaderboard',
+          parameters: [{ name: 'limit', in: 'query', description: 'Max entries (default: 50, max: 100)', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } }],
+          responses: {
+            200: { description: 'Leaderboard', content: { 'application/json': { schema: { type: 'object', properties: { leaderboard: { type: 'array', items: { type: 'object' } } } } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/community/emojis': {
+        get: {
+          tags: ['Community'],
+          summary: 'Get allowed reaction emojis',
+          description: 'Returns the list of emojis allowed for reactions.',
+          operationId: 'getAllowedEmojis',
+          responses: {
+            200: {
+              description: 'Allowed emojis',
+              content: { 'application/json': { schema: { type: 'object', properties: { emojis: { type: 'array', items: { type: 'string' } } } }, example: { emojis: ['🔥', '🎯', '🌙', '📈', '📉', '🤔', '💎', '🚀'] } } },
+            },
+          },
+        },
+      },
+
+      // ==================== Email Routes ====================
+
+      '/api/email/subscribe': {
+        post: {
+          tags: ['Email'],
+          summary: 'Subscribe to newsletter',
+          description: 'Subscribe an email address to the newsletter. Currently returns 501 (coming soon).',
+          operationId: 'emailSubscribe',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { email: { type: 'string', format: 'email' } }, required: ['email'] },
+                example: { email: 'user@example.com' },
+              },
+            },
+          },
+          responses: {
+            501: { description: 'Not implemented yet', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' }, example: { error: 'Not Implemented', message: 'Email subscriptions are coming soon.' } } } },
+          },
+        },
+      },
+      '/api/email/unsubscribe': {
+        post: {
+          tags: ['Email'],
+          summary: 'Unsubscribe from newsletter',
+          description: 'Unsubscribe from the newsletter. Currently returns 501 (coming soon).',
+          operationId: 'emailUnsubscribe',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { type: 'object', properties: { email: { type: 'string', format: 'email' } }, required: ['email'] },
+                example: { email: 'user@example.com' },
+              },
+            },
+          },
+          responses: {
+            501: { description: 'Not implemented yet', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' }, example: { error: 'Not Implemented', message: 'Email subscriptions are coming soon.' } } } },
+          },
+        },
+      },
+
+      // ==================== Export Routes ====================
+
+      '/api/export/csv': {
+        get: {
+          tags: ['Export'],
+          summary: 'Export predictions as CSV',
+          description: 'Downloads current predictions data as a CSV file.',
+          operationId: 'exportCsv',
+          responses: {
+            200: { description: 'CSV file', content: { 'text/csv': { schema: { type: 'string' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/export/json': {
+        get: {
+          tags: ['Export'],
+          summary: 'Export predictions as JSON',
+          description: 'Downloads current predictions data as a JSON file.',
+          operationId: 'exportJson',
+          responses: {
+            200: { description: 'JSON export', content: { 'application/json': { schema: { type: 'object' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/export/pdf': {
+        get: {
+          tags: ['Export'],
+          summary: 'Export predictions as PDF',
+          description: 'Generates and downloads a PDF report of current predictions.',
+          operationId: 'exportPdf',
+          responses: {
+            200: { description: 'PDF report', content: { 'application/pdf': { schema: { type: 'string', format: 'binary' } } } },
+            503: { description: 'PDF generation not available', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/export/image': {
+        get: {
+          tags: ['Export'],
+          summary: 'Generate shareable image card',
+          description: 'Generates a PNG image card of current predictions in the specified format.',
+          operationId: 'exportImage',
+          parameters: [
+            { name: 'format', in: 'query', description: 'Image format/layout (default: square)', schema: { type: 'string', enum: ['square', 'story', 'wide', 'compact'], default: 'square' } },
+          ],
+          responses: {
+            200: { description: 'PNG image', content: { 'image/png': { schema: { type: 'string', format: 'binary' } } } },
+            400: { description: 'Invalid format', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            503: { description: 'Image generation not available', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/export/share-text': {
+        get: {
+          tags: ['Export'],
+          summary: 'Get formatted share text',
+          description: 'Returns formatted text for sharing on social platforms.',
+          operationId: 'exportShareText',
+          parameters: [
+            { name: 'platform', in: 'query', description: 'Target platform (default: twitter)', schema: { type: 'string', enum: ['twitter', 'facebook', 'whatsapp', 'generic'], default: 'twitter' } },
+          ],
+          responses: {
+            200: {
+              description: 'Share text',
+              content: {
+                'application/json': {
+                  schema: { type: 'object', properties: { platform: { type: 'string' }, text: { type: 'string' }, url: { type: 'string' } } },
+                  example: { platform: 'twitter', text: "What's Happening: S&P 500 Direction at 55% 📊", url: 'https://whatshappening.app' },
+                },
+              },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/export/og': {
+        get: {
+          tags: ['Export'],
+          summary: 'Get Open Graph metadata',
+          description: 'Returns Open Graph metadata for link previews when sharing.',
+          operationId: 'exportOg',
+          responses: {
+            200: {
+              description: 'OG metadata',
+              content: {
+                'application/json': {
+                  schema: { type: 'object', properties: { title: { type: 'string' }, description: { type: 'string' }, image: { type: 'string' }, url: { type: 'string' }, type: { type: 'string' } } },
+                  example: { title: "What's Happening - 2025-01-31", description: 'Data-driven predictions', image: 'https://whatshappening.app/api/export/image?format=wide', url: 'https://whatshappening.app', type: 'website' },
+                },
+              },
+            },
+            500: { description: 'Server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
     },
     components: {
       schemas: {

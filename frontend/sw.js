@@ -238,4 +238,63 @@ self.addEventListener('sync', (event) => {
   }
 });
 
+/**
+ * Push notification handler
+ */
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  let data;
+  try {
+    data = event.data.json();
+  } catch (e) {
+    data = {
+      title: "What's Happening",
+      body: event.data.text(),
+    };
+  }
+
+  const options = {
+    body: data.body || '',
+    icon: data.icon || '/icons/icon-192.png',
+    badge: data.badge || '/icons/icon-72.png',
+    tag: data.tag || 'whatshappening',
+    data: data.data || { url: '/' },
+    vibrate: [100, 50, 100],
+    actions: [
+      { action: 'open', title: 'View' },
+      { action: 'dismiss', title: 'Dismiss' },
+    ],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "What's Happening", options)
+  );
+});
+
+/**
+ * Notification click handler
+ */
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'dismiss') return;
+
+  const url = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Focus existing window if available
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      // Open new window
+      return clients.openWindow(url);
+    })
+  );
+});
+
 console.log('[SW] Service worker loaded');
