@@ -13,21 +13,16 @@ import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
 import { initFilters, renderFilterBar, filterPredictions, getFilterState } from './components/filters.js';
 import { loadInsight } from './components/insight.js';
-import ga4 from './ga4.js';
-import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
-import consentBanner from './components/consent-banner.js';
-import { init as initPerformance, getMetrics } from './performance.js';
-import ErrorTracker from './error-tracking.js';
-import { initShare } from './share.js';
 import './pwa.js';
 import { initComparison } from './components/comparison.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './websocket.js';
 import { initConnectionIndicator } from './components/connection-indicator.js';
 import { initThemeToggle } from './components/themeToggle.js';
 import { initCountdown } from './components/countdown.js';
+import ErrorTracker from './error-tracking.js';
 
 // Lazy-loaded modules (non-critical path)
-let ga4, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
+let ga4, initAutoTracking, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
 
 /**
  * Lazy load non-critical modules after initial render
@@ -90,29 +85,11 @@ async function init() {
   renderFilterBar();
   initFilters(handleFilterChange);
 
-  // Initialize performance monitoring (Core Web Vitals)
-  initPerformance();
-
   // Initialize error tracking
   ErrorTracker.init({ backendUrl: config.apiBase ? `${config.apiBase}/api/errors` : null });
-  
-  // Initialize GA4 analytics
-  await ga4.init();
-  
-  // Show consent banner if needed
-  consentBanner.init();
-  
-  // Initialize automatic tracking (scroll depth, time on page, errors)
-  initAutoTracking();
-
-  // Initialize share functionality
-  initShare();
 
   // Initialize historical comparison view
   initComparison();
-
-  // Initialize email signup form
-  initEmailSignup();
 
   // Set up event listeners
   setupEventListeners();
