@@ -2518,3 +2518,408 @@ button:focus-visible,
 .header-btn:hover { background: var(--bg-hover); border-color: var(--border-hover); }
 .header-btn:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
 .header-btn:active { transform: scale(0.95); }
+
+/* Autocomplete dropdown (#152) */
+.autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.autocomplete-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.autocomplete-item mark {
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+}
+
+/* Location radius filter (#152) */
+.filter-location-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filter-radius {
+  width: 120px;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.filter-location-status {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   INSIGHT HERO — Conclusion-first AI Narrative
+   ============================================ */
+
+.insight-hero {
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #0a0d1a 0%, #1b2d4e 50%, #0f1a30 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.insight-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Mood badge */
+.insight-mood-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.03em;
+}
+
+/* Narrative */
+.insight-narrative {
+  position: relative;
+  z-index: 1;
+}
+
+.insight-narrative p {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-weight: 400;
+  max-width: 72ch;
+}
+
+.insight-narrative p:last-child {
+  margin-bottom: 0;
+}
+
+/* Highlights strip */
+.insight-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.insight-highlight-pill {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.insight-highlight-pill:hover {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.insight-highlight-pill[data-source=""] {
+  cursor: default;
+}
+.insight-highlight-pill[data-source=""]:hover {
+  transform: none;
+}
+
+/* Guidance card */
+.insight-guidance {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  z-index: 1;
+}
+
+.insight-guidance-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.insight-guidance-icon {
+  font-size: 1.1rem;
+}
+
+.insight-guidance-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.insight-guidance-text {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  opacity: 0.9;
+}
+
+/* Meta row */
+.insight-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+}
+
+.insight-refresh-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-muted);
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-left: auto;
+}
+
+.insight-refresh-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: var(--text-primary);
+}
+
+/* Error state */
+.insight-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+  gap: 1rem;
+}
+
+.insight-error-icon {
+  font-size: 2rem;
+}
+
+.insight-error-text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 40ch;
+  line-height: 1.6;
+}
+
+/* Skeleton loading */
+.insight-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.insight-skeleton-mood {
+  width: 100px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+}
+
+.insight-skeleton-line {
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+}
+
+.insight-skeleton-pills {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.insight-skeleton-pill {
+  width: 120px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Module highlight flash */
+.module-card.highlight-flash {
+  animation: flashHighlight 2s ease-out;
+}
+
+@keyframes flashHighlight {
+  0% { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); }
+  100% { box-shadow: none; }
+}
+
+/* ============================================
+   RAW DATA — Collapsible Section
+   ============================================ */
+
+.raw-data-section {
+  margin-top: 0.5rem;
+}
+
+.raw-data-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.raw-data-toggle:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.raw-data-toggle-count {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.raw-data-toggle-arrow {
+  margin-left: auto;
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.raw-data-section:not(.collapsed) .raw-data-toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.raw-data-wrapper {
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  max-height: 5000px;
+  opacity: 1;
+}
+
+.raw-data-section.collapsed .raw-data-wrapper {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================
+   INSIGHT — Light Theme Overrides
+   ============================================ */
+
+[data-theme="light"] .insight-hero {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f7ff 100%) !important;
+  border-color: rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] .insight-mood-badge {
+  background: rgba(0,0,0,0.05);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .insight-highlight-pill {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+}
+
+[data-theme="light"] .insight-guidance {
+  background: rgba(0,0,0,0.02);
+  border-color: rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] .insight-refresh-btn {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .insight-hero::before {
+  background: radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.04) 0%, transparent 60%);
+}
+
+/* ============================================
+   INSIGHT — Responsive
+   ============================================ */
+
+@media (max-width: 767px) {
+  .insight-hero {
+    padding: 1.25rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .insight-narrative p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .insight-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .insight-refresh-btn {
+    margin-left: 0;
+  }
+}

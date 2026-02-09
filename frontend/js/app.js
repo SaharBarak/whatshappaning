@@ -12,6 +12,7 @@ import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
 import { initFilters, renderFilterBar, filterPredictions, getFilterState } from './components/filters.js';
+import { loadInsight } from './components/insight.js';
 import ga4 from './ga4.js';
 import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
 import consentBanner from './components/consent-banner.js';
@@ -112,6 +113,12 @@ async function init() {
 
   // Set up event listeners
   setupEventListeners();
+
+  // Initialize raw data toggle
+  initRawDataToggle();
+
+  // Load AI insight (non-blocking)
+  loadInsight().catch(err => console.error('Insight load failed:', err));
 
   // Initial data load
   await refreshData();
@@ -292,6 +299,20 @@ async function toggleModule(moduleName) {
     interactionEvents?.moduleExpand(moduleName, moduleName);
   }
   await renderModules(state.data?.modules, state.expandedModules, toggleModule);
+}
+
+/**
+ * Initialize raw data collapsible toggle
+ */
+function initRawDataToggle() {
+  const toggle = document.getElementById('raw-data-toggle');
+  const section = document.getElementById('raw-data-section');
+  if (!toggle || !section) return;
+
+  toggle.addEventListener('click', () => {
+    const isCollapsed = section.classList.toggle('collapsed');
+    toggle.setAttribute('aria-expanded', !isCollapsed);
+  });
 }
 
 /**

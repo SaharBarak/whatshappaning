@@ -197,6 +197,11 @@
 
       <!-- ========== CONTENT AREA ========== -->
       <main id="main-content" class="content-area">
+        <!-- ===== INSIGHT HERO (Conclusion-first) ===== -->
+        <section class="insight-hero" id="insight-hero" aria-label="Today's cosmic insight">
+          <!-- Rendered by insight.js -->
+        </section>
+
         <!-- Page Header -->
         <div class="page-header">
           <div class="page-header-meta" id="page-date"></div>
@@ -248,29 +253,33 @@
           <div class="alert-content" id="alert-content"></div>
         </section>
 
-        <!-- Data Modules Section -->
-        <section class="modules-section" aria-label="Data Modules">
-          <div class="section-header">
-            <span class="section-icon" aria-hidden="true">🔮</span>
-            <span class="section-title">DATA MODULES</span>
-          </div>
-          <div class="data-grid" id="data-grid">
-            <div class="module-card skeleton" data-module="moon"></div>
-            <div class="module-card skeleton" data-module="tzolkin"></div>
-            <div class="module-card skeleton" data-module="dreamspell"></div>
-            <div class="module-card skeleton" data-module="parasha"></div>
-            <div class="module-card skeleton" data-module="gematria"></div>
-            <div class="module-card skeleton" data-module="numerology"></div>
-            <div class="module-card skeleton" data-module="iching"></div>
-            <div class="module-card skeleton" data-module="tarot"></div>
-            <div class="module-card skeleton" data-module="solar"></div>
-            <div class="module-card skeleton" data-module="schumann"></div>
-            <div class="module-card skeleton" data-module="cosmic"></div>
-            <div class="module-card skeleton" data-module="astrology"></div>
-            <div class="module-card skeleton" data-module="markets"></div>
-            <div class="module-card skeleton" data-module="geophysical"></div>
-            <div class="module-card skeleton" data-module="sentiment"></div>
-            <div class="module-card skeleton" data-module="news"></div>
+        <!-- ===== RAW DATA (Collapsible) ===== -->
+        <section class="raw-data-section collapsed" id="raw-data-section" aria-label="Source data modules">
+          <button class="raw-data-toggle" id="raw-data-toggle" aria-expanded="false" aria-controls="data-grid-wrapper">
+            <span class="raw-data-toggle-icon">🔮</span>
+            <span class="raw-data-toggle-text">Explore Source Data</span>
+            <span class="raw-data-toggle-count">16 modules</span>
+            <span class="raw-data-toggle-arrow">▼</span>
+          </button>
+          <div class="raw-data-wrapper" id="data-grid-wrapper">
+            <div class="data-grid" id="data-grid">
+              <div class="module-card skeleton" data-module="moon"></div>
+              <div class="module-card skeleton" data-module="tzolkin"></div>
+              <div class="module-card skeleton" data-module="dreamspell"></div>
+              <div class="module-card skeleton" data-module="parasha"></div>
+              <div class="module-card skeleton" data-module="gematria"></div>
+              <div class="module-card skeleton" data-module="numerology"></div>
+              <div class="module-card skeleton" data-module="iching"></div>
+              <div class="module-card skeleton" data-module="tarot"></div>
+              <div class="module-card skeleton" data-module="solar"></div>
+              <div class="module-card skeleton" data-module="schumann"></div>
+              <div class="module-card skeleton" data-module="cosmic"></div>
+              <div class="module-card skeleton" data-module="astrology"></div>
+              <div class="module-card skeleton" data-module="markets"></div>
+              <div class="module-card skeleton" data-module="geophysical"></div>
+              <div class="module-card skeleton" data-module="sentiment"></div>
+              <div class="module-card skeleton" data-module="news"></div>
+            </div>
           </div>
         </section>
 
@@ -511,6 +520,7 @@
   <link rel="modulepreload" href="js/components/modules.js">
   <link rel="modulepreload" href="js/components/states.js">
   <link rel="modulepreload" href="js/components/filters.js">
+  <link rel="modulepreload" href="js/components/insight.js">
 
   <!-- JavaScript Modules -->
   <script type="module" src="js/app.js" fetchpriority="high"></script>
