@@ -19,6 +19,7 @@ import { init as initPerformance, getMetrics } from './performance.js';
 import ErrorTracker from './error-tracking.js';
 import { initShare } from './share.js';
 import './pwa.js';
+import { initComparison } from './components/comparison.js';
 import { initThemeToggle } from './components/themeToggle.js';
 
 // Lazy-loaded modules (non-critical path)
@@ -102,6 +103,9 @@ async function init() {
 
   // Initialize share functionality
   initShare();
+
+  // Initialize historical comparison view
+  initComparison();
 
   // Initialize email signup form
   initEmailSignup();
