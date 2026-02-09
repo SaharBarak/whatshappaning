@@ -41,7 +41,7 @@ ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
 
 -- Create accuracy_snapshots table for periodic accuracy tracking
 CREATE TABLE IF NOT EXISTS accuracy_snapshots (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   snapshot_date DATE NOT NULL,
   period_days INTEGER NOT NULL, -- 7, 30, 90 days lookback
   outcome_id VARCHAR(50),       -- NULL for overall stats
@@ -60,7 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_accuracy_snapshots_outcome ON accuracy_snapshots(
 
 -- Create prediction_streaks table for tracking winning/losing streaks
 CREATE TABLE IF NOT EXISTS prediction_streaks (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   outcome_id VARCHAR(50) NOT NULL,
   streak_type VARCHAR(10) NOT NULL, -- 'win' or 'loss'
   streak_length INTEGER NOT NULL,

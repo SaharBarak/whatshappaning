@@ -8,7 +8,7 @@
 -- Table: api_keys
 -- Stores API keys with tier information
 CREATE TABLE IF NOT EXISTS api_keys (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   key_id VARCHAR(32) NOT NULL UNIQUE,     -- Public identifier (wh_pk_xxx)
   key_hash VARCHAR(128) NOT NULL,          -- SHA-256 hash of secret key
   name VARCHAR(100) NOT NULL,              -- User-friendly name
@@ -33,7 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_active ON api_keys (is_active) WHERE is_
 -- Table: api_usage
 -- Tracks API usage per key per day
 CREATE TABLE IF NOT EXISTS api_usage (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   key_id VARCHAR(32) NOT NULL,
   date DATE NOT NULL DEFAULT CURRENT_DATE,
   request_count INTEGER DEFAULT 0,
@@ -52,7 +52,7 @@ CREATE INDEX IF NOT EXISTS idx_api_usage_date ON api_usage (date DESC);
 -- Table: api_request_log
 -- Detailed request logs (7 days retention)
 CREATE TABLE IF NOT EXISTS api_request_log (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   key_id VARCHAR(32),
   endpoint VARCHAR(100) NOT NULL,
   method VARCHAR(10) NOT NULL,

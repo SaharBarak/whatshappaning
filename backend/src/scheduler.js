@@ -437,6 +437,7 @@ async function getAllModuleData() {
 
 module.exports = {
   registerModule,
+  loadModules,
   executeModule,
   executeDailyModules,
   startScheduler,

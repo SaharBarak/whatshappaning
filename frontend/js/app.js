@@ -12,6 +12,7 @@ import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
 import { initFilters, renderFilterBar, filterPredictions, getFilterState } from './components/filters.js';
+import { loadInsight } from './components/insight.js';
 import ga4 from './ga4.js';
 import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
 import consentBanner from './components/consent-banner.js';
@@ -23,6 +24,7 @@ import { initComparison } from './components/comparison.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './websocket.js';
 import { initConnectionIndicator } from './components/connection-indicator.js';
 import { initThemeToggle } from './components/themeToggle.js';
+import { initCountdown } from './components/countdown.js';
 
 // Lazy-loaded modules (non-critical path)
 let ga4, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
@@ -114,6 +116,15 @@ async function init() {
 
   // Set up event listeners
   setupEventListeners();
+
+  // Initialize raw data toggle
+  initRawDataToggle();
+
+  // Load AI insight (non-blocking)
+  loadInsight().catch(err => console.error('Insight load failed:', err));
+
+  // Initialize countdown timer (non-blocking)
+  initCountdown().catch(err => console.error('Countdown init failed:', err));
 
   // Initial data load
   await refreshData();
@@ -231,7 +242,16 @@ function render() {
       }
     }
   }
-  await renderModules(mergedModules, state.expandedModules, toggleModule);
+  // Apply preference-based module ordering
+  const prefs = getPreferences();
+  if (prefs && mergedModules) {
+    const orderedKeys = applyPreferencesToModuleOrder(Object.keys(mergedModules));
+    const ordered = {};
+    orderedKeys.forEach(k => { if (mergedModules[k]) ordered[k] = mergedModules[k]; });
+    await renderModules(ordered, state.expandedModules, toggleModule);
+  } else {
+    await renderModules(mergedModules, state.expandedModules, toggleModule);
+  }
   renderSuggestions(state.predictions?.actionSuggestions);
 }
 
@@ -314,6 +334,20 @@ async function toggleModule(moduleName) {
     interactionEvents?.moduleExpand(moduleName, moduleName);
   }
   await renderModules(state.data?.modules, state.expandedModules, toggleModule);
+}
+
+/**
+ * Initialize raw data collapsible toggle
+ */
+function initRawDataToggle() {
+  const toggle = document.getElementById('raw-data-toggle');
+  const section = document.getElementById('raw-data-section');
+  if (!toggle || !section) return;
+
+  toggle.addEventListener('click', () => {
+    const isCollapsed = section.classList.toggle('collapsed');
+    toggle.setAttribute('aria-expanded', !isCollapsed);
+  });
 }
 
 /**
