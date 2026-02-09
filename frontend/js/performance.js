@@ -2,8 +2,30 @@
  * Performance Monitoring Module
  *
  * Tracks Core Web Vitals and reports performance metrics.
- * Uses the web-vitals library pattern for accurate measurements.
+ * Uses the web-vitals library for accurate measurements when available,
+ * falls back to PerformanceObserver API.
  */
+
+// Try to load web-vitals from CDN for more accurate measurements
+let webVitalsLoaded = false;
+async function loadWebVitals() {
+  try {
+    const module = await import('https://unpkg.com/web-vitals@4/dist/web-vitals.js');
+    if (module) {
+      webVitalsLoaded = true;
+      // Use web-vitals library for accurate measurements
+      module.onLCP((metric) => logMetric('LCP', metric.value, getRating('LCP', metric.value)));
+      module.onFID((metric) => logMetric('FID', metric.value, getRating('FID', metric.value)));
+      module.onCLS((metric) => logMetric('CLS', metric.value, getRating('CLS', metric.value)));
+      module.onFCP((metric) => logMetric('FCP', metric.value, getRating('FCP', metric.value)));
+      module.onTTFB((metric) => logMetric('TTFB', metric.value, getRating('TTFB', metric.value)));
+      module.onINP((metric) => logMetric('INP', metric.value, getRating('INP', metric.value)));
+      console.log('[Web Vitals] Using web-vitals library for accurate measurements');
+    }
+  } catch (e) {
+    console.log('[Web Vitals] web-vitals library unavailable, using PerformanceObserver fallback');
+  }
+}
 
 // Performance budget thresholds (based on Google recommendations)
 const BUDGET = {
@@ -315,18 +337,23 @@ function init() {
  * Start all observers
  */
 function startObserving() {
-  // Delay slightly to ensure metrics are available
-  setTimeout(() => {
-    measureTTFB();
-    observeFCP();
-    observeLCP();
-    observeFID();
-    observeCLS();
-    observeINP();
+  // Try web-vitals library first, fall back to manual observers
+  loadWebVitals().then(() => {
+    if (!webVitalsLoaded) {
+      // Fallback: use manual PerformanceObserver
+      setTimeout(() => {
+        measureTTFB();
+        observeFCP();
+        observeLCP();
+        observeFID();
+        observeCLS();
+        observeINP();
+      }, 0);
+    }
 
     // Measure resources after a delay
     setTimeout(measureResources, 3000);
-  }, 0);
+  });
 
   // Report metrics on page unload
   window.addEventListener('visibilitychange', () => {
