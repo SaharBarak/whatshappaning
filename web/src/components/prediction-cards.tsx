@@ -19,9 +19,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { cn } from "@/lib/utils";
 
-// Sample prediction data
+// Sample prediction data (fallback when no live data)
 const predictions = [
   {
     id: 1,
@@ -327,6 +328,11 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
 }
 
 export function PredictionCards() {
+  const { predictions: livePredictions, lastUpdate } = useWebSocket();
+
+  // Use live predictions when available, fall back to static sample data
+  const activePredictions = (livePredictions as Prediction[] | null) ?? predictions;
+
   return (
     <section className="py-20" aria-labelledby="predictions-heading">
       <div className="container px-4">
@@ -342,10 +348,15 @@ export function PredictionCards() {
             Predictions based on real-time analysis of cosmic data, environmental
             patterns, and historical correlations.
           </p>
+          {lastUpdate && (
+            <p className="text-xs text-muted-foreground/60 mt-2" aria-live="polite">
+              Last updated: {new Date(lastUpdate).toLocaleTimeString()}
+            </p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Prediction cards">
-          {predictions.map((prediction, index) => (
+          {activePredictions.map((prediction, index) => (
             <PredictionCard
               key={prediction.id}
               prediction={prediction}
