@@ -5,7 +5,7 @@
 -- Table: community_users
 -- Anonymous users identified by cookie/device fingerprint
 CREATE TABLE IF NOT EXISTS community_users (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   anonymous_id TEXT UNIQUE NOT NULL,  -- Cookie/fingerprint hash
   display_name TEXT,                   -- Optional nickname
   avatar_seed TEXT,                    -- For generating avatar
@@ -18,7 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_community_users_anon ON community_users (anonymou
 -- Table: prediction_comments
 -- Comments on predictions
 CREATE TABLE IF NOT EXISTS prediction_comments (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   user_id INTEGER REFERENCES community_users(id) ON DELETE SET NULL,
   outcome_id TEXT NOT NULL,           -- Prediction outcome being commented on
   content TEXT NOT NULL,
@@ -33,7 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_comments_user ON prediction_comments (user_id);
 -- Table: prediction_reactions
 -- Emoji reactions on predictions
 CREATE TABLE IF NOT EXISTS prediction_reactions (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   user_id INTEGER REFERENCES community_users(id) ON DELETE CASCADE,
   outcome_id TEXT NOT NULL,
   emoji TEXT NOT NULL,                -- Emoji code (e.g., '👍', '🎯', '🔥')
@@ -46,7 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_reactions_outcome ON prediction_reactions (outcom
 -- Table: community_predictions
 -- User-submitted predictions with voting
 CREATE TABLE IF NOT EXISTS community_predictions (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   user_id INTEGER REFERENCES community_users(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   description TEXT,
@@ -65,7 +65,7 @@ CREATE INDEX IF NOT EXISTS idx_community_pred_user ON community_predictions (use
 -- Table: community_votes
 -- Votes on community predictions
 CREATE TABLE IF NOT EXISTS community_votes (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   prediction_id INTEGER REFERENCES community_predictions(id) ON DELETE CASCADE,
   user_id INTEGER REFERENCES community_users(id) ON DELETE CASCADE,
   vote TEXT NOT NULL,                  -- 'yes', 'no', or option value
@@ -79,7 +79,7 @@ CREATE INDEX IF NOT EXISTS idx_votes_prediction ON community_votes (prediction_i
 -- Table: user_accuracy
 -- Tracks prediction accuracy for leaderboard
 CREATE TABLE IF NOT EXISTS user_accuracy (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   user_id INTEGER REFERENCES community_users(id) ON DELETE CASCADE UNIQUE,
   total_predictions INTEGER DEFAULT 0,
   correct_predictions INTEGER DEFAULT 0,

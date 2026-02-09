@@ -5,7 +5,7 @@
 -- Prediction Archive table
 -- Stores historical predictions with their outcomes for accuracy tracking
 CREATE TABLE IF NOT EXISTS prediction_archive (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   date DATE NOT NULL,
   outcome_id TEXT NOT NULL,
   predicted_probability DECIMAL(5,4),

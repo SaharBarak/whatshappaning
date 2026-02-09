@@ -34,7 +34,7 @@ The backend uses environment variables for all sensitive configuration. **Never 
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgres://user:pass@host:5432/db` |
+| `DATABASE_URL` | PostgreSQL or CockroachDB connection string | `postgresql://user:pass@host:26257/defaultdb?sslmode=verify-full` |
 | `GEMINI_API_KEY` | Google Gemini API key for news analysis | `AIza...` |
 
 #### Optional Variables
@@ -59,6 +59,26 @@ The backend uses environment variables for all sensitive configuration. **Never 
    ```
 
 3. **Verify `.env` is in `.gitignore`** (it already is by default)
+
+### Database Setup
+
+The backend supports both PostgreSQL and CockroachDB Serverless.
+
+**Option A: Local PostgreSQL**
+```bash
+DATABASE_URL=postgres://username:password@localhost:5432/whatshappening
+```
+
+**Option B: CockroachDB Serverless (recommended for production)**
+1. Sign up at [cockroachlabs.cloud](https://cockroachlabs.cloud) (free serverless tier available)
+2. Create a cluster
+3. Get the connection string from the cluster dashboard
+4. Set it as `DATABASE_URL`:
+```bash
+DATABASE_URL=postgresql://user:password@host.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full
+```
+
+SSL is automatically enabled for CockroachDB and Render connections.
 
 ### Production Deployment
 

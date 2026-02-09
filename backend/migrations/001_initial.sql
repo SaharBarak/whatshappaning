@@ -8,7 +8,7 @@
 -- Table: snapshots
 -- Stores time-series module data with 90 days retention
 CREATE TABLE IF NOT EXISTS snapshots (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   module VARCHAR(50) NOT NULL,
   data JSONB NOT NULL,
   collected_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS daily_data (
 -- Table: indices_history
 -- Historical index values for trend analysis (1 year retention)
 CREATE TABLE IF NOT EXISTS indices_history (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   solar_geo DECIMAL(4,2),
   astro_events INTEGER,
   calendar_sync INTEGER,
@@ -47,7 +47,7 @@ CREATE INDEX IF NOT EXISTS idx_indices_time ON indices_history (calculated_at DE
 -- Table: news_themes
 -- Archived news analysis results (30 days retention)
 CREATE TABLE IF NOT EXISTS news_themes (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   themes JSONB NOT NULL,
   sources TEXT[] NOT NULL,
   article_count INTEGER NOT NULL,
@@ -61,7 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_news_time ON news_themes (analyzed_at DESC);
 -- Table: system_status
 -- Track data collection health (7 days retention)
 CREATE TABLE IF NOT EXISTS system_status (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   module VARCHAR(50) NOT NULL,
   status VARCHAR(20) NOT NULL, -- 'success', 'error', 'timeout'
   error_message TEXT,
@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS sentiment_daily (
 -- Table: correlation_results
 -- Pre-computed correlations with Wilson CI
 CREATE TABLE IF NOT EXISTS correlation_results (
-  id SERIAL PRIMARY KEY,
+  id INT8 DEFAULT unique_rowid() PRIMARY KEY,
   correlation_type VARCHAR(20) NOT NULL, -- 'single' or 'combination'
   features JSONB NOT NULL,
   outcome VARCHAR(50) NOT NULL,
