@@ -2963,3 +2963,48 @@ button:focus-visible,
     margin-left: 0;
   }
 }
+
+/* ========================================
+   Countdown Timer
+   ======================================== */
+
+.update-countdown {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.countdown-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  white-space: nowrap;
+}
+
+.countdown-separator {
+  opacity: 0.4;
+}
+
+.countdown-next {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.countdown-refreshing {
+  color: var(--accent);
+  animation: pulse-text 1s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .update-countdown {
+    display: none;
+  }
+}

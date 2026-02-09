@@ -22,6 +22,7 @@ import { initShare } from './share.js';
 import './pwa.js';
 import { initComparison } from './components/comparison.js';
 import { initThemeToggle } from './components/themeToggle.js';
+import { initCountdown } from './components/countdown.js';
 
 // Lazy-loaded modules (non-critical path)
 let ga4, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
@@ -119,6 +120,9 @@ async function init() {
 
   // Load AI insight (non-blocking)
   loadInsight().catch(err => console.error('Insight load failed:', err));
+
+  // Initialize countdown timer (non-blocking)
+  initCountdown().catch(err => console.error('Countdown init failed:', err));
 
   // Initial data load
   await refreshData();

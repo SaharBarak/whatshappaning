@@ -4,6 +4,7 @@
  */
 
 import { config } from '../config.js';
+import { getSnapshot } from '../api.js';
 
 const MOOD_GRADIENTS = {
   calm: 'linear-gradient(135deg, #0c1220 0%, #1a2744 50%, #0f1b2d 100%)',
@@ -29,9 +30,21 @@ let isLoading = false;
 let hasError = false;
 
 /**
- * Fetch insight from API
+ * Fetch insight — tries static snapshot first, falls back to API
  */
 async function fetchInsight(forceRefresh = false) {
+  // Try snapshot first (unless force refresh)
+  if (!forceRefresh) {
+    try {
+      const snapshot = await getSnapshot();
+      if (snapshot && snapshot.data && snapshot.data.insight) {
+        return snapshot.data.insight;
+      }
+    } catch (e) {
+      // Fall through to API
+    }
+  }
+
   const url = forceRefresh
     ? `${config.apiUrl}/api/insight/refresh`
     : `${config.apiUrl}/api/insight`;
