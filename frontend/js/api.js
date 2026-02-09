@@ -1,12 +1,18 @@
 /**
  * API Client Module
  * Handles all communication with the backend API
+ * Fetches from static Supabase snapshot first, falls back to live API
  */
 
 import { config } from './config.js';
 
 // In-memory cache
 const cache = new Map();
+
+// Static snapshot URL (Supabase Storage)
+const SNAPSHOT_URL = 'https://cvliqlgwcfbybayowvhw.supabase.co/storage/v1/object/public/snapshots/latest.json';
+const SNAPSHOT_CACHE_KEY = 'wh:snapshot';
+const SNAPSHOT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Make an API request with caching and error handling
@@ -71,9 +77,72 @@ export function clearCache(key = null) {
 }
 
 /**
+ * Fetch the static snapshot from Supabase Storage
+ * Returns { data, fromCache } or null on failure
+ */
+async function fetchSnapshot() {
+  // Check localStorage cache
+  try {
+    const cached = localStorage.getItem(SNAPSHOT_CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Date.now() - parsed._cachedAt < SNAPSHOT_CACHE_TTL) {
+        return { data: parsed.snapshot, fromCache: true };
+      }
+    }
+  } catch (e) { /* ignore */ }
+
+  try {
+    const response = await fetch(SNAPSHOT_URL, { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`Snapshot fetch: ${response.status}`);
+    const snapshot = await response.json();
+
+    // Cache in localStorage
+    try {
+      localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify({
+        snapshot,
+        _cachedAt: Date.now(),
+      }));
+    } catch (e) { /* quota exceeded, ignore */ }
+
+    return { data: snapshot, fromCache: false };
+  } catch (err) {
+    console.warn('Snapshot fetch failed, falling back to API:', err.message);
+    return null;
+  }
+}
+
+/**
+ * Get the current snapshot (with next_update, insight, etc.)
+ * Used by the countdown timer component
+ */
+export async function getSnapshot() {
+  const result = await fetchSnapshot();
+  if (result) return result;
+  // No snapshot available — return null, caller should handle
+  return null;
+}
+
+/**
  * Get all current module data and indices
+ * Tries static snapshot first, falls back to live API
  */
 export async function getCurrentData() {
+  const snapshot = await fetchSnapshot();
+  if (snapshot) {
+    // Reshape snapshot to match what the app expects from /api/current
+    const snapshotData = snapshot.data;
+    return {
+      data: {
+        modules: snapshotData.modules,
+        generated_at: snapshotData.generated_at,
+        next_update: snapshotData.next_update,
+        fromSnapshot: true,
+      },
+      fromCache: snapshot.fromCache,
+    };
+  }
+  // Fallback to live API
   return request('/api/current');
 }
 
@@ -197,6 +266,7 @@ export function formatTimeAgo(timestamp) {
 
 export default {
   getCurrentData,
+  getSnapshot,
   getHistory,
   getHistoricalRange,
   getHistoricalData,

@@ -17,7 +17,7 @@
   <meta name="twitter:title" content="What's Happening — Cosmic Prediction Dashboard">
   <meta name="twitter:description" content="Data-driven predictions correlating cosmic and esoteric data with real-world outcomes">
   <meta name="twitter:image" content="https://whatshappening.app/api/export/image?format=wide">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#09090b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
@@ -32,7 +32,7 @@
     gtag('js', new Date());
     gtag('config', 'G-2EECHBPF6C');
   </script>
-  <!-- Resource hints for faster third-party connections -->
+  <!-- Resource hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://whatshappening-api-89qq.onrender.com">
@@ -43,27 +43,30 @@
   <link rel="preload" href="js/api.js" as="script" crossorigin>
   <link rel="preload" href="js/config.js" as="script" crossorigin>
   <link rel="preload" href="css/styles.css" as="style">
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" as="style" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" as="style" crossorigin>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Critical CSS inlined for faster FCP -->
   <style>
-    /* Critical above-the-fold styles */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--text-primary:#e8e8ed;--text-secondary:#8b8b9e;--accent:#6366f1;--border:#1e1e2e}
-    [data-theme="light"]{--bg-primary:#f8fafc;--bg-secondary:#ffffff;--text-primary:#1a1a2e;--text-secondary:#64748b;--border:#e2e8f0}
-    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
-    .header-title{font-size:1.1rem;font-weight:700;letter-spacing:0.05em}
-    .skeleton{background:linear-gradient(90deg,var(--bg-secondary) 25%,rgba(255,255,255,0.05) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation:skeleton-pulse 1.5s ease-in-out infinite}
-    @keyframes skeleton-pulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    :root{--bg-primary:#09090b;--bg-card:#131318;--text-primary:#e4e4e7;--text-muted:#71717a;--accent:#6366f1;--border:#1e1e28}
+    [data-theme="light"]{--bg-primary:#fafafa;--bg-card:#ffffff;--text-primary:#18181b;--text-muted:#71717a;--border:#e4e4e7}
+    body{font-family:'Barlow',system-ui,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+    #app{display:flex;min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:260px;background:#0c0c10;border-right:1px solid var(--border);z-index:100}
+    .main-wrapper{flex:1;margin-left:260px;display:flex;flex-direction:column}
+    .header{display:flex;align-items:center;height:56px;padding:0 16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:var(--bg-primary)}
+    .skeleton{position:relative;overflow:hidden}
+    .skeleton::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--bg-card) 0%,rgba(255,255,255,0.03) 50%,var(--bg-card) 100%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .skip-link{position:absolute;left:-9999px;z-index:999;padding:0.5rem 1rem;background:var(--accent);color:#fff;text-decoration:none}
     .skip-link:focus{left:50%;transform:translateX(-50%);top:0.5rem}
+    @media(max-width:767px){.sidebar{transform:translateX(-100%)}.main-wrapper{margin-left:0}}
   </style>
 
-  <!-- Main stylesheet (non-blocking) -->
+  <!-- Main stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
   <!-- Defer non-critical CSS -->
   <link rel="stylesheet" href="css/consent-banner.css" media="print" onload="this.media='all'">
@@ -78,10 +81,9 @@
       if (effective === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
       }
-      // Update meta theme-color for mobile browsers
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) {
-        meta.setAttribute('content', effective === 'light' ? '#f8fafc' : '#0a0a0f');
+        meta.setAttribute('content', effective === 'light' ? '#fafafa' : '#09090b');
       }
     })();
   </script>
@@ -89,191 +91,358 @@
 <body>
   <!-- Skip link for keyboard users -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  
+
   <div id="app">
-    <!-- Offline indicator -->
-    <div id="offline-banner" class="offline-banner" role="alert" aria-live="polite" hidden>
-      ⚠️ You're offline — showing cached data
-    </div>
-    <!-- Header -->
-    <header class="header">
-      <h1 class="header-title">WHAT'S HAPPENING</h1>
-      <div class="header-actions">
-        <a href="analytics.html" class="header-link" title="View prediction accuracy">
-          <span class="header-link-icon">📊</span>
-          <span class="header-link-text">Analytics</span>
-        </a>
-        <button id="share-btn" class="header-share-btn" aria-label="Share" title="Share & Export">
-          <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
-          <span class="share-btn-text">Share</span>
-        </button>
-        <button id="comparison-toggle" class="header-compare-btn" aria-label="Compare dates" title="Historical Comparison">
-          📊 <span class="compare-btn-text">Compare</span>
-        </button>
-        <div class="live-indicator">
-          <span class="live-dot"></span>
-          <span class="live-text">Loading...</span>
+    <!-- ========== SIDEBAR ========== -->
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-brand-icon">WH</div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">What's Happening</span>
+          <span class="sidebar-brand-sub">Cosmic Dashboard</span>
         </div>
       </div>
-    </header>
 
-    <!-- Indices Bar -->
-    <section class="indices-bar" id="indices-bar" aria-label="Composite indices">
-      <div class="index-item skeleton" title="Solar-Geo Index">
-        <span class="index-value">--</span>
-      </div>
-      <div class="index-item skeleton" title="Astro Events Index">
-        <span class="index-value">--</span>
-      </div>
-      <div class="index-item skeleton" title="Calendar Sync Index">
-        <span class="index-value">--</span>
-      </div>
-    </section>
+      <div class="sidebar-nav">
+        <!-- Overview -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">Overview</div>
+          <a href="#dashboard" class="sidebar-nav-item active" data-section="dashboard">
+            <span class="sidebar-nav-icon">🏠</span>
+            <span class="sidebar-nav-label">Dashboard</span>
+          </a>
+        </div>
 
-    <!-- Filter Bar -->
-    <div id="filter-bar" class="filter-bar" role="search" aria-label="Filter predictions">
-      <!-- Filter bar content will be rendered by JavaScript -->
+        <!-- Analysis -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">Analysis</div>
+          <a href="#predictions" class="sidebar-nav-item" data-section="predictions">
+            <span class="sidebar-nav-icon">📊</span>
+            <span class="sidebar-nav-label">Predictions</span>
+          </a>
+          <a href="#modules" class="sidebar-nav-item" data-section="modules">
+            <span class="sidebar-nav-icon">🔮</span>
+            <span class="sidebar-nav-label">Data Modules</span>
+          </a>
+          <a href="#patterns" class="sidebar-nav-item" data-section="patterns">
+            <span class="sidebar-nav-icon">⚠️</span>
+            <span class="sidebar-nav-label">Pattern Alerts</span>
+          </a>
+        </div>
+
+        <!-- Tools -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">Tools</div>
+          <a href="analytics.html" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">📈</span>
+            <span class="sidebar-nav-label">Analytics</span>
+          </a>
+          <a href="#suggestions" class="sidebar-nav-item" data-section="suggestions">
+            <span class="sidebar-nav-icon">💡</span>
+            <span class="sidebar-nav-label">Suggestions</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-label="Collapse sidebar">
+          <span class="sidebar-nav-icon">◀</span>
+          <span class="sidebar-toggle-label">Collapse</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ========== MAIN WRAPPER ========== -->
+    <div class="main-wrapper">
+      <!-- Offline indicator -->
+      <div id="offline-banner" class="offline-banner" role="alert" aria-live="polite" hidden>
+        ⚠️ You're offline — showing cached data
+      </div>
+
+      <!-- Top Header -->
+      <header class="header">
+        <button class="header-mobile-toggle" id="mobile-menu-toggle" aria-label="Open menu">☰</button>
+        <h1 class="header-title">WHAT'S HAPPENING</h1>
+
+        <!-- Search / Command Palette trigger -->
+        <button class="header-search-btn" id="command-palette-trigger" aria-label="Search and navigate (⌘K)">
+          <span class="header-search-icon">🔍</span>
+          <span class="header-search-text">Search...</span>
+          <kbd class="header-search-kbd"><span>⌘</span>K</kbd>
+        </button>
+
+        <div class="header-actions">
+          <button id="share-btn" class="header-share-btn" aria-label="Share" title="Share & Export">
+            <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span class="share-btn-text">Share</span>
+          </button>
+          <button id="comparison-toggle" class="header-compare-btn" aria-label="Compare dates" title="Historical Comparison">
+            📊 <span class="compare-btn-text">Compare</span>
+          </button>
+          <div class="update-countdown" id="update-countdown"></div>
+          <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span class="live-text">Loading...</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ========== CONTENT AREA ========== -->
+      <main id="main-content" class="content-area">
+        <!-- ===== INSIGHT HERO (Conclusion-first) ===== -->
+        <section class="insight-hero" id="insight-hero" aria-label="Today's cosmic insight">
+          <!-- Rendered by insight.js -->
+        </section>
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-meta" id="page-date"></div>
+          <h2 class="page-header-title">Cosmic Prediction Dashboard</h2>
+        </div>
+
+        <!-- Indices / Stat Cards -->
+        <section class="indices-bar" id="indices-bar" aria-label="Composite indices">
+          <div class="index-item skeleton" title="Solar-Geo Index">
+            <span class="stat-card-label">Solar-Geo</span>
+            <span class="index-value">--</span>
+          </div>
+          <div class="index-item skeleton" title="Astro Events Index">
+            <span class="stat-card-label">Astro Events</span>
+            <span class="index-value">--</span>
+          </div>
+          <div class="index-item skeleton" title="Calendar Sync Index">
+            <span class="stat-card-label">Calendar Sync</span>
+            <span class="index-value">--</span>
+          </div>
+        </section>
+
+        <!-- Filter Bar -->
+        <div id="filter-bar" class="filter-bar" role="search" aria-label="Filter predictions">
+          <!-- Filter bar content rendered by JavaScript -->
+        </div>
+
+        <!-- Predictions Panel -->
+        <section class="predictions-panel" id="predictions-panel">
+          <div class="section-header">
+            <span class="section-icon" aria-hidden="true">📊</span>
+            <span class="section-title">PREDICTIONS</span>
+            <span id="predictions-count" class="predictions-count"></span>
+          </div>
+          <div class="predictions-list" id="predictions-list" aria-live="polite" aria-atomic="false">
+            <div class="prediction-skeleton skeleton"></div>
+            <div class="prediction-skeleton skeleton"></div>
+            <div class="prediction-skeleton skeleton"></div>
+          </div>
+        </section>
+
+        <!-- Pattern Alert (Conditional) -->
+        <section class="pattern-alert hidden" id="pattern-alert">
+          <div class="alert-header">
+            <span class="alert-icon">⚠️</span>
+            <span class="alert-title">PATTERN ALERT</span>
+            <span class="match-score">Match: --</span>
+          </div>
+          <div class="alert-content" id="alert-content"></div>
+        </section>
+
+        <!-- ===== RAW DATA (Collapsible) ===== -->
+        <section class="raw-data-section collapsed" id="raw-data-section" aria-label="Source data modules">
+          <button class="raw-data-toggle" id="raw-data-toggle" aria-expanded="false" aria-controls="data-grid-wrapper">
+            <span class="raw-data-toggle-icon">🔮</span>
+            <span class="raw-data-toggle-text">Explore Source Data</span>
+            <span class="raw-data-toggle-count">16 modules</span>
+            <span class="raw-data-toggle-arrow">▼</span>
+          </button>
+          <div class="raw-data-wrapper" id="data-grid-wrapper">
+            <div class="data-grid" id="data-grid">
+              <div class="module-card skeleton" data-module="moon"></div>
+              <div class="module-card skeleton" data-module="tzolkin"></div>
+              <div class="module-card skeleton" data-module="dreamspell"></div>
+              <div class="module-card skeleton" data-module="parasha"></div>
+              <div class="module-card skeleton" data-module="gematria"></div>
+              <div class="module-card skeleton" data-module="numerology"></div>
+              <div class="module-card skeleton" data-module="iching"></div>
+              <div class="module-card skeleton" data-module="tarot"></div>
+              <div class="module-card skeleton" data-module="solar"></div>
+              <div class="module-card skeleton" data-module="schumann"></div>
+              <div class="module-card skeleton" data-module="cosmic"></div>
+              <div class="module-card skeleton" data-module="astrology"></div>
+              <div class="module-card skeleton" data-module="markets"></div>
+              <div class="module-card skeleton" data-module="geophysical"></div>
+              <div class="module-card skeleton" data-module="sentiment"></div>
+              <div class="module-card skeleton" data-module="news"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Email Signup Section -->
+        <section class="email-signup-section" id="email-signup-section" aria-labelledby="email-signup-title">
+          <div class="email-signup-content">
+            <div class="email-signup-header">
+              <span class="email-signup-icon" aria-hidden="true">📬</span>
+              <div>
+                <h2 id="email-signup-title" class="email-signup-title">Get Daily Predictions</h2>
+                <p class="email-signup-subtitle">Delivered to your inbox every morning</p>
+              </div>
+            </div>
+            <form id="email-signup-form" class="email-signup-form">
+              <div class="email-input-group">
+                <input type="email" id="email-input" class="email-input" placeholder="your@email.com" required autocomplete="email" aria-label="Email address" />
+                <button type="submit" id="email-submit-btn" class="email-submit-btn">Subscribe</button>
+              </div>
+              <div class="email-preferences">
+                <label class="email-pref-label"><input type="checkbox" id="pref-daily" checked /><span>Daily digest</span></label>
+                <label class="email-pref-label"><input type="checkbox" id="pref-weekly" /><span>Weekly summary</span></label>
+                <label class="email-pref-label"><input type="checkbox" id="pref-alerts" checked /><span>Pattern alerts</span></label>
+              </div>
+              <p id="email-signup-message" class="email-signup-message hidden"></p>
+            </form>
+          </div>
+        </section>
+
+        <!-- Suggestions Footer -->
+        <footer class="suggestions-footer" id="suggestions-footer">
+          <div class="suggestions-section" id="suggestions-section">
+            <div class="section-header">
+              <span class="section-icon">💡</span>
+              <span class="section-title">SUGGESTIONS</span>
+            </div>
+            <div class="suggestions-content" id="suggestions-content"></div>
+          </div>
+          <div class="disclaimer">
+            Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.
+          </div>
+        </footer>
+      </main>
     </div>
 
-    <!-- Predictions Panel -->
-    <main id="main-content">
-    <section class="predictions-panel" id="predictions-panel">
-      <div class="section-header">
-        <span class="section-icon" aria-hidden="true">📊</span>
-        <span class="section-title">PREDICTIONS</span>
-        <span id="predictions-count" class="predictions-count"></span>
-      </div>
-      <div class="predictions-list" id="predictions-list" aria-live="polite" aria-atomic="false">
-        <!-- Predictions will be rendered here -->
-        <div class="prediction-skeleton skeleton"></div>
-        <div class="prediction-skeleton skeleton"></div>
-        <div class="prediction-skeleton skeleton"></div>
-      </div>
-    </section>
-
-    <!-- Pattern Alert (Conditional) -->
-    <section class="pattern-alert hidden" id="pattern-alert">
-      <div class="alert-header">
-        <span class="alert-icon">⚠️</span>
-        <span class="alert-title">PATTERN ALERT</span>
-        <span class="match-score">Match: --</span>
-      </div>
-      <div class="alert-content" id="alert-content">
-        <!-- Alert content will be rendered here -->
-      </div>
-    </section>
-
-    <!-- Data Modules Section -->
-    <section class="modules-section" aria-label="Data Modules">
-      <div class="section-header">
-        <span class="section-title">DATA MODULES</span>
-      </div>
-      <div class="data-grid" id="data-grid">
-        <!-- 16 module cards will be rendered here -->
-        <div class="module-card skeleton" data-module="moon"></div>
-        <div class="module-card skeleton" data-module="tzolkin"></div>
-        <div class="module-card skeleton" data-module="dreamspell"></div>
-        <div class="module-card skeleton" data-module="parasha"></div>
-        <div class="module-card skeleton" data-module="gematria"></div>
-        <div class="module-card skeleton" data-module="numerology"></div>
-        <div class="module-card skeleton" data-module="iching"></div>
-        <div class="module-card skeleton" data-module="tarot"></div>
-        <div class="module-card skeleton" data-module="solar"></div>
-        <div class="module-card skeleton" data-module="schumann"></div>
-        <div class="module-card skeleton" data-module="cosmic"></div>
-        <div class="module-card skeleton" data-module="astrology"></div>
-        <div class="module-card skeleton" data-module="markets"></div>
-        <div class="module-card skeleton" data-module="geophysical"></div>
-        <div class="module-card skeleton" data-module="sentiment"></div>
-        <div class="module-card skeleton" data-module="news"></div>
-      </div>
-    </section>
-
-    </main>
-
-    <!-- Historical Comparison Panel -->
+    <!-- ========== HISTORICAL COMPARISON PANEL ========== -->
     <aside id="comparison-panel" class="comparison-panel" hidden aria-label="Historical comparison"></aside>
 
-    <!-- Email Signup Section -->
-    <section class="email-signup-section" id="email-signup-section" aria-labelledby="email-signup-title">
-      <div class="email-signup-content">
-        <div class="email-signup-header">
-          <span class="email-signup-icon" aria-hidden="true">📬</span>
-          <div>
-            <h2 id="email-signup-title" class="email-signup-title">Get Daily Predictions</h2>
-            <p class="email-signup-subtitle">Delivered to your inbox every morning</p>
-          </div>
-        </div>
-        <form id="email-signup-form" class="email-signup-form">
-          <div class="email-input-group">
-            <input
-              type="email"
-              id="email-input"
-              class="email-input"
-              placeholder="your@email.com"
-              required
-              autocomplete="email"
-              aria-label="Email address"
-            />
-            <button type="submit" id="email-submit-btn" class="email-submit-btn">
-              Subscribe
-            </button>
-          </div>
-          <div class="email-preferences">
-            <label class="email-pref-label">
-              <input type="checkbox" id="pref-daily" checked />
-              <span>Daily digest</span>
-            </label>
-            <label class="email-pref-label">
-              <input type="checkbox" id="pref-weekly" />
-              <span>Weekly summary</span>
-            </label>
-            <label class="email-pref-label">
-              <input type="checkbox" id="pref-alerts" checked />
-              <span>Pattern alerts</span>
-            </label>
-          </div>
-          <p id="email-signup-message" class="email-signup-message hidden"></p>
-        </form>
-      </div>
-    </section>
-
-    <!-- Toast Notification -->
+    <!-- ========== TOAST NOTIFICATION ========== -->
     <div id="subscription-toast" class="subscription-toast" role="status" aria-live="polite">
       <span id="toast-icon" class="toast-icon">✓</span>
       <span id="toast-message" class="toast-message"></span>
     </div>
 
-    <!-- Suggestions Footer -->
-    <footer class="suggestions-footer" id="suggestions-footer">
-      <div class="suggestions-section" id="suggestions-section">
-        <div class="section-header">
-          <span class="section-icon">💡</span>
-          <span class="section-title">SUGGESTIONS</span>
-        </div>
-        <div class="suggestions-content" id="suggestions-content">
-          <!-- Suggestions will be rendered here -->
-        </div>
-      </div>
-      <div class="disclaimer">
-        Predictions based on historical correlations. Not financial, medical, or professional advice. Past patterns ≠ future outcomes.
-      </div>
-    </footer>
-
-    <!-- Error Banner (Hidden by default) -->
+    <!-- ========== ERROR BANNER ========== -->
     <div class="error-banner hidden" id="error-banner" role="alert" aria-live="assertive">
       <span class="error-text">Connection error. Showing cached data.</span>
       <button class="error-dismiss" onclick="dismissError()" aria-label="Dismiss error">×</button>
     </div>
+
+    <!-- ========== COMMAND PALETTE ========== -->
+    <div class="command-palette-overlay hidden" id="command-palette-overlay">
+      <div class="command-palette" role="dialog" aria-modal="true" aria-label="Command palette">
+        <div class="command-palette-input-wrapper">
+          <span class="command-palette-search-icon">🔍</span>
+          <input type="text" class="command-palette-input" id="command-palette-input" placeholder="Search predictions, modules, actions..." autocomplete="off" />
+        </div>
+        <div class="command-palette-results" id="command-palette-results">
+          <div class="command-palette-group-label">Navigation</div>
+          <div class="command-palette-item" data-action="scroll-dashboard">
+            <span class="command-palette-item-icon">🏠</span>
+            <span class="command-palette-item-label">Dashboard</span>
+          </div>
+          <div class="command-palette-item" data-action="scroll-predictions">
+            <span class="command-palette-item-icon">📊</span>
+            <span class="command-palette-item-label">Predictions</span>
+          </div>
+          <div class="command-palette-item" data-action="scroll-modules">
+            <span class="command-palette-item-icon">🔮</span>
+            <span class="command-palette-item-label">Data Modules</span>
+          </div>
+          <div class="command-palette-item" data-action="scroll-patterns">
+            <span class="command-palette-item-icon">⚠️</span>
+            <span class="command-palette-item-label">Pattern Alerts</span>
+          </div>
+          <div class="command-palette-item" data-action="scroll-suggestions">
+            <span class="command-palette-item-icon">💡</span>
+            <span class="command-palette-item-label">Suggestions</span>
+          </div>
+          <div class="command-palette-group-label">Actions</div>
+          <div class="command-palette-item" data-action="open-analytics">
+            <span class="command-palette-item-icon">📈</span>
+            <span class="command-palette-item-label">Open Analytics</span>
+          </div>
+          <div class="command-palette-item" data-action="open-share">
+            <span class="command-palette-item-icon">↗</span>
+            <span class="command-palette-item-label">Share & Export</span>
+          </div>
+          <div class="command-palette-item" data-action="toggle-theme">
+            <span class="command-palette-item-icon">🌓</span>
+            <span class="command-palette-item-label">Toggle Theme</span>
+          </div>
+          <div class="command-palette-item" data-action="open-comparison">
+            <span class="command-palette-item-icon">📊</span>
+            <span class="command-palette-item-label">Historical Comparison</span>
+          </div>
+        </div>
+        <div class="command-palette-footer">
+          <span><kbd>↑↓</kbd> Navigate</span>
+          <span><kbd>↵</kbd> Select</span>
+          <span><kbd>Esc</kbd> Close</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MOBILE BOTTOM NAV ========== -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile navigation">
+      <div class="mobile-nav-items">
+        <a href="#dashboard" class="mobile-nav-item active" data-section="dashboard">
+          <span class="mobile-nav-icon">🏠</span>
+          <span class="mobile-nav-label">Home</span>
+        </a>
+        <a href="#predictions" class="mobile-nav-item" data-section="predictions">
+          <span class="mobile-nav-icon">📊</span>
+          <span class="mobile-nav-label">Predict</span>
+        </a>
+        <a href="#modules" class="mobile-nav-item" data-section="modules">
+          <span class="mobile-nav-icon">🔮</span>
+          <span class="mobile-nav-label">Modules</span>
+        </a>
+        <a href="#patterns" class="mobile-nav-item" data-section="patterns">
+          <span class="mobile-nav-icon">⚠️</span>
+          <span class="mobile-nav-label">Alerts</span>
+        </a>
+        <button class="mobile-nav-item" id="mobile-more-btn" aria-label="More options">
+          <span class="mobile-nav-icon">•••</span>
+          <span class="mobile-nav-label">More</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile "More" menu -->
+    <div class="mobile-more-menu hidden" id="mobile-more-menu">
+      <a href="analytics.html" class="mobile-more-item">
+        <span class="mobile-more-icon">📈</span>
+        <span>Analytics</span>
+      </a>
+      <a href="#suggestions" class="mobile-more-item" data-section="suggestions">
+        <span class="mobile-more-icon">💡</span>
+        <span>Suggestions</span>
+      </a>
+      <button class="mobile-more-item" data-action="toggle-theme">
+        <span class="mobile-more-icon">🌓</span>
+        <span>Toggle Theme</span>
+      </button>
+      <button class="mobile-more-item" data-action="open-share">
+        <span class="mobile-more-icon">↗</span>
+        <span>Share & Export</span>
+      </button>
+    </div>
   </div>
 
-  <!-- Share Modal -->
+  <!-- Share Modal (unchanged structure) -->
   <div id="share-modal" class="share-modal hidden" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
     <div class="share-modal-content">
       <div class="share-modal-header">
@@ -281,99 +450,61 @@
         <button id="share-modal-close" class="share-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <div class="share-modal-body">
-        <!-- Social Sharing Section -->
         <div class="share-section">
           <h3 class="share-section-title">Share on Social</h3>
           <div class="share-buttons">
             <button id="share-twitter" class="share-btn share-btn-twitter" aria-label="Share on Twitter">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               <span>Twitter/X</span>
             </button>
             <button id="share-facebook" class="share-btn share-btn-facebook" aria-label="Share on Facebook">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               <span>Facebook</span>
             </button>
             <button id="share-whatsapp" class="share-btn share-btn-whatsapp" aria-label="Share on WhatsApp">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
               <span>WhatsApp</span>
             </button>
             <button id="share-linkedin" class="share-btn share-btn-linkedin" aria-label="Share on LinkedIn">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
               <span>LinkedIn</span>
             </button>
             <button id="share-copy-link" class="share-btn share-btn-link" aria-label="Copy link">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
               <span>Copy Link</span>
             </button>
           </div>
         </div>
-
-        <!-- Export Images Section -->
         <div class="share-section">
           <h3 class="share-section-title">Download Image</h3>
           <div class="share-buttons export-buttons">
             <button id="export-image-square" class="share-btn export-btn" aria-label="Download square image">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              </svg>
-              <span>Square</span>
-              <small>1080×1080</small>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+              <span>Square</span><small>1080×1080</small>
             </button>
             <button id="export-image-story" class="share-btn export-btn" aria-label="Download story image">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="6" y="2" width="12" height="20" rx="2" ry="2"></rect>
-              </svg>
-              <span>Story</span>
-              <small>1080×1920</small>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2" ry="2"></rect></svg>
+              <span>Story</span><small>1080×1920</small>
             </button>
             <button id="export-image-wide" class="share-btn export-btn" aria-label="Download wide image">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect>
-              </svg>
-              <span>Wide</span>
-              <small>1200×630</small>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect></svg>
+              <span>Wide</span><small>1200×630</small>
             </button>
           </div>
         </div>
-
-        <!-- Export Data Section -->
         <div class="share-section">
           <h3 class="share-section-title">Export Data</h3>
           <div class="share-buttons export-buttons">
             <button id="export-pdf" class="share-btn export-btn" aria-label="Download PDF report">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
               <span>PDF Report</span>
             </button>
             <button id="export-json" class="share-btn export-btn" aria-label="Download JSON data">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="16 18 22 12 16 6"></polyline>
-                <polyline points="8 6 2 12 8 18"></polyline>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
               <span>JSON</span>
             </button>
             <button id="export-csv" class="share-btn export-btn" aria-label="Download CSV data">
-              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
+              <svg class="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>CSV</span>
             </button>
           </div>
@@ -390,8 +521,11 @@
   <link rel="modulepreload" href="js/components/modules.js">
   <link rel="modulepreload" href="js/components/states.js">
   <link rel="modulepreload" href="js/components/filters.js">
+  <link rel="modulepreload" href="js/components/insight.js">
 
   <!-- JavaScript Modules -->
   <script type="module" src="js/app.js" fetchpriority="high"></script>
+  <!-- UI Shell JS (sidebar, command palette, mobile nav) -->
+  <script type="module" src="js/ui-shell.js"></script>
 </body>
 </html>
