@@ -19,6 +19,9 @@ import { init as initPerformance, getMetrics } from './performance.js';
 import ErrorTracker from './error-tracking.js';
 import { initShare } from './share.js';
 import './pwa.js';
+import { initComparison } from './components/comparison.js';
+import { connect as wsConnect, disconnect as wsDisconnect } from './websocket.js';
+import { initConnectionIndicator } from './components/connection-indicator.js';
 import { initThemeToggle } from './components/themeToggle.js';
 
 // Lazy-loaded modules (non-critical path)
@@ -103,6 +106,9 @@ async function init() {
   // Initialize share functionality
   initShare();
 
+  // Initialize historical comparison view
+  initComparison();
+
   // Initialize email signup form
   initEmailSignup();
 
@@ -115,8 +121,12 @@ async function init() {
   // Load non-critical modules after first render
   loadDeferredModules();
 
-  // Set up auto-refresh
+  // Set up auto-refresh (fallback if WS unavailable)
   setInterval(refreshData, config.autoRefreshInterval);
+
+  // Connect WebSocket for real-time updates
+  initConnectionIndicator();
+  wsConnect(handleRealtimeUpdate);
 }
 
 /**
@@ -124,6 +134,22 @@ async function init() {
  */
 function handleFilterChange(filterState) {
   // Re-render predictions with new filters
+  render();
+}
+
+/**
+ * Handle real-time data from WebSocket
+ */
+function handleRealtimeUpdate(payload) {
+  if (payload.current) {
+    state.data = payload.current;
+  }
+  if (payload.predictions) {
+    state.predictions = payload.predictions;
+  }
+  state.lastUpdate = new Date();
+  state.error = null;
+  hideError();
   render();
 }
 
