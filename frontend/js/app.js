@@ -21,7 +21,7 @@ import { initShare } from './share.js';
 import { initThemeToggle } from './components/themeToggle.js';
 
 // Lazy-loaded modules (non-critical path)
-let ga4, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
+let ga4, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup, initPWA;
 
 /**
  * Lazy load non-critical modules after initial render
@@ -33,14 +33,16 @@ async function loadDeferredModules() {
     consentModule,
     perfModule,
     shareModule,
-    emailModule
+    emailModule,
+    pwaModule
   ] = await Promise.all([
     import('./ga4.js'),
     import('./ga4-events.js'),
     import('./components/consent-banner.js'),
     import('./performance.js'),
     import('./share.js'),
-    import('./email-signup.js')
+    import('./email-signup.js'),
+    import('./pwa.js')
   ]);
 
   ga4 = ga4Module.default;

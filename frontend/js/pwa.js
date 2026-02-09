@@ -253,5 +253,37 @@ export async function clearCaches() {
   console.log('[PWA] Cache clear requested');
 }
 
+/**
+ * Initialize offline/online detection
+ */
+function initOfflineDetection() {
+  function updateOnlineStatus() {
+    const existing = document.getElementById('offline-indicator');
+    if (!navigator.onLine) {
+      if (!existing) {
+        const indicator = document.createElement('div');
+        indicator.id = 'offline-indicator';
+        indicator.className = 'offline-indicator';
+        indicator.setAttribute('role', 'status');
+        indicator.setAttribute('aria-live', 'polite');
+        indicator.innerHTML = `
+          <span class="offline-icon">⚡</span>
+          <span>You're offline — showing cached data</span>
+        `;
+        document.body.prepend(indicator);
+        requestAnimationFrame(() => indicator.classList.add('visible'));
+      }
+    } else if (existing) {
+      existing.classList.remove('visible');
+      setTimeout(() => existing.remove(), 300);
+    }
+  }
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+}
+
 // Auto-initialize when module loads
 initPWA();
+initOfflineDetection();
