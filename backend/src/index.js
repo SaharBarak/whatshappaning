@@ -19,7 +19,7 @@ const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
 const cookieParser = require('cookie-parser');
 const { rateLimiter } = require('./utils/rateLimiter');
-const { responseTime, compression, metricsCollector, performanceMetrics } = require('./middleware/performance');
+const { responseTime, compression, cacheHeaders, metricsCollector, performanceMetrics } = require('./middleware/performance');
 const { optionalApiKeyAuth } = require('./middleware/apiKeyAuth');
 const { startScheduler, runInitialCollection } = require('./scheduler');
 const { migrate } = require('../scripts/migrate');
@@ -64,6 +64,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(responseTime);
 app.use(compression());
+app.use(cacheHeaders());
 app.use(metricsCollector);
 
 // Request logging in development
