@@ -2275,6 +2275,17 @@ button:focus-visible,
   transform: scale(1.05);
 }
 
+/* Offline Banner */
+.offline-banner {
+  background: var(--warning-color, #e2b340);
+  color: #000;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 1000;
+}
+
 /* Responsive PWA Banner */
 @media (max-width: 480px) {
   .pwa-install-banner {
