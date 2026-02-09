@@ -14,12 +14,16 @@ let heartbeatTimer = null;
 let fallbackPollTimer = null;
 let onDataCallback = null;
 let intentionallyClosed = false;
+let heartbeatTimeoutTimer = null;
+let fallbackPollCount = 0;
 
 const MAX_RECONNECT_ATTEMPTS = 10;
 const BASE_DELAY_MS = 1000;
 const MAX_DELAY_MS = 30000;
 const HEARTBEAT_INTERVAL_MS = 30000;
+const HEARTBEAT_TIMEOUT_MS = 10000;
 const FALLBACK_POLL_INTERVAL_MS = 60000;
+const WS_RETRY_EVERY_N_POLLS = 5; // Retry WS every 5th poll cycle instead of every cycle
 
 // --- Connection State ---
 export const ConnectionState = Object.freeze({
@@ -128,7 +132,7 @@ function handleMessage(msg) {
       }
       break;
     case 'pong':
-      // heartbeat acknowledged
+      clearHeartbeatTimeout();
       break;
     default:
       console.log('[WS] Unknown message type:', msg.type);
@@ -141,8 +145,21 @@ function startHeartbeat() {
   heartbeatTimer = setInterval(() => {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: 'ping' }));
+      // Start pong timeout — close stale connections
+      clearHeartbeatTimeout();
+      heartbeatTimeoutTimer = setTimeout(() => {
+        console.warn('[WS] No pong received, closing stale connection');
+        if (ws) ws.close();
+      }, HEARTBEAT_TIMEOUT_MS);
     }
   }, HEARTBEAT_INTERVAL_MS);
+}
+
+function clearHeartbeatTimeout() {
+  if (heartbeatTimeoutTimer) {
+    clearTimeout(heartbeatTimeoutTimer);
+    heartbeatTimeoutTimer = null;
+  }
 }
 
 function stopHeartbeat() {
@@ -150,6 +167,7 @@ function stopHeartbeat() {
     clearInterval(heartbeatTimer);
     heartbeatTimer = null;
   }
+  clearHeartbeatTimeout();
 }
 
 // --- Reconnect ---
@@ -174,6 +192,7 @@ function scheduleReconnect() {
 // --- Fallback Polling ---
 function startFallbackPolling() {
   stopFallbackPolling();
+  fallbackPollCount = 0;
   fallbackPollTimer = setInterval(async () => {
     try {
       const [currentRes, predictionsRes] = await Promise.all([
@@ -183,9 +202,13 @@ function startFallbackPolling() {
       if (onDataCallback) {
         onDataCallback({ current: currentRes, predictions: predictionsRes });
       }
-      // Try WS again periodically
-      reconnectAttempts = 0;
-      doConnect();
+      // Retry WS only every Nth poll cycle to avoid rapid connect/close churn
+      fallbackPollCount++;
+      if (fallbackPollCount >= WS_RETRY_EVERY_N_POLLS) {
+        fallbackPollCount = 0;
+        reconnectAttempts = 0;
+        doConnect();
+      }
     } catch (e) {
       console.warn('[WS] Fallback poll failed:', e);
     }
