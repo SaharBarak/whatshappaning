@@ -17,7 +17,7 @@ const { gatherModuleData, generateInsight } = require('../routes/insight');
 const { uploadSnapshot } = require('../services/snapshot-store');
 const logger = require('../utils/logger');
 
-const UPDATE_INTERVAL_HOURS = 4;
+const UPDATE_INTERVAL_HOURS = 1;
 
 async function main() {
   const startTime = Date.now();
