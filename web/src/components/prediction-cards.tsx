@@ -330,8 +330,20 @@ function PredictionCard({ prediction, index }: { prediction: Prediction; index: 
 export function PredictionCards() {
   const { predictions: livePredictions, lastUpdate } = useWebSocket();
 
-  // Use live predictions when available, fall back to static sample data
-  const activePredictions = (livePredictions as Prediction[] | null) ?? predictions;
+  // Validate and use live predictions when available, fall back to static sample data
+  const activePredictions = React.useMemo(() => {
+    if (!Array.isArray(livePredictions) || livePredictions.length === 0) return predictions;
+    const isValidPrediction = (p: unknown): p is Prediction =>
+      typeof p === "object" &&
+      p !== null &&
+      typeof (p as Prediction).id === "number" &&
+      typeof (p as Prediction).title === "string" &&
+      typeof (p as Prediction).probability === "number" &&
+      typeof (p as Prediction).description === "string" &&
+      Array.isArray((p as Prediction).factors);
+    const validated = livePredictions.filter(isValidPrediction);
+    return validated.length > 0 ? validated : predictions;
+  }, [livePredictions]);
 
   return (
     <section className="py-20" aria-labelledby="predictions-heading">
