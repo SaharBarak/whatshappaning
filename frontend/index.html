@@ -16,11 +16,42 @@
     gtag('js', new Date());
     gtag('config', 'G-2EECHBPF6C');
   </script>
+  <!-- Resource hints for faster third-party connections -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://whatshappening-api-89qq.onrender.com">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="js/app.js" as="script" crossorigin>
+  <link rel="preload" href="js/api.js" as="script" crossorigin>
+  <link rel="preload" href="js/config.js" as="script" crossorigin>
+  <link rel="preload" href="css/styles.css" as="style">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" as="style" crossorigin>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Critical CSS inlined for faster FCP -->
+  <style>
+    /* Critical above-the-fold styles */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--text-primary:#e8e8ed;--text-secondary:#8b8b9e;--accent:#6366f1;--border:#1e1e2e}
+    [data-theme="light"]{--bg-primary:#f8fafc;--bg-secondary:#ffffff;--text-primary:#1a1a2e;--text-secondary:#64748b;--border:#e2e8f0}
+    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
+    .header-title{font-size:1.1rem;font-weight:700;letter-spacing:0.05em}
+    .skeleton{background:linear-gradient(90deg,var(--bg-secondary) 25%,rgba(255,255,255,0.05) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation:skeleton-pulse 1.5s ease-in-out infinite}
+    @keyframes skeleton-pulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skip-link{position:absolute;left:-9999px;z-index:999;padding:0.5rem 1rem;background:var(--accent);color:#fff;text-decoration:none}
+    .skip-link:focus{left:50%;transform:translateX(-50%);top:0.5rem}
+  </style>
+
+  <!-- Main stylesheet (non-blocking) -->
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/consent-banner.css">
+  <!-- Defer non-critical CSS -->
+  <link rel="stylesheet" href="css/consent-banner.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/consent-banner.css"></noscript>
   <!-- Prevent flash of wrong theme -->
   <script>
     (function() {
@@ -324,6 +355,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Modulepreload for critical JS modules -->
+  <link rel="modulepreload" href="js/config.js">
+  <link rel="modulepreload" href="js/api.js">
+  <link rel="modulepreload" href="js/components/indices.js">
+  <link rel="modulepreload" href="js/components/predictions.js">
+  <link rel="modulepreload" href="js/components/modules.js">
+  <link rel="modulepreload" href="js/components/states.js">
+  <link rel="modulepreload" href="js/components/filters.js">
 
   <!-- JavaScript Modules -->
   <script type="module" src="js/app.js" fetchpriority="high"></script>

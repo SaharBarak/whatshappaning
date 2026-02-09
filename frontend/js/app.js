@@ -19,7 +19,48 @@ import { init as initPerformance, getMetrics } from './performance.js';
 import ErrorTracker from './error-tracking.js';
 import { initShare } from './share.js';
 import { initThemeToggle } from './components/themeToggle.js';
-import { initEmailSignup } from './email-signup.js';
+
+// Lazy-loaded modules (non-critical path)
+let ga4, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
+
+/**
+ * Lazy load non-critical modules after initial render
+ */
+async function loadDeferredModules() {
+  const [
+    ga4Module,
+    ga4EventsModule,
+    consentModule,
+    perfModule,
+    shareModule,
+    emailModule
+  ] = await Promise.all([
+    import('./ga4.js'),
+    import('./ga4-events.js'),
+    import('./components/consent-banner.js'),
+    import('./performance.js'),
+    import('./share.js'),
+    import('./email-signup.js')
+  ]);
+
+  ga4 = ga4Module.default;
+  interactionEvents = ga4EventsModule.interactionEvents;
+  errorEvents = ga4EventsModule.errorEvents;
+  consentBanner = consentModule.default;
+  initShare = shareModule.initShare;
+  initEmailSignup = emailModule.initEmailSignup;
+
+  // Initialize deferred modules
+  perfModule.init();
+  await ga4.init();
+  consentBanner.init();
+  ga4EventsModule.initAutoTracking();
+  initShare();
+  initEmailSignup();
+
+  // Expose performance metrics for debugging
+  window.getPerformanceMetrics = perfModule.getMetrics;
+}
 
 // Application state
 const state = {
@@ -70,6 +111,9 @@ async function init() {
   // Initial data load
   await refreshData();
 
+  // Load non-critical modules after first render
+  loadDeferredModules();
+
   // Set up auto-refresh
   setInterval(refreshData, config.autoRefreshInterval);
 }
@@ -118,8 +162,8 @@ async function refreshData() {
     state.error = error.message;
     showError(`Failed to load data: ${error.message}`);
     
-    // Track API error
-    errorEvents.apiError('/api/data', error.status || 0, error.message);
+    // Track API error (if analytics loaded)
+    errorEvents?.apiError('/api/data', error.status || 0, error.message);
 
     // Still try to render with any cached data
     if (state.data || state.predictions) {
@@ -223,7 +267,7 @@ function togglePrediction(outcomeId) {
     // Track prediction click when expanding
     const prediction = state.predictions?.outcomes?.find(p => p.outcomeId === outcomeId);
     if (prediction) {
-      interactionEvents.predictionClick(outcomeId, prediction.type || 'unknown', prediction.confidence || 0);
+      interactionEvents?.predictionClick(outcomeId, prediction.type || 'unknown', prediction.confidence || 0);
     }
   }
   renderPredictions(state.predictions, state.expandedPredictions, togglePrediction);
@@ -237,10 +281,10 @@ async function toggleModule(moduleName) {
   
   if (wasExpanded) {
     state.expandedModules.delete(moduleName);
-    interactionEvents.moduleCollapse(moduleName, moduleName);
+    interactionEvents?.moduleCollapse(moduleName, moduleName);
   } else {
     state.expandedModules.add(moduleName);
-    interactionEvents.moduleExpand(moduleName, moduleName);
+    interactionEvents?.moduleExpand(moduleName, moduleName);
   }
   await renderModules(state.data?.modules, state.expandedModules, toggleModule);
 }
@@ -301,11 +345,6 @@ function setupEventListeners() {
 window.dismissError = () => {
   hideError();
 };
-
-/**
- * Expose performance metrics for debugging
- */
-window.getPerformanceMetrics = getMetrics;
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {

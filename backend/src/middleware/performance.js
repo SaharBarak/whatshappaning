@@ -6,6 +6,7 @@
  */
 
 const zlib = require('zlib');
+const crypto = require('crypto');
 
 /**
  * Response time logging middleware
@@ -48,12 +49,21 @@ function responseTime(req, res, next) {
  */
 function compression(options = {}) {
   const threshold = options.threshold || 1024; // 1KB default
-  const level = options.level || 6; // Default compression level
+  const gzipLevel = options.level || 6; // Default gzip compression level
 
   return function(req, res, next) {
-    // Skip if client doesn't accept gzip
     const acceptEncoding = req.headers['accept-encoding'] || '';
-    if (!acceptEncoding.includes('gzip')) {
+
+    // Determine best encoding: prefer brotli > gzip
+    let encoding = null;
+    if (acceptEncoding.includes('br')) {
+      encoding = 'br';
+    } else if (acceptEncoding.includes('gzip')) {
+      encoding = 'gzip';
+    }
+
+    // Skip if client doesn't accept any compression
+    if (!encoding) {
       return next();
     }
 
@@ -61,20 +71,19 @@ function compression(options = {}) {
     const originalWrite = res.write;
     const originalEnd = res.end;
     let chunks = [];
-    let isCompressing = false;
 
     // Override write
-    res.write = function(chunk, encoding) {
+    res.write = function(chunk, enc) {
       if (chunk) {
-        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding));
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, enc));
       }
       return true;
     };
 
     // Override end
-    res.end = function(chunk, encoding) {
+    res.end = function(chunk, enc) {
       if (chunk) {
-        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding));
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, enc));
       }
 
       const body = Buffer.concat(chunks);
@@ -84,18 +93,28 @@ function compression(options = {}) {
           !res.getHeader('Content-Encoding') &&
           shouldCompress(res)) {
 
-        zlib.gzip(body, { level }, (err, compressed) => {
+        const compressCb = (err, compressed) => {
           if (err) {
             // Fall back to uncompressed
             originalEnd.call(res, body);
             return;
           }
 
-          res.setHeader('Content-Encoding', 'gzip');
+          res.setHeader('Content-Encoding', encoding);
           res.setHeader('Content-Length', compressed.length);
           res.setHeader('Vary', 'Accept-Encoding');
           originalEnd.call(res, compressed);
-        });
+        };
+
+        if (encoding === 'br') {
+          zlib.brotliCompress(body, {
+            params: {
+              [zlib.constants.BROTLI_PARAM_QUALITY]: 4 // Fast brotli for dynamic content
+            }
+          }, compressCb);
+        } else {
+          zlib.gzip(body, { level: gzipLevel }, compressCb);
+        }
       } else {
         originalEnd.call(res, body);
       }
@@ -123,6 +142,7 @@ function shouldCompress(res) {
 
 /**
  * Cache headers middleware for static assets and API responses
+ * Adds Cache-Control headers and ETag support for conditional requests.
  */
 function cacheHeaders(options = {}) {
   const {
@@ -155,6 +175,10 @@ function cacheHeaders(options = {}) {
         maxAge = 900; // 15 minutes for predictions
       } else if (req.path.includes('/correlations')) {
         maxAge = 3600; // 1 hour for correlations
+      } else if (req.path.includes('/history') || req.path.includes('/historical')) {
+        maxAge = 1800; // 30 minutes for historical data
+      } else if (req.path.includes('/patterns')) {
+        maxAge = 600; // 10 minutes for patterns
       }
 
       res.set({
@@ -168,6 +192,23 @@ function cacheHeaders(options = {}) {
         'Cache-Control': 'no-store'
       });
     }
+
+    // Add ETag support for JSON responses
+    const originalJson = res.json;
+    res.json = function(body) {
+      if (req.method === 'GET' && body) {
+        const content = JSON.stringify(body);
+        const etag = `"${crypto.createHash('md5').update(content).digest('hex').slice(0, 16)}"`;
+        res.set('ETag', etag);
+
+        // Check If-None-Match for conditional request
+        const ifNoneMatch = req.headers['if-none-match'];
+        if (ifNoneMatch === etag) {
+          return res.status(304).end();
+        }
+      }
+      return originalJson.call(this, body);
+    };
 
     next();
   };
