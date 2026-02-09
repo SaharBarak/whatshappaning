@@ -9,6 +9,7 @@ let comparisonState = {
   isOpen: false,
   selectedDate: null,
   historicalData: null,
+  todayData: null,
   dateRange: null,
   isLoading: false,
   error: null
@@ -17,6 +18,18 @@ let comparisonState = {
 /**
  * Initialize comparison view — attach event listeners
  */
+/**
+ * Update the current "today" data for side-by-side comparison
+ */
+export function updateTodayData(data) {
+  comparisonState.todayData = data;
+  // Re-render if panel is showing data
+  if (comparisonState.isOpen && comparisonState.historicalData) {
+    const panel = document.getElementById('comparison-panel');
+    renderComparisonPanel(panel);
+  }
+}
+
 export function initComparison() {
   const toggle = document.getElementById('comparison-toggle');
   if (toggle) {
@@ -213,27 +226,44 @@ function renderComparisonData(historical) {
 }
 
 /**
- * Render a single module's historical data
+ * Render a single module's side-by-side comparison (today vs historical)
  */
-function renderModuleComparison(name, data) {
+function renderModuleComparison(name, historicalData) {
   const label = name.charAt(0).toUpperCase() + name.slice(1);
-  const entries = typeof data === 'object' && data !== null
-    ? Object.entries(data).filter(([k]) => k !== 'collectedAt')
+  const histEntries = typeof historicalData === 'object' && historicalData !== null
+    ? Object.entries(historicalData).filter(([k]) => k !== 'collectedAt')
     : [];
 
-  if (entries.length === 0) return '';
+  if (histEntries.length === 0) return '';
 
-  let rows = entries.map(([key, value]) => {
-    const displayVal = typeof value === 'object' ? JSON.stringify(value) : String(value);
-    return `<div class="comparison-row">
+  // Get today's data for this module
+  const todayModule = comparisonState.todayData?.modules?.[name]?.data
+    || comparisonState.todayData?.dailyData?.[name]
+    || comparisonState.todayData?.modules?.[name]
+    || {};
+
+  let rows = histEntries.map(([key, histValue]) => {
+    const todayValue = todayModule[key];
+    const histDisplay = typeof histValue === 'object' ? JSON.stringify(histValue) : String(histValue);
+    const todayDisplay = todayValue != null
+      ? (typeof todayValue === 'object' ? JSON.stringify(todayValue) : String(todayValue))
+      : '—';
+    const match = todayDisplay === histDisplay;
+    return `<div class="comparison-row ${match ? 'comparison-match' : 'comparison-diff'}">
       <span class="comparison-key">${key.replace(/_/g, ' ')}</span>
-      <span class="comparison-val">${displayVal}</span>
+      <span class="comparison-val comparison-val-today">${todayDisplay}</span>
+      <span class="comparison-val comparison-val-hist">${histDisplay}</span>
     </div>`;
   }).join('');
 
   return `
     <div class="comparison-module-card">
       <h3 class="comparison-module-title">${label}</h3>
+      <div class="comparison-row comparison-row-header">
+        <span class="comparison-key"></span>
+        <span class="comparison-val comparison-val-today">Today</span>
+        <span class="comparison-val comparison-val-hist">${comparisonState.selectedDate || 'Historical'}</span>
+      </div>
       ${rows}
     </div>
   `;
@@ -272,4 +302,4 @@ export function compareToDate(dateStr) {
   openComparison(dateStr);
 }
 
-export default { initComparison, compareToDate };
+export default { initComparison, compareToDate, updateTodayData };

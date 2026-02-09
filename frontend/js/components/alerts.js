@@ -4,6 +4,7 @@
  */
 
 import { config } from '../config.js';
+import { compareToDate } from './comparison.js';
 
 /**
  * Render pattern alert section
@@ -28,6 +29,15 @@ export function renderPatternAlert(alerts) {
 
   container.classList.remove('hidden');
   container.innerHTML = renderAlert(topAlert);
+
+  // Attach compare buttons
+  container.querySelectorAll('.compare-date-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dateStr = btn.dataset.date?.split('T')[0] || btn.dataset.date;
+      if (dateStr) compareToDate(dateStr);
+    });
+  });
 }
 
 /**
@@ -61,7 +71,9 @@ function renderAlert(alert) {
         <p class="text-secondary" style="margin-bottom: 8px;">Conditions match:</p>
         <div class="matching-dates">
           ${matchingDates.slice(0, 5).map(date => `
-            <span class="matching-date">${formatDate(date)}</span>
+            <span class="matching-date">${formatDate(date)}
+              <button class="compare-date-btn" data-date="${date}" aria-label="Compare with ${formatDate(date)}" title="Compare">📊</button>
+            </span>
           `).join('')}
           ${matchingDates.length > 5 ? `<span class="matching-date">+${matchingDates.length - 5} more</span>` : ''}
         </div>

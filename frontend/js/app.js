@@ -19,7 +19,7 @@ import { init as initPerformance, getMetrics } from './performance.js';
 import ErrorTracker from './error-tracking.js';
 import { initShare } from './share.js';
 import './pwa.js';
-import { initComparison } from './components/comparison.js';
+import { initComparison, updateTodayData } from './components/comparison.js';
 import { initThemeToggle } from './components/themeToggle.js';
 
 // Lazy-loaded modules (non-critical path)
@@ -151,6 +151,9 @@ async function refreshData() {
     state.predictions = predictionsResult.data;
     state.lastUpdate = new Date();
     state.error = null;
+
+    // Update comparison view with today's data
+    updateTodayData(state.data);
 
     // Check if data is stale
     if (currentResult.stale || predictionsResult.stale) {
