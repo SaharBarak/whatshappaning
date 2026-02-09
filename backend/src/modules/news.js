@@ -18,10 +18,12 @@ const cache = require('../utils/cache');
 const logger = require('../utils/logger');
 
 // RSS Feed URLs
+// Reuters and AP feeds are dead (404/403 as of 2025). Replaced with working alternatives.
 const RSS_FEEDS = {
-  Reuters: 'https://www.reutersagency.com/feed/',
-  AP: 'https://rsshub.app/apnews/topics/apf-topnews',
-  BBC: 'http://feeds.bbci.co.uk/news/world/rss.xml',
+  BBC: 'https://feeds.bbci.co.uk/news/world/rss.xml',
+  NYT: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
+  NPR: 'https://feeds.npr.org/1001/rss.xml',
+  AlJazeera: 'https://www.aljazeera.com/xml/rss/all.xml',
 };
 
 // Cache keys
