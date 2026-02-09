@@ -132,11 +132,37 @@ export async function getCurrentData() {
   if (snapshot) {
     // Reshape snapshot to match what the app expects from /api/current
     const snapshotData = snapshot.data;
+    const allModules = snapshotData.modules || {};
+
+    // Separate daily modules from snapshot modules (matching backend /api/current shape)
+    const dailyModuleNames = ['tzolkin', 'dreamspell', 'tarot', 'iching', 'gematria', 'numerology', 'parasha'];
+    const snapshotModuleNames = ['moon', 'astrology', 'solar', 'schumann', 'news', 'cosmic', 'markets', 'geophysical', 'sentiment'];
+
+    const dailyData = {};
+    const modules = {};
+
+    for (const [key, value] of Object.entries(allModules)) {
+      if (dailyModuleNames.includes(key)) {
+        dailyData[key] = value;
+      } else {
+        modules[key] = { data: value, collectedAt: value?.collectedAt || snapshotData.generated_at };
+      }
+    }
+
     return {
       data: {
-        modules: snapshotData.modules,
+        timestamp: snapshotData.generated_at,
+        dataAge: '0m',
+        modules,
+        dailyData,
+        indices: {
+          solarGeo: { value: null, level: 'unknown' },
+          astroEvents: { count: 0, level: 'unknown' },
+          calendarSync: { score: 0, level: 'unknown' },
+        },
         generated_at: snapshotData.generated_at,
         next_update: snapshotData.next_update,
+        insight: snapshotData.insight,
         fromSnapshot: true,
       },
       fromCache: snapshot.fromCache,
