@@ -139,9 +139,11 @@ async function executeDailyModules() {
   // These modules calculate once per day and are stored in daily_data
   const dailyModules = ['tzolkin', 'dreamspell', 'tarot', 'iching', 'gematria'];
   const results = {};
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   for (const name of dailyModules) {
     results[name] = await executeModule(name);
+    await sleep(2000); // 2s delay between modules to avoid rate limits
   }
 
   // Numerology also goes into daily_data (for universal day number)
