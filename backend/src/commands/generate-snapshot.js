@@ -18,6 +18,7 @@ const { uploadSnapshot } = require('../services/snapshot-store');
 const logger = require('../utils/logger');
 
 const UPDATE_INTERVAL_HOURS = 1;
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function main() {
   const startTime = Date.now();
@@ -36,6 +37,10 @@ async function main() {
 
     const moduleCount = Object.keys(allModules).filter(k => allModules[k] != null).length;
     logger.info(`Collected data from ${moduleCount} modules`);
+
+    // Wait before Gemini calls to avoid rate limits
+    logger.info('Waiting 30s before insight generation (Gemini rate limit)...');
+    await sleep(30000);
 
     // 2. Gather module data for insight (same logic as the API route)
     const moduleData = await gatherModuleData();
