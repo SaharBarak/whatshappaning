@@ -11,7 +11,7 @@ import { renderPatternAlert } from './components/alerts.js';
 import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
-import { initFilters, renderFilterBar, filterPredictions, getFilterState } from './components/filters.js';
+import { initFilters, renderFilterBar, filterPredictions, getFilterState, updateKnownTerms } from './components/filters.js';
 import { loadInsight } from './components/insight.js';
 import './pwa.js';
 import { initComparison } from './components/comparison.js';
@@ -168,7 +168,16 @@ async function refreshData() {
     state.predictions = predictionsResult?.data || null;
     state.lastUpdate = new Date();
     state.error = null;
-    hideError();
+
+    // Feed prediction names into search autocomplete
+    updateKnownTerms(state.predictions?.predictions);
+
+    // Check if data is stale
+    if (currentResult.stale || predictionsResult.stale) {
+      showError('Showing cached data. Connection issues detected.');
+    } else {
+      hideError();
+    }
 
     // Render all components
     render();
