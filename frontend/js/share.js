@@ -141,7 +141,7 @@ export async function copyLink() {
  */
 export function shareToTwitter() {
   const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent("Check out today's cosmic predictions on What's Happening!");
+  const text = encodeURIComponent("Check out today's predictions on What's Happening!");
   const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
   window.open(shareUrl, '_blank', 'width=550,height=420');
 }
@@ -187,7 +187,7 @@ export async function nativeShare() {
   try {
     await navigator.share({
       title: "What's Happening - Today's Predictions",
-      text: "Check out today's cosmic predictions and data correlations",
+      text: "Check out today's predictions and data correlations",
       url: window.location.href
     });
   } catch (error) {
