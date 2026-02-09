@@ -250,23 +250,66 @@ async function sendDailySummary(summaryData) {
   return broadcastToSubs(subs.rows, payload);
 }
 
+const MAX_NOTIFICATIONS_PER_DAY = 3;
+
 /**
- * Broadcast a payload to multiple subscriptions, respecting quiet hours
- * Limits to 3 notifications per day per subscription
+ * Check how many notifications a subscription has received today
+ */
+async function getDailyNotificationCount(subscriptionId) {
+  const result = await db.query(
+    `SELECT COUNT(*) as count FROM push_notification_log
+     WHERE subscription_id = $1 AND sent_at >= CURRENT_DATE`,
+    [subscriptionId]
+  );
+  return parseInt(result.rows[0].count, 10);
+}
+
+/**
+ * Log a sent notification for rate limiting
+ */
+async function logNotification(subscriptionId, notificationType) {
+  await db.query(
+    `INSERT INTO push_notification_log (subscription_id, notification_type, sent_at)
+     VALUES ($1, $2, NOW())`,
+    [subscriptionId, notificationType]
+  );
+}
+
+/**
+ * Broadcast a payload to multiple subscriptions, respecting quiet hours.
+ * Enforces a maximum of 3 notifications per day per subscription.
  */
 async function broadcastToSubs(subs, payload) {
   let sent = 0;
   let failed = 0;
+  let skippedQuiet = 0;
+  let skippedRateLimit = 0;
+
+  const notificationType = payload.data?.type || 'unknown';
 
   for (const sub of subs) {
-    if (isQuietHours(sub)) continue;
+    if (isQuietHours(sub)) {
+      skippedQuiet++;
+      continue;
+    }
+
+    // Enforce daily rate limit
+    const dailyCount = await getDailyNotificationCount(sub.id);
+    if (dailyCount >= MAX_NOTIFICATIONS_PER_DAY) {
+      skippedRateLimit++;
+      continue;
+    }
 
     const success = await sendToSubscription(sub, payload);
-    if (success) sent++;
-    else failed++;
+    if (success) {
+      sent++;
+      await logNotification(sub.id, notificationType);
+    } else {
+      failed++;
+    }
   }
 
-  return { sent, failed, total: subs.length };
+  return { sent, failed, skippedQuiet, skippedRateLimit, total: subs.length };
 }
 
 /**

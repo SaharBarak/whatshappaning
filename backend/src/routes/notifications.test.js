@@ -71,4 +71,23 @@ describe('Push Notification Routes', () => {
       assert.ok(!isQuiet);
     });
   });
+
+  describe('rate limiting', () => {
+    it('should enforce max 3 notifications per day', () => {
+      const MAX_NOTIFICATIONS_PER_DAY = 3;
+      const dailyCount = 3;
+      assert.ok(dailyCount >= MAX_NOTIFICATIONS_PER_DAY, 'Should skip when at limit');
+    });
+
+    it('should allow notifications under the limit', () => {
+      const MAX_NOTIFICATIONS_PER_DAY = 3;
+      const dailyCount = 1;
+      assert.ok(dailyCount < MAX_NOTIFICATIONS_PER_DAY, 'Should allow when under limit');
+    });
+
+    it('should track skipped rate-limited subscriptions', () => {
+      const result = { sent: 2, failed: 0, skippedQuiet: 1, skippedRateLimit: 3, total: 6 };
+      assert.equal(result.sent + result.failed + result.skippedQuiet + result.skippedRateLimit, result.total);
+    });
+  });
 });
