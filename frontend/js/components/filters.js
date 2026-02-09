@@ -4,6 +4,8 @@
  */
 
 import { announceToScreenReader } from '../a11y.js';
+import { initAutocomplete } from './search-autocomplete.js';
+import { readFiltersFromURL, writeFiltersToURL, listenForPopState } from '../filter-url.js';
 
 // Filter state
 const filterState = {
@@ -11,8 +13,14 @@ const filterState = {
   confidence: 'all', // all, high, medium, low
   search: '',
   dateFrom: null,
-  dateTo: null
+  dateTo: null,
+  lat: null,
+  lng: null,
+  radius: null // km
 };
+
+// Known search terms for autocomplete (populated from predictions data)
+let knownTerms = [];
 
 // Available categories
 const CATEGORIES = [
@@ -53,6 +61,28 @@ export function initFilters(callback) {
   
   // Set up event listeners
   setupEventListeners(container);
+
+  // Initialize autocomplete on search input
+  const searchInput = container.querySelector('#filter-search');
+  if (searchInput) {
+    initAutocomplete(
+      searchInput,
+      (query) => {
+        const q = query.toLowerCase();
+        return knownTerms.filter((t) => t.toLowerCase().includes(q));
+      },
+      (term) => {
+        filterState.search = term;
+        notifyChange();
+      }
+    );
+  }
+
+  // Restore filters from URL on init
+  applyURLFilters(readFiltersFromURL());
+
+  // Handle browser back/forward
+  listenForPopState(applyURLFilters);
 }
 
 /**
@@ -166,6 +196,7 @@ function notifyChange() {
     onFilterChange(getFilterState());
   }
   updateActiveFilterCount();
+  writeFiltersToURL(getFilterState());
 }
 
 /**
@@ -477,10 +508,84 @@ export function renderFilterBar() {
   `;
 }
 
+/**
+ * Apply filter state from URL params
+ */
+function applyURLFilters(urlState) {
+  if (urlState.search != null) filterState.search = urlState.search;
+  if (urlState.categories) filterState.categories = new Set(urlState.categories);
+  if (urlState.confidence) filterState.confidence = urlState.confidence;
+  if (urlState.dateFrom !== undefined) filterState.dateFrom = urlState.dateFrom;
+  if (urlState.dateTo !== undefined) filterState.dateTo = urlState.dateTo;
+  if (urlState.lat != null) filterState.lat = urlState.lat;
+  if (urlState.lng != null) filterState.lng = urlState.lng;
+  if (urlState.radius != null) filterState.radius = urlState.radius;
+
+  // Sync UI
+  const container = document.getElementById('filter-bar');
+  if (container) {
+    const searchInput = container.querySelector('#filter-search');
+    if (searchInput) searchInput.value = filterState.search || '';
+
+    container.querySelectorAll('[data-category]').forEach((cb) => {
+      cb.checked = filterState.categories.has(cb.dataset.category);
+    });
+
+    const confSelect = container.querySelector('#filter-confidence');
+    if (confSelect) confSelect.value = filterState.confidence;
+
+    const dateFrom = container.querySelector('#filter-date-from');
+    const dateTo = container.querySelector('#filter-date-to');
+    if (dateFrom) dateFrom.value = filterState.dateFrom || '';
+    if (dateTo) dateTo.value = filterState.dateTo || '';
+
+    const radiusInput = container.querySelector('#filter-radius');
+    if (radiusInput) radiusInput.value = filterState.radius || '';
+  }
+
+  if (onFilterChange) onFilterChange(getFilterState());
+  updateActiveFilterCount();
+}
+
+/**
+ * Update autocomplete known terms from predictions data.
+ * Call after new data loads.
+ * @param {Array} predictions
+ */
+export function updateKnownTerms(predictions) {
+  if (!predictions) return;
+  const terms = new Set();
+  predictions.forEach((p) => {
+    if (p.name) terms.add(p.name);
+    if (p.category) terms.add(p.category);
+    // Extract factor names
+    if (p.factors) {
+      p.factors.forEach((f) => {
+        if (f.name) terms.add(f.name);
+      });
+    }
+  });
+  knownTerms = Array.from(terms).sort();
+}
+
+/**
+ * Haversine distance in km
+ */
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 export default {
   initFilters,
   renderFilterBar,
   getFilterState,
   clearFilters,
-  filterPredictions
+  filterPredictions,
+  updateKnownTerms
 };
