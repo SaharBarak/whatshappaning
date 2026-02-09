@@ -21,6 +21,13 @@ jobs:
         working-directory: backend
         run: npm ci
 
+      - name: Run database migrations
+        working-directory: backend
+        run: node scripts/migrate.js
+        env:
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Generate and upload snapshot
         working-directory: backend
         run: node src/commands/generate-snapshot.js

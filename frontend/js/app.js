@@ -242,7 +242,16 @@ function render() {
       }
     }
   }
-  await renderModules(mergedModules, state.expandedModules, toggleModule);
+  // Apply preference-based module ordering
+  const prefs = getPreferences();
+  if (prefs && mergedModules) {
+    const orderedKeys = applyPreferencesToModuleOrder(Object.keys(mergedModules));
+    const ordered = {};
+    orderedKeys.forEach(k => { if (mergedModules[k]) ordered[k] = mergedModules[k]; });
+    await renderModules(ordered, state.expandedModules, toggleModule);
+  } else {
+    await renderModules(mergedModules, state.expandedModules, toggleModule);
+  }
   renderSuggestions(state.predictions?.actionSuggestions);
 }
 
