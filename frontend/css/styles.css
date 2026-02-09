@@ -1,11 +1,9 @@
-/* ============================================
-   WHAT'S HAPPENING — Cosmic Prediction Dashboard
+/* =====================================   WHAT'S HAPPENING — Cosmic Prediction Dashboard
    UI Redesign: Sidebar + Grid Dashboard Layout
    Inspired by Omnis design system
    ============================================ */
 
-/* ============================================
-   DESIGN TOKENS
+/* =====================================   DESIGN TOKENS
    ============================================ */
 :root {
   /* Backgrounds */
@@ -161,8 +159,7 @@ html.theme-transitioning *::after {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
-/* ============================================
-   RESET & BASE
+/* =====================================   RESET & BASE
    ============================================ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -212,8 +209,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   letter-spacing: 0.05em;
 }
 
-/* ============================================
-   APP LAYOUT — Sidebar + Main
+/* =====================================   APP LAYOUT — Sidebar + Main
    ============================================ */
 #app {
   display: flex;
@@ -221,8 +217,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   min-height: 100dvh;
 }
 
-/* ============================================
-   SIDEBAR
+/* =====================================   SIDEBAR
    ============================================ */
 .sidebar {
   position: fixed;
@@ -448,8 +443,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   .sidebar-toggle-btn { display: none; }
 }
 
-/* ============================================
-   MAIN CONTENT AREA
+/* =====================================   MAIN CONTENT AREA
    ============================================ */
 .main-wrapper {
   flex: 1;
@@ -472,8 +466,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   }
 }
 
-/* ============================================
-   TOP HEADER BAR
+/* =====================================   TOP HEADER BAR
    ============================================ */
 .header {
   display: flex;
@@ -719,8 +712,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   50% { opacity: 0.5; }
 }
 
-/* ============================================
-   MAIN CONTENT
+/* =====================================   MAIN CONTENT
    ============================================ */
 .content-area {
   flex: 1;
@@ -772,8 +764,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   }
 }
 
-/* ============================================
-   STAT CARDS ROW
+/* =====================================   STAT CARDS ROW
    ============================================ */
 .stats-row {
   display: grid;
@@ -861,8 +852,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 .index-trend.falling { color: var(--negative); }
 .index-trend.stable { color: var(--neutral); }
 
-/* ============================================
-   SECTION HEADERS
+/* =====================================   SECTION HEADERS
    ============================================ */
 .section-header {
   display: flex;
@@ -881,8 +871,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   text-transform: uppercase;
 }
 
-/* ============================================
-   FILTER BAR
+/* =====================================   FILTER BAR
    ============================================ */
 .filter-bar {
   background: var(--bg-card);
@@ -1155,8 +1144,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 .no-results-icon { font-size: 2rem; margin-bottom: var(--spacing-sm); }
 .no-results-text { font-size: 0.9rem; }
 
-/* ============================================
-   PREDICTIONS PANEL
+/* =====================================   PREDICTIONS PANEL
    ============================================ */
 .predictions-panel {
   background: var(--bg-card);
@@ -1367,8 +1355,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 .meta-label { color: var(--text-muted); }
 .meta-value { font-family: var(--font-mono); letter-spacing: 0.05em; color: var(--text-secondary); }
 
-/* ============================================
-   PATTERN ALERT
+/* =====================================   PATTERN ALERT
    ============================================ */
 .pattern-alert {
   background: var(--alert-bg);
@@ -1415,8 +1402,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 .outcome-rate { color: var(--text-secondary); font-size: 0.9rem; }
 .outcome-rate strong { color: var(--text-primary); }
 
-/* ============================================
-   DATA MODULES GRID
+/* =====================================   DATA MODULES GRID
    ============================================ */
 .modules-section { margin-bottom: var(--spacing-xl); }
 
@@ -1509,8 +1495,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 .detail-label { color: var(--text-muted); }
 .detail-value { font-family: var(--font-mono); letter-spacing: 0.05em; color: var(--text-primary); }
 
-/* ============================================
-   SUGGESTIONS FOOTER
+/* =====================================   SUGGESTIONS FOOTER
    ============================================ */
 .suggestions-footer {
   background: var(--bg-card);
@@ -1561,8 +1546,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   line-height: 1.6;
 }
 
-/* ============================================
-   EMAIL SIGNUP
+/* =====================================   EMAIL SIGNUP
    ============================================ */
 .email-signup-section {
   background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
@@ -1661,8 +1645,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
 }
 
-/* ============================================
-   TOAST NOTIFICATIONS
+/* =====================================   TOAST NOTIFICATIONS
    ============================================ */
 .subscription-toast {
   position: fixed;
@@ -1693,8 +1676,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 .subscription-toast.error .toast-icon { color: var(--negative); }
 .toast-icon { font-size: 1.1rem; }
 
-/* ============================================
-   ERROR BANNER
+/* =====================================   ERROR BANNER
    ============================================ */
 .error-banner {
   position: fixed;
@@ -1728,8 +1710,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   justify-content: center;
 }
 
-/* ============================================
-   SHARE MODAL
+/* =====================================   SHARE MODAL
    ============================================ */
 .share-modal {
   position: fixed;
@@ -1895,8 +1876,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
-/* ============================================
-   COMMAND PALETTE
+/* =====================================   COMMAND PALETTE
    ============================================ */
 .command-palette-overlay {
   position: fixed;
@@ -2019,8 +1999,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
   font-family: inherit;
 }
 
-/* ============================================
-   MOBILE BOTTOM NAV
+/* =====================================   MOBILE BOTTOM NAV
    ============================================ */
 .mobile-bottom-nav {
   display: none;
@@ -2118,8 +2097,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 
 .mobile-more-icon { font-size: 1rem; width: 18px; text-align: center; }
 
-/* ============================================
-   LOADING SKELETON
+/* =====================================   LOADING SKELETON
    ============================================ */
 .skeleton { position: relative; overflow: hidden; }
 
@@ -2161,8 +2139,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 [data-theme="light"] .freshness-recent { background: #fef3c7; color: #92400e; }
 [data-theme="light"] .freshness-stale { background: #fee2e2; color: #991b1b; }
 
-/* ============================================
-   UTILITY CLASSES
+/* =====================================   UTILITY CLASSES
    ============================================ */
 .hidden { display: none !important; }
 .text-positive { color: var(--positive); }
@@ -2182,8 +2159,7 @@ h4 { font-size: var(--text-md); line-height: 1.3; font-weight: 500; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ============================================
-   ACCESSIBILITY
+/* =====================================   ACCESSIBILITY
    ============================================ */
 .skip-link {
   position: absolute;
@@ -2264,8 +2240,7 @@ button:focus-visible,
   }
 }
 
-/* ============================================
-   PWA INSTALL BANNER
+/* =====================================   PWA INSTALL BANNER
    ============================================ */
 .pwa-install-banner {
   position: fixed;
@@ -2395,8 +2370,7 @@ button:focus-visible,
   .pwa-install-banner { display: none !important; }
 }
 
-/* ============================================
-   HISTORICAL COMPARISON PANEL
+/* =====================================   HISTORICAL COMPARISON PANEL
    ============================================ */
 .comparison-panel {
   position: fixed;
@@ -2542,8 +2516,7 @@ button:focus-visible,
   .comparison-panel { width: 100vw; max-width: 100vw; right: -100vw; }
 }
 
-/* ============================================
-   THEME TOGGLE BUTTON
+/* =====================================   THEME TOGGLE BUTTON
    ============================================ */
 .theme-toggle {
   display: flex;
@@ -2569,8 +2542,7 @@ button:focus-visible,
 .theme-toggle-icon { display: inline-block; transition: transform 0.3s ease; }
 .theme-toggle:hover .theme-toggle-icon { transform: rotate(15deg); }
 
-/* ============================================
-   HEADER BUTTONS (generic)
+/* =====================================   HEADER BUTTONS (generic)
    ============================================ */
 .header-btn {
   display: flex;
@@ -2654,8 +2626,7 @@ button:focus-visible,
   color: var(--text-secondary);
 }
 
-/* ============================================
-   INSIGHT HERO — Conclusion-first AI Narrative
+/* =====================================   INSIGHT HERO — Conclusion-first AI Narrative
    ============================================ */
 
 .insight-hero {
@@ -2881,8 +2852,7 @@ button:focus-visible,
   100% { box-shadow: none; }
 }
 
-/* ============================================
-   RAW DATA — Collapsible Section
+/* =====================================   RAW DATA — Collapsible Section
    ============================================ */
 
 .raw-data-section {
@@ -2938,8 +2908,7 @@ button:focus-visible,
   pointer-events: none;
 }
 
-/* ============================================
-   INSIGHT — Light Theme Overrides
+/* =====================================   INSIGHT — Light Theme Overrides
    ============================================ */
 
 [data-theme="light"] .insight-hero {
@@ -2972,8 +2941,7 @@ button:focus-visible,
   background: radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.04) 0%, transparent 60%);
 }
 
-/* ============================================
-   INSIGHT — Responsive
+/* =====================================   INSIGHT — Responsive
    ============================================ */
 
 @media (max-width: 767px) {
@@ -2998,8 +2966,7 @@ button:focus-visible,
   }
 }
 
-/* ========================================
-   Countdown Timer
+/* =================================   Countdown Timer
    ======================================== */
 
 .update-countdown {
@@ -3084,4 +3051,160 @@ button:focus-visible,
 .autocomplete-item:hover mark,
 .autocomplete-item.active mark {
   color: inherit;
+/* Preferences Panel (#154) */
+.preferences-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 380px;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  z-index: 1000;
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  padding: 1.5rem;
+}
+
+.preferences-panel.open {
+  right: 0;
+}
+
+.prefs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.prefs-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.prefs-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.prefs-close:hover {
+  color: var(--text-primary);
+}
+
+.prefs-section {
+  margin-bottom: 1.5rem;
+}
+
+.prefs-section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.prefs-category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.prefs-category-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.prefs-category-label:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.prefs-category-label input {
+  display: none;
+}
+
+.prefs-time-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.prefs-time-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.prefs-time-label:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.prefs-time-label input {
+  display: none;
+}
+
+.prefs-save-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.prefs-save-btn:hover {
+  opacity: 0.9;
+}
+
+.header-prefs-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.header-prefs-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .preferences-panel {
+    width: 100vw;
+    right: -100vw;
+  }
+  .prefs-btn-text {
+    display: none;
+  }
 }
