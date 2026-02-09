@@ -12,6 +12,12 @@ import { renderModules } from './components/modules.js';
 import { renderSuggestions } from './components/suggestions.js';
 import { showError, hideError, showLoading, hideLoading } from './components/states.js';
 import { initFilters, renderFilterBar, filterPredictions, getFilterState } from './components/filters.js';
+import ga4 from './ga4.js';
+import { initAutoTracking, interactionEvents, errorEvents } from './ga4-events.js';
+import consentBanner from './components/consent-banner.js';
+import { init as initPerformance, getMetrics } from './performance.js';
+import ErrorTracker from './error-tracking.js';
+import { initShare } from './share.js';
 import { initThemeToggle } from './components/themeToggle.js';
 
 // Lazy-loaded modules (non-critical path)
@@ -77,6 +83,27 @@ async function init() {
   // Render and initialize filter bar
   renderFilterBar();
   initFilters(handleFilterChange);
+
+  // Initialize performance monitoring (Core Web Vitals)
+  initPerformance();
+
+  // Initialize error tracking
+  ErrorTracker.init({ backendUrl: config.apiBase ? `${config.apiBase}/api/errors` : null });
+  
+  // Initialize GA4 analytics
+  await ga4.init();
+  
+  // Show consent banner if needed
+  consentBanner.init();
+  
+  // Initialize automatic tracking (scroll depth, time on page, errors)
+  initAutoTracking();
+
+  // Initialize share functionality
+  initShare();
+
+  // Initialize email signup form
+  initEmailSignup();
 
   // Set up event listeners
   setupEventListeners();
@@ -177,7 +204,7 @@ function render() {
       }
     }
   }
-  renderModules(mergedModules, state.expandedModules, toggleModule);
+  await renderModules(mergedModules, state.expandedModules, toggleModule);
   renderSuggestions(state.predictions?.actionSuggestions);
 }
 
@@ -249,7 +276,7 @@ function togglePrediction(outcomeId) {
 /**
  * Toggle module card expansion
  */
-function toggleModule(moduleName) {
+async function toggleModule(moduleName) {
   const wasExpanded = state.expandedModules.has(moduleName);
   
   if (wasExpanded) {
@@ -259,7 +286,7 @@ function toggleModule(moduleName) {
     state.expandedModules.add(moduleName);
     interactionEvents?.moduleExpand(moduleName, moduleName);
   }
-  renderModules(state.data?.modules, state.expandedModules, toggleModule);
+  await renderModules(state.data?.modules, state.expandedModules, toggleModule);
 }
 
 /**
