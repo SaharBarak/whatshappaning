@@ -273,6 +273,28 @@ body {
   animation: none;
 }
 
+/* WebSocket connection states */
+.live-dot--live {
+  background-color: var(--confidence-high);
+  animation: pulse 2s infinite;
+}
+
+.live-dot--connecting,
+.live-dot--reconnecting {
+  background-color: var(--confidence-medium);
+  animation: pulse 0.8s infinite;
+}
+
+.live-dot--disconnected {
+  background-color: var(--confidence-low);
+  animation: none;
+}
+
+.live-dot--fallback {
+  background-color: var(--confidence-medium);
+  animation: none;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
