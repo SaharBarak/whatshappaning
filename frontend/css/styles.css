@@ -2567,6 +2567,33 @@ button:focus-visible,
   opacity: 1;
 }
 
+/* Comparison preset buttons */
+.comparison-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.comparison-preset-btn {
+  padding: 4px 10px;
+  background: var(--bg-primary, #0a0a0f);
+  border: 1px solid var(--border-primary, #2a2a3e);
+  border-radius: 12px;
+  color: var(--text-secondary, #8888aa);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.comparison-preset-btn:hover {
+  border-color: var(--accent-primary, #6366f1);
+  color: var(--text-primary, #e0e0e8);
+  background: rgba(99, 102, 241, 0.1);
+}
+
 .comparison-outcomes {
   margin-top: 16px;
   background: var(--bg-primary, #0a0a0f);
