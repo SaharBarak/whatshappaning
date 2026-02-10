@@ -17,6 +17,7 @@ const emailRoutes = require('./routes/email');
 const communityRoutes = require('./routes/community');
 const notificationRoutes = require('./routes/notifications');
 const insightRoutes = require('./routes/insight');
+const preferencesRoutes = require('./routes/preferences');
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
 const cookieParser = require('cookie-parser');
@@ -101,6 +102,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/insight', insightRoutes);
+app.use('/api/preferences', preferencesRoutes);
 app.use('/health', healthRoutes);
 
 // Metrics endpoint for monitoring
