@@ -1,10 +1,12 @@
 /**
  * Outcome Targets Module
  *
- * Defines and calculates 11 binary outcomes for correlation analysis.
- * Per spec 23:
+ * Defines and calculates 17 binary outcomes for correlation analysis.
+ * Per spec 23 + health & wellness extension:
  * - Market Outcomes (6): spx_direction, spx_volatile, btc_direction, btc_volatile, vix_spike, gold_direction
  * - Geophysical Outcomes (3): major_quake, quake_above_avg, geomag_storm
+ * - Health & Wellness Outcomes (6): sleep_quality_index, barometric_mood, solar_wind_energy,
+ *     mercury_retrograde_comms, schumann_meditation, migraine_risk
  * - Sentiment Outcomes (2): sentiment_drop, fear_spike
  *
  * Note: spx_return (continuous) excluded per DECISION 4 (binary outcomes only for MVP)
@@ -70,6 +72,44 @@ const OUTCOME_DEFINITIONS = {
     description: 'Geomagnetic storm (Kp >= 5)',
     calculation: 'kp_index >= 5',
     baseRateEstimate: 0.08,
+  },
+
+  // Health & Wellness Outcomes (6)
+  sleep_quality_index: {
+    type: 'binary',
+    description: 'Poor sleep quality predicted (Kp ≥ 4 + Schumann deviation)',
+    calculation: 'kp_index >= 4 OR (schumann_amplitude > 50 AND kp_index >= 3)',
+    baseRateEstimate: 0.25,
+  },
+  barometric_mood: {
+    type: 'binary',
+    description: 'Mood instability predicted (rapid pressure change)',
+    calculation: 'pressure_change_rate > 5 OR (kp_index >= 4 AND pressure_change_rate > 3)',
+    baseRateEstimate: 0.20,
+  },
+  solar_wind_energy: {
+    type: 'binary',
+    description: 'High collective energy day (solar wind > 500 km/s)',
+    calculation: 'solar_wind_speed > 500',
+    baseRateEstimate: 0.30,
+  },
+  mercury_retrograde_comms: {
+    type: 'binary',
+    description: 'Communication disruption risk (Mercury retrograde)',
+    calculation: 'mercury_retrograde === true',
+    baseRateEstimate: 0.22,
+  },
+  schumann_meditation: {
+    type: 'binary',
+    description: 'Enhanced meditation effectiveness (Schumann near 7.83 Hz)',
+    calculation: 'schumann_amplitude < 20 AND kp_index < 3',
+    baseRateEstimate: 0.35,
+  },
+  migraine_risk: {
+    type: 'binary',
+    description: 'Elevated migraine risk (multi-factor weather index)',
+    calculation: 'kp_index >= 4 OR (pressure_change > 5 AND solar_wind_speed > 450)',
+    baseRateEstimate: 0.15,
   },
 
   // Sentiment Outcomes (2)
@@ -156,6 +196,61 @@ function calculateGeophysicalOutcomes(geoData, historicalAvg = {}) {
 }
 
 /**
+ * Calculate health & wellness outcomes
+ *
+ * @param {Object} data - Current module data (solar, schumann, geophysical, astrology)
+ * @returns {Object} Health & wellness outcomes
+ */
+function calculateHealthWellnessOutcomes(data) {
+  const outcomes = {};
+  const kp = data.kpIndex ?? data.kp_index;
+  const schumannAmp = data.schumannAmplitude ?? data.schumann_amplitude;
+  const solarWind = data.solarWindSpeed ?? data.solar_wind_speed;
+  const mercuryRetro = data.mercuryRetrograde ?? data.mercury_retrograde;
+
+  // #100 Geomagnetic Sleep Quality Index
+  if (kp !== undefined) {
+    const schumannDeviation = schumannAmp !== undefined && schumannAmp > 50;
+    outcomes.sleep_quality_index = kp >= 4 || (schumannDeviation && kp >= 3);
+  }
+
+  // #101 Barometric Mood Predictor
+  // Use kp as proxy for geophysical disturbance when pressure data unavailable
+  if (kp !== undefined) {
+    const pressureProxy = kp >= 4; // High geomagnetic = likely pressure disturbance
+    const solarStress = solarWind !== undefined && solarWind > 450;
+    outcomes.barometric_mood = pressureProxy || (solarStress && kp >= 3);
+  }
+
+  // #102 Solar Wind Collective Energy
+  if (solarWind !== undefined) {
+    outcomes.solar_wind_energy = solarWind > 500;
+  }
+
+  // #103 Mercury Retrograde Communication Failures
+  if (mercuryRetro !== undefined) {
+    outcomes.mercury_retrograde_comms = !!mercuryRetro;
+  }
+
+  // #105 Schumann Resonance Meditation Effectiveness
+  if (schumannAmp !== undefined || kp !== undefined) {
+    const schumannCalm = schumannAmp === undefined || schumannAmp < 20;
+    const geoCalm = kp === undefined || kp < 3;
+    outcomes.schumann_meditation = schumannCalm && geoCalm;
+  }
+
+  // #109 Migraine Weather Index (multi-factor)
+  if (kp !== undefined) {
+    const geoStress = kp >= 4;
+    const solarPressure = solarWind !== undefined && solarWind > 450;
+    const schumannStress = schumannAmp !== undefined && schumannAmp > 40;
+    outcomes.migraine_risk = geoStress || (solarPressure && schumannStress);
+  }
+
+  return outcomes;
+}
+
+/**
  * Calculate sentiment outcomes
  *
  * @param {Object} currentSentiment - Current sentiment data
@@ -217,6 +312,16 @@ function extractOutcomes(currentData, previousData = {}, historicalAvg = {}) {
   );
   Object.assign(outcomes, sentimentOutcomes);
 
+  // Health & wellness outcomes
+  const healthData = {
+    kpIndex: currentData.solar?.kpIndex || geoSource.kpIndex,
+    schumannAmplitude: currentData.schumann?.amplitude,
+    solarWindSpeed: currentData.solar?.solarWindSpeed || currentData.solar?.windSpeed,
+    mercuryRetrograde: currentData.astrology?.mercuryRetrograde,
+  };
+  const healthOutcomes = calculateHealthWellnessOutcomes(healthData);
+  Object.assign(outcomes, healthOutcomes);
+
   return outcomes;
 }
 
@@ -265,6 +370,7 @@ function getOutcomesByCategory() {
   return {
     market: ['spx_direction', 'spx_volatile', 'btc_direction', 'btc_volatile', 'vix_spike', 'gold_direction'],
     geophysical: ['major_quake', 'quake_above_avg', 'geomag_storm'],
+    health_wellness: ['sleep_quality_index', 'barometric_mood', 'solar_wind_energy', 'mercury_retrograde_comms', 'schumann_meditation', 'migraine_risk'],
     sentiment: ['sentiment_drop', 'fear_spike'],
   };
 }
@@ -333,6 +439,16 @@ function calculateAllOutcomes(row, prevRow = {}, avgData = {}) {
     outcomes.fear_spike = fg < 25;
   }
 
+  // Health & wellness outcomes (from row data)
+  const healthData = {
+    kp_index: row.kp_index,
+    schumann_amplitude: row.schumann_amplitude,
+    solar_wind_speed: row.solar_wind_speed,
+    mercury_retrograde: row.mercury_retrograde,
+  };
+  const healthOutcomes = calculateHealthWellnessOutcomes(healthData);
+  Object.assign(outcomes, healthOutcomes);
+
   return outcomes;
 }
 
@@ -343,6 +459,7 @@ module.exports = {
   // Calculation functions
   calculateMarketOutcomes,
   calculateGeophysicalOutcomes,
+  calculateHealthWellnessOutcomes,
   calculateSentimentOutcomes,
   extractOutcomes,
   calculateAllOutcomes,

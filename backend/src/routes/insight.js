@@ -87,26 +87,30 @@ async function generateInsight(moduleData) {
     throw new Error('GEMINI_API_KEY not configured');
   }
 
-  const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const { withRetry } = require('../utils/retry');
 
-  const dataStr = JSON.stringify(moduleData, null, 2);
-  
-  const prompt = `Here is the current data from all our cosmic/esoteric/geophysical monitoring modules. Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.
+  const result = await withRetry(async () => {
+    const genAI = new GoogleGenerativeAI(config.geminiApiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+    const dataStr = JSON.stringify(moduleData, null, 2);
+    
+    const prompt = `Here is the current data from all our cosmic/esoteric/geophysical monitoring modules. Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.
 
 Current module data:
 ${dataStr}
 
 Synthesize all of this into a cohesive insight about what's happening right now.`;
 
-  const result = await model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 2048,
-    },
-  });
+    return await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2048,
+      },
+    });
+  }, { label: 'Gemini-insight', maxRetries: 3, baseDelayMs: 16000 });
 
   const text = result.response.text().trim();
   

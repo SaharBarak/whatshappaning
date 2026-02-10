@@ -15,6 +15,8 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env'
 const { loadModules, executeModule, executeDailyModules, getAllModuleData } = require('../scheduler');
 const { gatherModuleData, generateInsight } = require('../routes/insight');
 const { uploadSnapshot } = require('../services/snapshot-store');
+const { generatePredictions } = require('../prediction');
+const { archivePrediction } = require('../analytics');
 const logger = require('../utils/logger');
 
 const UPDATE_INTERVAL_HOURS = 1;
@@ -39,8 +41,8 @@ async function main() {
     logger.info(`Collected data from ${moduleCount} modules`);
 
     // Wait before Gemini calls to avoid rate limits
-    logger.info('Waiting 30s before insight generation (Gemini rate limit)...');
-    await sleep(30000);
+    logger.info('Waiting 45s before insight generation (Gemini rate limit)...');
+    await sleep(45000);
 
     // 2. Gather module data for insight (same logic as the API route)
     const moduleData = await gatherModuleData();
@@ -63,18 +65,58 @@ async function main() {
       };
     }
 
-    // 4. Bundle snapshot
+    // 4. Generate predictions
+    logger.info('Generating predictions...');
+    let predictions = null;
+    try {
+      predictions = await generatePredictions(allModules);
+      const predCount = predictions.predictions ? predictions.predictions.length : 0;
+      logger.info(`Generated ${predCount} predictions`);
+
+      // Archive predictions to CockroachDB for accuracy tracking
+      if (predictions.predictions && predictions.predictions.length > 0) {
+        logger.info('Archiving predictions to database...');
+        const today = new Date();
+        for (const pred of predictions.predictions) {
+          try {
+            await archivePrediction(
+              today,
+              pred.outcomeId || pred.outcome,
+              pred.probability,
+              pred.confidence || 'MEDIUM'
+            );
+          } catch (archiveErr) {
+            logger.warn(`Failed to archive prediction ${pred.outcomeId}: ${archiveErr.message}`);
+          }
+        }
+        logger.info('Predictions archived');
+      }
+    } catch (err) {
+      logger.error('Prediction generation failed (continuing without):', err.message);
+      predictions = {
+        date: new Date().toISOString().split('T')[0],
+        generatedAt: new Date().toISOString(),
+        error: 'Prediction generation failed',
+        predictions: [],
+        patternAlerts: [],
+        actionSuggestions: [],
+        summary: {},
+      };
+    }
+
+    // 5. Bundle snapshot
     const now = new Date();
     const nextUpdate = new Date(now.getTime() + UPDATE_INTERVAL_HOURS * 60 * 60 * 1000);
 
     const snapshot = {
       modules: allModules,
       insight,
+      predictions,
       generated_at: now.toISOString(),
       next_update: nextUpdate.toISOString(),
     };
 
-    // 5. Upload to Supabase
+    // 6. Upload to Supabase
     logger.info('Uploading snapshot to Supabase...');
     await uploadSnapshot(snapshot);
 

@@ -135,6 +135,21 @@ const predictionTypes = [
     status: "active",
   },
   {
+    id: "health-wellness",
+    title: "Health & Wellness Index",
+    description: "Predict sleep quality, migraine risk, energy levels, and mood from geomagnetic, solar, and atmospheric data.",
+    icon: Heart,
+    gradient: "from-rose-500 to-pink-600",
+    correlations: [
+      { source: "Kp Index + Schumann", target: "Sleep Quality", strength: 70 },
+      { source: "Solar Wind Speed", target: "Energy Levels", strength: 65 },
+      { source: "Multi-Factor Weather", target: "Migraine Risk", strength: 74 },
+    ],
+    dataPoints: ["Kp index", "Schumann amplitude", "Solar wind", "Mercury retrograde", "Barometric pressure"],
+    accuracy: 68,
+    status: "active",
+  },
+  {
     id: "planetary-alignment",
     title: "Planetary Alignment Index",
     description: "Track major planetary configurations and their correlation with collective energy shifts.",
