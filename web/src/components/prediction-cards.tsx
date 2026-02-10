@@ -135,6 +135,7 @@ const categoryColors: Record<string, string> = {
   health: "from-rose-500/20 to-red-500/20",
   mental: "from-cyan-500/20 to-blue-500/20",
   mood: "from-violet-500/20 to-fuchsia-500/20",
+  wellness: "from-rose-500/20 to-pink-500/20",
 };
 
 interface Prediction {
