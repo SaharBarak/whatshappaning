@@ -20,6 +20,7 @@ import { initConnectionIndicator } from './components/connection-indicator.js';
 import { initThemeToggle } from './components/themeToggle.js';
 import { initCountdown } from './components/countdown.js';
 import ErrorTracker from './error-tracking.js';
+import { initPreferences, getPreferences, applyPreferencesToModuleOrder } from './components/preferences.js';
 
 // Lazy-loaded modules (non-critical path)
 let ga4, initAutoTracking, interactionEvents, errorEvents, consentBanner, initShare, initEmailSignup;
@@ -91,6 +92,8 @@ async function init() {
   // Initialize historical comparison view
   initComparison();
 
+  // Initialize user preferences
+  await initPreferences(() => refreshData());
   // Set up event listeners
   setupEventListeners();
 
