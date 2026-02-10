@@ -103,26 +103,30 @@ function determineOverallSentiment(cryptoFearGreed, vixLevel) {
  * @returns {Promise<Object>} Index data or error object
  */
 async function fetchYahooData(name, symbol) {
+  const { withRetry } = require('../utils/retry');
+
   try {
-    const yf = await getYahooFinance();
-    if (!yf) {
-      throw new Error('yahoo-finance2 module not available');
-    }
+    return await withRetry(async () => {
+      const yf = await getYahooFinance();
+      if (!yf) {
+        throw new Error('yahoo-finance2 module not available');
+      }
 
-    const quote = await yf.quote(symbol);
+      const quote = await yf.quote(symbol);
 
-    if (!quote || quote.regularMarketPrice === undefined) {
-      throw new Error(`No data returned for ${symbol}`);
-    }
+      if (!quote || quote.regularMarketPrice === undefined) {
+        throw new Error(`No data returned for ${symbol}`);
+      }
 
-    const price = quote.regularMarketPrice;
-    const dailyChange = quote.regularMarketChangePercent || 0;
+      const price = quote.regularMarketPrice;
+      const dailyChange = quote.regularMarketChangePercent || 0;
 
-    return {
-      price: Math.round(price * 100) / 100,
-      dailyChange: Math.round(dailyChange * 100) / 100,
-      trend: determineTrend(dailyChange),
-    };
+      return {
+        price: Math.round(price * 100) / 100,
+        dailyChange: Math.round(dailyChange * 100) / 100,
+        trend: determineTrend(dailyChange),
+      };
+    }, { label: `Yahoo-${name}`, maxRetries: 2, baseDelayMs: 5000 });
   } catch (error) {
     console.error(`Error fetching ${name} (${symbol}) from Yahoo Finance:`, error.message);
     return {
@@ -216,12 +220,16 @@ async function collect() {
   const now = new Date();
   const anomalies = [];
 
-  // Fetch all data in parallel
-  const [spxData, vixData, goldData, dxyData, btcData, fearGreedData] = await Promise.all([
-    fetchYahooData('SPX', YAHOO_SYMBOLS.SPX),
-    fetchYahooData('VIX', YAHOO_SYMBOLS.VIX),
-    fetchYahooData('GOLD', YAHOO_SYMBOLS.GOLD),
-    fetchYahooData('DXY', YAHOO_SYMBOLS.DXY),
+  // Fetch Yahoo data sequentially to avoid rate limits, others in parallel
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const spxData = await fetchYahooData('SPX', YAHOO_SYMBOLS.SPX);
+  await sleep(2000);
+  const vixData = await fetchYahooData('VIX', YAHOO_SYMBOLS.VIX);
+  await sleep(2000);
+  const goldData = await fetchYahooData('GOLD', YAHOO_SYMBOLS.GOLD);
+  await sleep(2000);
+  const dxyData = await fetchYahooData('DXY', YAHOO_SYMBOLS.DXY);
+  const [btcData, fearGreedData] = await Promise.all([
     fetchBitcoinData(),
     fetchFearGreedIndex(),
   ]);

@@ -130,16 +130,18 @@ async function analyzeWithGemini(headlines) {
     return null;
   }
 
+  const { withRetry } = require('../utils/retry');
+
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    return await withRetry(async () => {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    // Prepare headlines text for analysis
-    const headlinesText = headlines
-      .map((h, i) => `${i + 1}. [${h.source}] ${h.title}`)
-      .join('\n');
+      const headlinesText = headlines
+        .map((h, i) => `${i + 1}. [${h.source}] ${h.title}`)
+        .join('\n');
 
-    const prompt = `Analyze these news headlines and extract 3-5 major themes. For each theme provide: name (2-4 words), count of related articles, 3-5 keywords, and sentiment (positive/negative/neutral). Also provide overall sentiment (calm/tense/positive). Return as JSON.
+      const prompt = `Analyze these news headlines and extract 3-5 major themes. For each theme provide: name (2-4 words), count of related articles, 3-5 keywords, and sentiment (positive/negative/neutral). Also provide overall sentiment (calm/tense/positive). Return as JSON.
 
 Headlines:
 ${headlinesText}
@@ -157,19 +159,18 @@ Return ONLY valid JSON in this exact format:
   "overallSentiment": "tense"
 }`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-    // Extract JSON from response (handle markdown code blocks)
-    let jsonStr = text;
-    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
+      let jsonStr = text;
+      const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1].trim();
+      }
 
-    const analysis = JSON.parse(jsonStr);
-    return analysis;
+      return JSON.parse(jsonStr);
+    }, { label: 'Gemini-news', maxRetries: 3, baseDelayMs: 16000 });
   } catch (error) {
     console.error('Error analyzing with Gemini:', error.message);
     return null;
