@@ -181,8 +181,13 @@ export async function getHistory(moduleName, days = 7) {
 
 /**
  * Get today's predictions
+ * Tries static snapshot first, falls back to live API
  */
 export async function getPredictions() {
+  const snapshot = await fetchSnapshot();
+  if (snapshot && snapshot.data && snapshot.data.predictions) {
+    return { data: snapshot.data.predictions, fromCache: snapshot.fromCache, fromSnapshot: true };
+  }
   return request('/api/predictions');
 }
 
