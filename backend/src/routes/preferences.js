@@ -1,146 +1,128 @@
 /**
- * Preferences Routes - User Preferences & Feed Personalization (EPIC-019)
+ * Preferences Routes - User preferences for feed personalization
  *
- * Uses the same cookie-based anonymous identity as community features.
- * Preferences are stored per community_user and influence feed ranking.
+ * No authentication — preferences are keyed by a client-generated ID
+ * stored in localStorage. This matches the app's public-dashboard model.
  *
  * Endpoints:
- *   GET    /api/preferences          — Get current user's preferences
- *   PUT    /api/preferences          — Create or update preferences
- *   DELETE /api/preferences          — Reset preferences to defaults
- *   POST   /api/preferences/feed     — Get personalized feed ranking
+ * - GET    /api/preferences/:clientId       — Get preferences
+ * - PUT    /api/preferences/:clientId       — Create or update preferences
+ * - DELETE /api/preferences/:clientId       — Delete preferences
+ * - POST   /api/preferences/:clientId/feed  — Get personalized feed ranking
  */
 
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Valid interest categories (maps to dashboard modules)
-const VALID_INTERESTS = [
+// Valid interest categories
+const VALID_CATEGORIES = [
   'astrology', 'moon', 'numerology', 'tarot', 'iching',
   'markets', 'geophysical', 'solar', 'schumann', 'sentiment',
   'cosmic', 'gematria', 'parasha', 'tzolkin', 'dreamspell', 'news'
 ];
 
+// Valid time preferences
 const VALID_TIME_PREFS = ['morning', 'afternoon', 'evening', 'night', 'all'];
 
-/**
- * Middleware: get or create anonymous user (same pattern as community routes)
- */
-async function getUserMiddleware(req, res, next) {
-  try {
-    const anonymousId = req.cookies?.wh_anon_id || req.headers['x-anonymous-id'];
-
-    if (!anonymousId) {
-      const crypto = require('crypto');
-      const newId = crypto.randomBytes(16).toString('hex');
-      res.cookie('wh_anon_id', newId, {
-        httpOnly: true,
-        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
-        sameSite: 'lax',
-      });
-
-      const result = await db.query(
-        `INSERT INTO community_users (anonymous_id) VALUES ($1) RETURNING id`,
-        [newId]
-      );
-      req.userId = result.rows[0].id;
-    } else {
-      const result = await db.query(
-        `INSERT INTO community_users (anonymous_id) VALUES ($1)
-         ON CONFLICT (anonymous_id) DO UPDATE SET last_active_at = NOW()
-         RETURNING id`,
-        [anonymousId]
-      );
-      req.userId = result.rows[0].id;
-    }
-    next();
-  } catch (err) {
-    console.error('Preferences auth error:', err);
-    res.status(500).json({ error: 'Authentication failed' });
-  }
+// Client ID validation (alphanumeric + hyphens, 8-64 chars)
+function isValidClientId(id) {
+  return typeof id === 'string' && /^[a-zA-Z0-9_-]{8,64}$/.test(id);
 }
 
-router.use(getUserMiddleware);
-
 /**
- * Validate preferences payload
+ * Validate preference payload
  */
 function validatePreferences(body) {
   const errors = [];
+  const prefs = {};
 
-  if (body.interests !== undefined) {
-    if (!Array.isArray(body.interests)) {
-      errors.push('interests must be an array');
+  // Interest categories
+  if (body.categories !== undefined) {
+    if (!Array.isArray(body.categories)) {
+      errors.push('categories must be an array');
     } else {
-      const invalid = body.interests.filter(i => !VALID_INTERESTS.includes(i));
-      if (invalid.length) errors.push(`Invalid interests: ${invalid.join(', ')}`);
+      const invalid = body.categories.filter(c => !VALID_CATEGORIES.includes(c));
+      if (invalid.length) errors.push(`Invalid categories: ${invalid.join(', ')}`);
+      else prefs.categories = body.categories;
     }
   }
 
+  // Location radius (km)
   if (body.locationRadius !== undefined) {
     const r = Number(body.locationRadius);
-    if (isNaN(r) || r < 1 || r > 500) errors.push('locationRadius must be 1-500 km');
+    if (isNaN(r) || r < 1 || r > 500) {
+      errors.push('locationRadius must be between 1 and 500 km');
+    } else {
+      prefs.locationRadius = r;
+    }
   }
 
-  if (body.location !== undefined && body.location !== null) {
-    if (typeof body.location !== 'object') {
-      errors.push('location must be an object with lat, lng');
+  // Location coordinates
+  if (body.location !== undefined) {
+    if (!body.location || typeof body.location !== 'object') {
+      errors.push('location must be an object with lat and lng');
     } else {
       const { lat, lng } = body.location;
       if (typeof lat !== 'number' || lat < -90 || lat > 90) errors.push('Invalid latitude');
       if (typeof lng !== 'number' || lng < -180 || lng > 180) errors.push('Invalid longitude');
+      if (!errors.length) prefs.location = { lat, lng };
     }
   }
 
+  // Preferred times
   if (body.preferredTimes !== undefined) {
     if (!Array.isArray(body.preferredTimes)) {
       errors.push('preferredTimes must be an array');
     } else {
       const invalid = body.preferredTimes.filter(t => !VALID_TIME_PREFS.includes(t));
       if (invalid.length) errors.push(`Invalid time preferences: ${invalid.join(', ')}`);
+      else prefs.preferredTimes = body.preferredTimes;
     }
   }
 
+  // Notification preferences (for future use with EPIC-005)
   if (body.notifications !== undefined) {
     if (typeof body.notifications !== 'object') {
       errors.push('notifications must be an object');
+    } else {
+      prefs.notifications = {
+        patternAlerts: Boolean(body.notifications.patternAlerts),
+        predictionShifts: Boolean(body.notifications.predictionShifts),
+        dailySummary: Boolean(body.notifications.dailySummary),
+        rareEvents: Boolean(body.notifications.rareEvents),
+        quietHoursStart: body.notifications.quietHoursStart || null,
+        quietHoursEnd: body.notifications.quietHoursEnd || null,
+      };
     }
   }
 
-  return errors;
+  return { prefs, errors };
 }
 
 /**
- * GET /api/preferences — Get current user's preferences
+ * GET /api/preferences/:clientId
  */
-router.get('/', async (req, res) => {
+router.get('/:clientId', async (req, res) => {
   try {
+    const { clientId } = req.params;
+    if (!isValidClientId(clientId)) {
+      return res.status(400).json({ error: 'Invalid client ID format' });
+    }
+
     const result = await db.query(
-      `SELECT interests, location_lat, location_lng, location_label,
-              location_radius_km, preferred_times, notifications, updated_at
-       FROM user_preferences WHERE user_id = $1`,
-      [req.userId]
+      'SELECT preferences, updated_at FROM user_preferences WHERE client_id = $1',
+      [clientId]
     );
 
     if (result.rows.length === 0) {
-      return res.json({ preferences: null, message: 'No preferences set' });
+      return res.status(404).json({ error: 'Preferences not found' });
     }
 
-    const row = result.rows[0];
     res.json({
-      preferences: {
-        interests: row.interests,
-        location: row.location_lat != null ? {
-          lat: parseFloat(row.location_lat),
-          lng: parseFloat(row.location_lng),
-          label: row.location_label,
-        } : null,
-        locationRadius: row.location_radius_km,
-        preferredTimes: row.preferred_times,
-        notifications: row.notifications,
-      },
-      updatedAt: row.updated_at,
+      clientId,
+      preferences: result.rows[0].preferences,
+      updatedAt: result.rows[0].updated_at,
     });
   } catch (err) {
     console.error('Error fetching preferences:', err);
@@ -149,61 +131,32 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * PUT /api/preferences — Create or update preferences
+ * PUT /api/preferences/:clientId
  */
-router.put('/', async (req, res) => {
+router.put('/:clientId', async (req, res) => {
   try {
-    const errors = validatePreferences(req.body);
-    if (errors.length) return res.status(400).json({ errors });
+    const { clientId } = req.params;
+    if (!isValidClientId(clientId)) {
+      return res.status(400).json({ error: 'Invalid client ID format' });
+    }
 
-    const {
-      interests = [],
-      location = null,
-      locationLabel = null,
-      locationRadius = 25,
-      preferredTimes = ['all'],
-      notifications = { patternAlerts: true, predictionShifts: false, dailySummary: false, rareEvents: true },
-    } = req.body;
+    const { prefs, errors } = validatePreferences(req.body);
+    if (errors.length) {
+      return res.status(400).json({ errors });
+    }
 
     const result = await db.query(
-      `INSERT INTO user_preferences (user_id, interests, location_lat, location_lng, location_label,
-         location_radius_km, preferred_times, notifications, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
-       ON CONFLICT (user_id) DO UPDATE SET
-         interests = EXCLUDED.interests,
-         location_lat = EXCLUDED.location_lat,
-         location_lng = EXCLUDED.location_lng,
-         location_label = EXCLUDED.location_label,
-         location_radius_km = EXCLUDED.location_radius_km,
-         preferred_times = EXCLUDED.preferred_times,
-         notifications = EXCLUDED.notifications,
-         updated_at = NOW()
-       RETURNING *`,
-      [
-        req.userId,
-        JSON.stringify(interests),
-        location?.lat ?? null,
-        location?.lng ?? null,
-        locationLabel || location?.label || null,
-        locationRadius,
-        JSON.stringify(preferredTimes),
-        JSON.stringify(notifications),
-      ]
+      `INSERT INTO user_preferences (client_id, preferences, updated_at)
+       VALUES ($1, $2, NOW())
+       ON CONFLICT (client_id)
+       DO UPDATE SET preferences = $2, updated_at = NOW()
+       RETURNING preferences, updated_at`,
+      [clientId, JSON.stringify(prefs)]
     );
 
     res.json({
-      message: 'Preferences saved',
-      preferences: {
-        interests: result.rows[0].interests,
-        location: result.rows[0].location_lat != null ? {
-          lat: parseFloat(result.rows[0].location_lat),
-          lng: parseFloat(result.rows[0].location_lng),
-          label: result.rows[0].location_label,
-        } : null,
-        locationRadius: result.rows[0].location_radius_km,
-        preferredTimes: result.rows[0].preferred_times,
-        notifications: result.rows[0].notifications,
-      },
+      clientId,
+      preferences: result.rows[0].preferences,
       updatedAt: result.rows[0].updated_at,
     });
   } catch (err) {
@@ -213,47 +166,92 @@ router.put('/', async (req, res) => {
 });
 
 /**
- * DELETE /api/preferences — Reset preferences
+ * DELETE /api/preferences/:clientId
  */
-router.delete('/', async (req, res) => {
+router.delete('/:clientId', async (req, res) => {
   try {
-    await db.query('DELETE FROM user_preferences WHERE user_id = $1', [req.userId]);
-    res.json({ message: 'Preferences reset' });
+    const { clientId } = req.params;
+    if (!isValidClientId(clientId)) {
+      return res.status(400).json({ error: 'Invalid client ID format' });
+    }
+
+    const result = await db.query(
+      'DELETE FROM user_preferences WHERE client_id = $1',
+      [clientId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Preferences not found' });
+    }
+
+    res.json({ message: 'Preferences deleted' });
   } catch (err) {
-    console.error('Error resetting preferences:', err);
-    res.status(500).json({ error: 'Failed to reset preferences' });
+    console.error('Error deleting preferences:', err);
+    res.status(500).json({ error: 'Failed to delete preferences' });
   }
 });
 
 /**
- * POST /api/preferences/feed — Get personalized module ranking
+ * POST /api/preferences/:clientId/feed
+ * Returns personalized feed ranking based on user preferences
  *
- * Returns modules sorted by relevance based on user interests.
- * If no preferences set, returns default ordering.
+ * Takes the current module data and re-ranks it according to
+ * the user's interest categories and other preferences.
  */
-router.post('/feed', async (req, res) => {
+router.post('/:clientId/feed', async (req, res) => {
   try {
-    const result = await db.query(
-      'SELECT interests, preferred_times FROM user_preferences WHERE user_id = $1',
-      [req.userId]
-    );
-
-    const allModules = [...VALID_INTERESTS];
-
-    if (result.rows.length === 0 || !result.rows[0].interests?.length) {
-      return res.json({ modules: allModules, personalized: false });
+    const { clientId } = req.params;
+    if (!isValidClientId(clientId)) {
+      return res.status(400).json({ error: 'Invalid client ID format' });
     }
 
-    const interests = result.rows[0].interests;
+    // Get user preferences
+    const prefResult = await db.query(
+      'SELECT preferences FROM user_preferences WHERE client_id = $1',
+      [clientId]
+    );
 
-    // Preferred interests first, then the rest in default order
-    const preferred = interests.filter(i => allModules.includes(i));
-    const rest = allModules.filter(i => !preferred.includes(i));
+    if (prefResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Preferences not found. Set preferences first.' });
+    }
+
+    const prefs = prefResult.rows[0].preferences;
+    const categories = prefs.categories || VALID_CATEGORIES;
+
+    // Get current module data
+    const modules = {};
+    for (const cat of VALID_CATEGORIES) {
+      const snapshot = await db.getLatestSnapshot(cat);
+      if (snapshot) {
+        modules[cat] = {
+          data: snapshot.data,
+          collectedAt: snapshot.collected_at,
+          // Boost score: preferred categories get higher ranking
+          relevance: categories.includes(cat) ? 1.0 : 0.3,
+          preferred: categories.includes(cat),
+        };
+      }
+    }
+
+    // Sort by relevance (preferred first), then by freshness
+    const ranked = Object.entries(modules)
+      .sort(([, a], [, b]) => {
+        if (a.relevance !== b.relevance) return b.relevance - a.relevance;
+        return new Date(b.collectedAt) - new Date(a.collectedAt);
+      })
+      .map(([name, mod]) => ({
+        module: name,
+        data: mod.data,
+        collectedAt: mod.collectedAt,
+        relevance: mod.relevance,
+        preferred: mod.preferred,
+      }));
 
     res.json({
-      modules: [...preferred, ...rest],
-      personalized: true,
-      preferredTimes: result.rows[0].preferred_times,
+      clientId,
+      totalModules: ranked.length,
+      preferredCount: ranked.filter(m => m.preferred).length,
+      feed: ranked,
     });
   } catch (err) {
     console.error('Error generating personalized feed:', err);

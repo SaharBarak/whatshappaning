@@ -40,9 +40,9 @@ async function main() {
     const moduleCount = Object.keys(allModules).filter(k => allModules[k] != null).length;
     logger.info(`Collected data from ${moduleCount} modules`);
 
-    // Wait before Gemini calls to avoid rate limits
-    logger.info('Waiting 45s before insight generation (Gemini rate limit)...');
-    await sleep(45000);
+    // Brief pause before Gemini calls
+    logger.info('Waiting 5s before insight generation...');
+    await sleep(5000);
 
     // 2. Gather module data for insight (same logic as the API route)
     const moduleData = await gatherModuleData();
