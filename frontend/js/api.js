@@ -18,6 +18,10 @@ const SNAPSHOT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
  * Make an API request with caching and error handling
  */
 async function request(endpoint, options = {}) {
+  // Snapshot-only mode — no live API available
+  if (!config.apiUrl) {
+    return { data: null, error: 'No API configured (snapshot-only mode)' };
+  }
   const url = `${config.apiUrl}${endpoint}`;
   const cacheKey = url;
 

@@ -12,24 +12,10 @@ function getApiUrl() {
     return 'http://localhost:3000';
   }
 
-  // GitHub Pages deployment
-  if (hostname.includes('github.io')) {
-    return 'https://whatshappening-api-89qq.onrender.com';
-  }
-
-  // Render.com static site deployment
-  if (hostname.includes('onrender.com')) {
-    return 'https://whatshappening-api-89qq.onrender.com';
-  }
-
-  // Vercel deployment
-  if (hostname.includes('vercel.app')) {
-    return 'https://whatshappening-api-89qq.onrender.com';
-  }
-
-  // Netlify deployment
-  if (hostname.includes('netlify.app')) {
-    return 'https://whatshappening-api-89qq.onrender.com';
+  // Production deployments — no backend API, snapshot-only mode
+  if (hostname.includes('github.io') || hostname.includes('onrender.com') || 
+      hostname.includes('vercel.app') || hostname.includes('netlify.app')) {
+    return null; // Snapshot-only mode — no live API
   }
 
   // Production - adjust domain as needed

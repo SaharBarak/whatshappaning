@@ -78,6 +78,11 @@ export function connect(onData) {
 }
 
 function doConnect() {
+  // Snapshot-only mode — no WebSocket available
+  if (!config.apiUrl) {
+    setState('disconnected');
+    return;
+  }
   cleanup();
   setState(reconnectAttempts === 0 ? ConnectionState.CONNECTING : ConnectionState.RECONNECTING);
 
