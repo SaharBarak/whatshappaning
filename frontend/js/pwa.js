@@ -46,8 +46,10 @@ async function registerServiceWorker() {
   }
 
   try {
-    const registration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/'
+    // Use relative paths so it works on GitHub Pages subpath (/whatshappaning/)
+    const basePath = new URL('.', window.location.href).pathname;
+    const registration = await navigator.serviceWorker.register(`${basePath}sw.js`, {
+      scope: basePath
     });
 
     console.log('[PWA] Service worker registered:', registration.scope);

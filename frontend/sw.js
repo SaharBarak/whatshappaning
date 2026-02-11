@@ -8,22 +8,28 @@ const STATIC_CACHE = 'whatshappaning-static-v1';
 const DYNAMIC_CACHE = 'whatshappaning-dynamic-v1';
 
 // Static assets to cache immediately on install
+// Resolve paths relative to SW scope (works on GitHub Pages subpath)
+const SW_SCOPE = self.registration?.scope || self.location.href.replace(/sw\.js$/, '');
+function scopedUrl(path) {
+  return new URL(path, SW_SCOPE).href;
+}
+
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/js/app.js',
-  '/js/api.js',
-  '/js/config.js',
-  '/js/components/indices.js',
-  '/js/components/predictions.js',
-  '/js/components/alerts.js',
-  '/js/components/modules.js',
-  '/js/components/suggestions.js',
-  '/js/components/states.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  './',
+  './index.html',
+  './css/styles.css',
+  './js/app.js',
+  './js/api.js',
+  './js/config.js',
+  './js/components/indices.js',
+  './js/components/predictions.js',
+  './js/components/alerts.js',
+  './js/components/modules.js',
+  './js/components/suggestions.js',
+  './js/components/states.js',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 // External resources to cache
@@ -256,8 +262,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body || '',
-    icon: data.icon || '/icons/icon-192.png',
-    badge: data.badge || '/icons/icon-72.png',
+    icon: data.icon || 'icons/icon-192.png',
+    badge: data.badge || 'icons/icon-72.png',
     tag: data.tag || 'whatshappening',
     data: data.data || { url: '/' },
     vibrate: [100, 50, 100],

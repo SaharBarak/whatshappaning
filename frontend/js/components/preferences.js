@@ -39,20 +39,28 @@ let onPrefsChanged = null;
  * Load preferences from API
  */
 async function loadPreferences() {
+  // Always load local first so we never block on a dead API
+  const saved = localStorage.getItem('wh_preferences');
+  if (saved) {
+    try { currentPrefs = JSON.parse(saved); } catch (e) { /* ignore */ }
+  }
+
   try {
     const clientId = getClientId();
-    const resp = await fetch(`${config.apiUrl}/api/preferences/${clientId}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    const resp = await fetch(`${config.apiUrl}/api/preferences/${clientId}`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
     if (resp.ok) {
       const data = await resp.json();
       currentPrefs = data.preferences;
     } else if (resp.status === 404) {
-      currentPrefs = null;
+      // No server-side prefs — keep local
     }
   } catch (err) {
-    console.warn('Could not load preferences:', err);
-    // Fall back to localStorage
-    const saved = localStorage.getItem('wh_preferences');
-    if (saved) currentPrefs = JSON.parse(saved);
+    console.warn('Could not load preferences from API:', err.message);
   }
   return currentPrefs;
 }
