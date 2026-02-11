@@ -37,6 +37,18 @@ async function withRetry(fn, options = {}) {
         err.message.includes('rate')
       );
 
+      // If daily quota is exhausted (limit: 0), don't bother retrying
+      const isQuotaExhausted = err.message && (
+        err.message.includes('limit: 0') ||
+        err.message.includes('FreeTier') ||
+        err.message.includes('PerDayPerProject')
+      );
+
+      if (isQuotaExhausted) {
+        logger.warn(`[${label}] Daily quota exhausted — skipping retries`);
+        throw err;
+      }
+
       if (attempt < maxRetries && isRateLimit) {
         // Parse retry delay from error if available
         const retryMatch = err.message.match(/retry in ([\d.]+)s/i);
