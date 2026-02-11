@@ -11,35 +11,21 @@
 
 const axios = require('axios');
 
-// yahoo-finance2 is ESM-only, so we need to use dynamic import
-let yahooFinance = null;
-async function getYahooFinance() {
-  if (!yahooFinance) {
-    try {
-      const module = await import('yahoo-finance2');
-      const YahooFinance = module.default;
-      // v2.x default export is a class constructor, not a plain object
-      yahooFinance = typeof YahooFinance === 'function' ? new YahooFinance() : YahooFinance;
-    } catch (error) {
-      console.error('Failed to load yahoo-finance2:', error.message);
-      return null;
-    }
-  }
-  return yahooFinance;
-}
-
-// Yahoo Finance ticker symbols
-const YAHOO_SYMBOLS = {
-  SPX: '^GSPC',
-  VIX: '^VIX',
-  GOLD: 'GC=F',
-  DXY: 'DX-Y.NYB',
-};
-
-// API endpoints
+// Free API endpoints (no API keys required)
 const COINGECKO_URL =
   'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true';
 const FEAR_GREED_URL = 'https://api.alternative.me/fng/?limit=1';
+
+// Free market data sources
+// 1. CNBC quote API (free, no key) - SPX, VIX, Gold, DXY
+// 2. CoinGecko (free tier) - Bitcoin
+// 3. Alternative.me (free) - Fear & Greed
+const CNBC_SYMBOLS = {
+  SPX: '.SPX',      // S&P 500
+  VIX: '.VIX',      // CBOE Volatility
+  GOLD: '@GC.1',    // Gold futures
+  DXY: '.DXY',      // Dollar index
+};
 
 /**
  * Determine trend based on daily change percentage
@@ -97,38 +83,39 @@ function determineOverallSentiment(cryptoFearGreed, vixLevel) {
 }
 
 /**
- * Fetch stock/index data from Yahoo Finance
+ * Fetch market data from free CNBC quote API
  * @param {string} name - Display name (e.g., 'SPX')
- * @param {string} symbol - Yahoo Finance symbol
+ * @param {string} symbol - CNBC symbol
  * @returns {Promise<Object>} Index data or error object
  */
-async function fetchYahooData(name, symbol) {
-  const { withRetry } = require('../utils/retry');
-
+async function fetchMarketData(name, symbol) {
   try {
-    return await withRetry(async () => {
-      const yf = await getYahooFinance();
-      if (!yf) {
-        throw new Error('yahoo-finance2 module not available');
-      }
+    const url = `https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=${encodeURIComponent(symbol)}&requestMethod=itv&no498498s=1&partnerId=2&fund=1&exthrs=1&output=json&events=1`;
+    const response = await axios.get(url, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DataCollector/1.0)',
+        Accept: 'application/json',
+      },
+    });
 
-      const quote = await yf.quote(symbol);
+    const data = response.data;
+    const quote = data?.FormattedQuoteResult?.FormattedQuote?.[0];
+    
+    if (!quote || !quote.last) {
+      throw new Error(`No data returned for ${symbol}`);
+    }
 
-      if (!quote || quote.regularMarketPrice === undefined) {
-        throw new Error(`No data returned for ${symbol}`);
-      }
+    const price = parseFloat(quote.last.replace(/,/g, ''));
+    const dailyChange = parseFloat(quote.change_pct) || 0;
 
-      const price = quote.regularMarketPrice;
-      const dailyChange = quote.regularMarketChangePercent || 0;
-
-      return {
-        price: Math.round(price * 100) / 100,
-        dailyChange: Math.round(dailyChange * 100) / 100,
-        trend: determineTrend(dailyChange),
-      };
-    }, { label: `Yahoo-${name}`, maxRetries: 2, baseDelayMs: 5000 });
+    return {
+      price: Math.round(price * 100) / 100,
+      dailyChange: Math.round(dailyChange * 100) / 100,
+      trend: determineTrend(dailyChange),
+    };
   } catch (error) {
-    console.error(`Error fetching ${name} (${symbol}) from Yahoo Finance:`, error.message);
+    console.error(`Error fetching ${name} (${symbol}):`, error.message);
     return {
       price: null,
       dailyChange: null,
@@ -220,16 +207,12 @@ async function collect() {
   const now = new Date();
   const anomalies = [];
 
-  // Fetch Yahoo data sequentially to avoid rate limits, others in parallel
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  const spxData = await fetchYahooData('SPX', YAHOO_SYMBOLS.SPX);
-  await sleep(2000);
-  const vixData = await fetchYahooData('VIX', YAHOO_SYMBOLS.VIX);
-  await sleep(2000);
-  const goldData = await fetchYahooData('GOLD', YAHOO_SYMBOLS.GOLD);
-  await sleep(2000);
-  const dxyData = await fetchYahooData('DXY', YAHOO_SYMBOLS.DXY);
-  const [btcData, fearGreedData] = await Promise.all([
+  // Fetch all market data in parallel (all free sources)
+  const [spxData, vixData, goldData, dxyData, btcData, fearGreedData] = await Promise.all([
+    fetchMarketData('SPX', CNBC_SYMBOLS.SPX),
+    fetchMarketData('VIX', CNBC_SYMBOLS.VIX),
+    fetchMarketData('GOLD', CNBC_SYMBOLS.GOLD),
+    fetchMarketData('DXY', CNBC_SYMBOLS.DXY),
     fetchBitcoinData(),
     fetchFearGreedIndex(),
   ]);

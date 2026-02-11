@@ -14,6 +14,7 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env'
 
 const { loadModules, executeModule, executeDailyModules, getAllModuleData } = require('../scheduler');
 const { gatherModuleData, generateInsight } = require('../routes/insight');
+const { generateRuleBasedInsight } = require('../services/insight-engine');
 const { uploadSnapshot } = require('../services/snapshot-store');
 const { generatePredictions } = require('../prediction');
 const { archivePrediction } = require('../analytics');
@@ -47,22 +48,18 @@ async function main() {
     // 2. Gather module data for insight (same logic as the API route)
     const moduleData = await gatherModuleData();
 
-    // 3. Generate AI insight
-    logger.info('Generating AI insight...');
+    // 3. Generate insight (rule-based first, AI as optional enhancement)
+    logger.info('Generating insight...');
     let insight = null;
     try {
+      // Try AI insight first if Gemini is available
       insight = await generateInsight(moduleData);
-      logger.info(`Insight generated — mood: ${insight.mood}`);
+      logger.info(`AI insight generated — mood: ${insight.mood}`);
     } catch (err) {
-      logger.error('Insight generation failed (continuing without):', err.message);
-      insight = {
-        insight: 'Insight temporarily unavailable.',
-        highlights: [],
-        guidance: 'Check back soon for updated cosmic guidance.',
-        mood: 'reflective',
-        generated_at: new Date().toISOString(),
-        sources: Object.keys(moduleData),
-      };
+      logger.warn('AI insight unavailable, using rule-based engine:', err.message?.substring(0, 80));
+      // Fall back to rule-based insight (always works, no API needed)
+      insight = generateRuleBasedInsight(moduleData);
+      logger.info(`Rule-based insight generated — mood: ${insight.mood}`);
     }
 
     // 4. Generate predictions
