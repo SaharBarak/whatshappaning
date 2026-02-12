@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/SaharBarak/whatshappaning-backend.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/SaharBarak/whatshappaning-frontend.git
